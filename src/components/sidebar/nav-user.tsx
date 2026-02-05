@@ -5,7 +5,7 @@ import { IconLogout } from "@tabler/icons-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
-import { logoutAction } from "@/app/actions/auth";
+import { logoutAction } from "@/app/sign-in/action";
 
 export function NavUser({
   user,

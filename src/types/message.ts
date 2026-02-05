@@ -1,0 +1,20 @@
+// src/types/message.ts
+import { z } from "zod";
+
+export const messageStatusEnum = z.enum(["NEW", "CONTACTED", "QUALIFIED", "NEGOTIATION", "PROPOSAL_SENT"]);
+
+export const messageSchema = z.object({
+  message_id: z.string(),
+  sender_name: z.string(),
+  sender_email: z.string().email(),
+  sender_phone: z.string(),
+  organization_name: z.string(),
+  message_status: messageStatusEnum,
+  subject: z.array(z.string()),
+  message_body: z.string(),
+  created_date: z.string(), // bisa diubah ke z.coerce.date() kalau mau
+});
+
+export type MessageStatus = z.infer<typeof messageStatusEnum>;
+export type Message = z.infer<typeof messageSchema>;
+export const messagesSchema = z.array(messageSchema);

@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { IconArticle, IconChalkboardTeacher, IconDashboard, IconDeviceImacCode, IconHeartHandshake, IconMessage2, IconMessageCircleUser, IconUserSquareRounded, IconWorldSearch } from "@tabler/icons-react";
-import { NavMain } from "@/components/nav-main";
+import { NavMain } from "@/components/sidebar/nav-main";
 import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import Image from "next/image";
 import Link from "next/link";
@@ -18,17 +18,17 @@ const data = {
     items: [
       {
         title: "Dashboard",
-        url: "/dashboard",
+        url: "/general/dashboard",
         icon: IconDashboard,
       },
       {
         title: "Message",
-        url: "/messages",
+        url: "/general/messages",
         icon: IconMessage2,
       },
       {
         title: "User",
-        url: "#",
+        url: "/general/users",
         icon: IconUserSquareRounded,
       },
       {

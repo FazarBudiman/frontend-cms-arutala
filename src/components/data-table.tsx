@@ -1,224 +1,157 @@
 "use client";
 
 import * as React from "react";
-import { DndContext, closestCenter, MouseSensor, TouchSensor, KeyboardSensor, useSensor, useSensors, type DragEndEvent, type UniqueIdentifier } from "@dnd-kit/core";
-import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
-import { SortableContext, useSortable, arrayMove, verticalListSortingStrategy } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
-import { ColumnDef, Row, flexRender, getCoreRowModel, getPaginationRowModel, useReactTable } from "@tanstack/react-table";
-import { z } from "zod";
-import { IconDotsVertical, IconGripVertical, IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
+import { ColumnDef, ColumnFiltersState, OnChangeFn, SortingState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
 
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
-import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-/* -------------------------------------------------------------------------- */
-/*                                   Schema                                   */
-/* -------------------------------------------------------------------------- */
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
-export const messageSchema = z.object({
-  message_id: z.string(),
-  sender_name: z.string(),
-  sender_email: z.string(),
-  sender_phone: z.string(),
-  organization_name: z.string(),
-  message_status: z.enum(["NEW", "CONTACTED", "QUALIFIED", "NEGOTIATION", "PROPOSAL_SENT"]),
-  subject: z.array(z.string()),
-  message_body: z.string(),
-  created_date: z.string(),
-});
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
-export type Message = z.infer<typeof messageSchema>;
+/* =======================
+   Props
+======================= */
 
-/* -------------------------------------------------------------------------- */
-/*                               Drag Handle                                  */
-/* -------------------------------------------------------------------------- */
+export interface DataTableProps<TData, TValue> {
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
 
-function DragHandle({ id }: { id: string }) {
-  const { attributes, listeners } = useSortable({ id });
+  /** wajib agar table tidak bergantung ke field tertentu */
+  getRowId: (row: TData) => string;
 
-  return (
-    <Button {...attributes} {...listeners} variant="ghost" size="icon" className="size-7 cursor-grab text-muted-foreground">
-      <IconGripVertical className="size-4" />
-    </Button>
-  );
+  /** external state (optional) */
+  sorting?: SortingState;
+  columnFilters?: ColumnFiltersState;
+
+  onSortingChange?: OnChangeFn<SortingState>;
+  onColumnFiltersChange?: OnChangeFn<ColumnFiltersState>;
+
+  pageSizeOptions?: number[];
 }
 
-/* -------------------------------------------------------------------------- */
-/*                                  Columns                                   */
-/* -------------------------------------------------------------------------- */
+/* =======================
+   Component
+======================= */
 
-const statusColor: Record<Message["message_status"], string> = {
-  NEW: "bg-blue-500",
-  CONTACTED: "bg-yellow-500",
-  QUALIFIED: "bg-green-500",
-  NEGOTIATION: "bg-orange-500",
-  PROPOSAL_SENT: "bg-purple-500",
-};
-
-const columns: ColumnDef<Message>[] = [
-  {
-    id: "drag",
-    header: () => null,
-    cell: ({ row }) => <DragHandle id={row.original.message_id} />,
-  },
-  {
-    id: "select",
-    header: ({ table }) => <Checkbox checked={table.getIsAllPageRowsSelected()} onCheckedChange={(v) => table.toggleAllPageRowsSelected(!!v)} />,
-    cell: ({ row }) => <Checkbox checked={row.getIsSelected()} onCheckedChange={(v) => row.toggleSelected(!!v)} />,
-  },
-  {
-    accessorKey: "sender_name",
-    header: "Sender",
-    cell: ({ row }) => (
-      <div className="flex flex-col">
-        <span className="font-medium">{row.original.sender_name}</span>
-        <span className="text-xs text-muted-foreground">{row.original.organization_name}</span>
-      </div>
-    ),
-  },
-  {
-    accessorKey: "subject",
-    header: "Subject",
-    cell: ({ row }) => (
-      <div className="flex gap-1 flex-wrap">
-        {row.original.subject.map((s) => (
-          <Badge key={s} variant="secondary">
-            {s}
-          </Badge>
-        ))}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "message_status",
-    header: "Status",
-    cell: ({ row }) => <Badge className={statusColor[row.original.message_status]}>{row.original.message_status}</Badge>,
-  },
-  {
-    accessorKey: "created_date",
-    header: "Date",
-    cell: ({ row }) => new Date(row.original.created_date).toLocaleDateString("id-ID"),
-  },
-  {
-    id: "actions",
-    cell: () => (
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <IconDotsVertical className="size-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem>View Detail</DropdownMenuItem>
-          <DropdownMenuItem>Mark as Qualified</DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem className="text-red-500">Delete</DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    ),
-  },
-];
-
-/* -------------------------------------------------------------------------- */
-/*                              Draggable Row                                 */
-/* -------------------------------------------------------------------------- */
-
-function DraggableRow({ row }: { row: Row<Message> }) {
-  const { setNodeRef, transform, transition, isDragging } = useSortable({
-    id: row.original.message_id,
-  });
-
-  return (
-    <TableRow
-      ref={setNodeRef}
-      data-state={row.getIsSelected() && "selected"}
-      className={isDragging ? "opacity-70" : ""}
-      style={{
-        transform: CSS.Transform.toString(transform),
-        transition,
-      }}
-    >
-      {row.getVisibleCells().map((cell) => (
-        <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
-      ))}
-    </TableRow>
-  );
-}
-
-/* -------------------------------------------------------------------------- */
-/*                                 DataTable                                  */
-/* -------------------------------------------------------------------------- */
-
-export function DataTable({ data: initialData }: { data: Message[] }) {
-  const [data, setData] = React.useState<Message[]>(initialData);
+export function DataTable<TData, TValue>({ columns, data, getRowId, sorting, columnFilters, onSortingChange, onColumnFiltersChange, pageSizeOptions = [10, 25, 50] }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
-
-  const sensors = useSensors(useSensor(MouseSensor), useSensor(TouchSensor), useSensor(KeyboardSensor));
-
-  const dataIds = React.useMemo<UniqueIdentifier[]>(() => data.map((d) => d.message_id), [data]);
+  const [pagination, setPagination] = React.useState({
+    pageIndex: 0,
+    pageSize: pageSizeOptions[0],
+  });
 
   const table = useReactTable({
     data,
     columns,
-    state: { rowSelection },
-    getRowId: (row) => row.message_id,
+    getRowId,
+
+    state: {
+      pagination,
+      rowSelection,
+      sorting,
+      columnFilters,
+    },
+
     enableRowSelection: true,
+
+    onPaginationChange: setPagination,
     onRowSelectionChange: setRowSelection,
+    onSortingChange,
+    onColumnFiltersChange,
+
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
   });
 
-  function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event;
-    if (!over || active.id === over.id) return;
-
-    setData((items) => {
-      const oldIndex = items.findIndex((i) => i.message_id === active.id);
-      const newIndex = items.findIndex((i) => i.message_id === over.id);
-      return arrayMove(items, oldIndex, newIndex);
-    });
-  }
+  const pageCount = table.getPageCount();
+  const currentPage = table.getState().pagination.pageIndex;
 
   return (
     <div className="space-y-4">
-      <DndContext sensors={sensors} collisionDetection={closestCenter} modifiers={[restrictToVerticalAxis]} onDragEnd={handleDragEnd}>
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((hg) => (
-                <TableRow key={hg.id}>
-                  {hg.headers.map((header) => (
-                    <TableHead key={header.id}>{flexRender(header.column.columnDef.header, header.getContext())}</TableHead>
+      {/* TABLE */}
+      <div className="rounded-md border overflow-hidden">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((group) => (
+              <TableRow key={group.id}>
+                {group.headers.map((header) => (
+                  <TableHead key={header.id}>{header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}</TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+
+          <TableBody>
+            {table.getRowModel().rows.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id} className="p-4">
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
                   ))}
                 </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={columns.length} className="h-24 text-center text-muted-foreground">
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+
+      {/* FOOTER */}
+      <div className="flex items-center justify-between px-2">
+        {/* PAGE SIZE */}
+        <div className="flex items-center gap-2">
+          <Label className="text-sm text-muted-foreground">Rows per page</Label>
+
+          <Select value={String(table.getState().pagination.pageSize)} onValueChange={(value) => table.setPageSize(Number(value))}>
+            <SelectTrigger className="w-20">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {pageSizeOptions.map((size) => (
+                <SelectItem key={size} value={String(size)}>
+                  {size}
+                </SelectItem>
               ))}
-            </TableHeader>
-
-            <TableBody>
-              <SortableContext items={dataIds} strategy={verticalListSortingStrategy}>
-                {table.getRowModel().rows.map((row) => (
-                  <DraggableRow key={row.id} row={row} />
-                ))}
-              </SortableContext>
-            </TableBody>
-          </Table>
+            </SelectContent>
+          </Select>
         </div>
-      </DndContext>
 
-      {/* Pagination */}
-      <div className="flex items-center justify-between">
-        <span className="text-sm text-muted-foreground">{table.getFilteredSelectedRowModel().rows.length} selected</span>
-        <div className="flex gap-2">
-          <Button variant="outline" size="icon" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-            <IconChevronLeft />
-          </Button>
-          <Button variant="outline" size="icon" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-            <IconChevronRight />
-          </Button>
+        {/* PAGE INFO + PAGINATION */}
+        <div className="flex items-center gap-6 whitespace-nowrap">
+          <Label className="text-sm text-muted-foreground">
+            Page {currentPage + 1} of {pageCount}
+          </Label>
+
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious onClick={() => table.previousPage()} aria-disabled={!table.getCanPreviousPage()} />
+              </PaginationItem>
+
+              {Array.from({ length: pageCount }).map((_, index) => (
+                <PaginationItem key={index}>
+                  <PaginationLink isActive={index === currentPage} onClick={() => table.setPageIndex(index)}>
+                    {index + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+
+              <PaginationItem>
+                <PaginationNext onClick={() => table.nextPage()} aria-disabled={!table.getCanNextPage()} />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         </div>
       </div>
     </div>
