@@ -1,12 +1,13 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { Message } from "@/types/message";
 import { DataTable } from "@/components/data-table";
 import { columns } from "./columns";
 import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Field } from "../ui/field";
 
 export function MessageTable({ data }: { data: Message[] }) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -16,19 +17,28 @@ export function MessageTable({ data }: { data: Message[] }) {
   /* Helpers                                                             */
   /* ------------------------------------------------------------------ */
 
-  const setNameFilter = (value: string) => {
+  const uniqueStatuses = useMemo(() => [...new Set(data.map((d) => d.message_status))], [data]);
+
+  const setColumnFilter = (id: string, value: string | null) => {
     setFilters((prev) => {
-      const others = prev.filter((f) => f.id !== "sender_name");
-      return value ? [...others, { id: "sender_name", value }] : others;
+      const others = prev.filter((f) => f.id !== id);
+      return value ? [...others, { id, value }] : others;
     });
   };
 
-  const setStatusFilter = (value: string) => {
-    setFilters((prev) => {
-      const others = prev.filter((f) => f.id !== "message_status");
-      return value !== "ALL" ? [...others, { id: "message_status", value }] : others;
-    });
-  };
+  // const setNameFilter = (value: string) => {
+  //   setFilters((prev) => {
+  //     const others = prev.filter((f) => f.id !== "sender_name");
+  //     return value ? [...others, { id: "sender_name", value }] : others;
+  //   });
+  // };
+
+  // const setStatusFilter = (value: string) => {
+  //   setFilters((prev) => {
+  //     const others = prev.filter((f) => f.id !== "message_status");
+  //     return value !== "ALL" ? [...others, { id: "message_status", value }] : others;
+  //   });
+  // };
 
   /* ------------------------------------------------------------------ */
 
@@ -37,20 +47,26 @@ export function MessageTable({ data }: { data: Message[] }) {
       {/* Toolbar */}
       <div className="flex items-center gap-4 ">
         {/* Search by name */}
-        <Input placeholder="Search by name..." onChange={(e) => setNameFilter(e.target.value)} className="max-w-sm" />
+        {/* <Input placeholder="Search by name..." onChange={(e) => setNameFilter(e.target.value)} className="max-w-sm" /> */}
+        <Input placeholder="Search by name..." onChange={(e) => setColumnFilter("sender_name", e.target.value)} className="max-w-sm" />
 
         {/* Filter by status */}
-        <Select defaultValue="ALL" onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-48">
+
+        <Select defaultValue="ALL" onValueChange={(v) => setColumnFilter("message_status", v !== "ALL" ? v : null)}>
+          <SelectTrigger>
             <SelectValue placeholder="Filter status" />
           </SelectTrigger>
-          <SelectContent side="bottom" avoidCollisions={false}>
-            <SelectItem value="ALL">All Status</SelectItem>
-            <SelectItem value="NEW">NEW</SelectItem>
-            <SelectItem value="CONTACTED">CONTACTED</SelectItem>
-            <SelectItem value="QUALIFIED">QUALIFIED</SelectItem>
-            <SelectItem value="NEGOTIATION">NEGOTIATION</SelectItem>
-            <SelectItem value="PROPOSAL_SENT">PROPOSAL_SENT</SelectItem>
+          <SelectContent position="popper">
+            <SelectGroup>
+              <SelectItem value="ALL">All Status</SelectItem>
+              {uniqueStatuses.map((status) => {
+                return (
+                  <SelectItem value={status} key={status}>
+                    {status}
+                  </SelectItem>
+                );
+              })}
+            </SelectGroup>
           </SelectContent>
         </Select>
       </div>

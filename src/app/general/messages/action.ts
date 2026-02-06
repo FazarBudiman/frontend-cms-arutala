@@ -1,7 +1,7 @@
 // app/actions/messages.ts
 "use server";
 
-import { getAllMessages } from "@/lib/api/message.api";
+import { deleteMessageById, getAllMessages } from "@/lib/api/message.api";
 import { messagesSchema } from "@/types/message";
 
 export async function getAllMessagesAction() {
@@ -28,5 +28,14 @@ export async function getAllMessagesAction() {
     success: true,
     message: response.message,
     data: parsed.data,
+  };
+}
+
+export async function deleteMessageByIdAction(messageId: string) {
+  const response = await deleteMessageById(messageId);
+
+  return {
+    success: response.success,
+    message: response.message,
   };
 }

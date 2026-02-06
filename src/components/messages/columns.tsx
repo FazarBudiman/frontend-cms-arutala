@@ -4,9 +4,10 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
-import { ArrowUpDown } from "lucide-react";
-import { AlertDialogDelete } from "../alert-dialog-delete";
-// import { UseDeleteMessage } from "@/hooks/mutations/use-delete-message";
+import { ArrowUpDown, TrashIcon } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { IconDotsVertical, IconListDetails } from "@tabler/icons-react";
+import { MessageActions } from "./message-action";
 
 export const statusColor: Record<MessageStatus, string> = {
   NEW: "bg-blue-500",
@@ -14,6 +15,10 @@ export const statusColor: Record<MessageStatus, string> = {
   QUALIFIED: "bg-green-500",
   NEGOTIATION: "bg-orange-500",
   PROPOSAL_SENT: "bg-purple-500",
+  VERBAL_COMMITMENT: "bg-purple-700",
+  CLOSED_WON: "bg-yellow-500",
+  CLOSED_LOSS: "bg-orange-500",
+  ON_HOLD: "bg-blue-500",
 };
 
 export const columns: ColumnDef<Message>[] = [
@@ -43,14 +48,14 @@ export const columns: ColumnDef<Message>[] = [
     cell: ({ row }) => (
       <div className="flex flex-col">
         <span className="font-medium">{row.original.sender_name}</span>
-        <span className="text-xs text-muted-foreground">{row.original.sender_email}</span>
+        <span className="text-xs text-muted-foreground">{row.original.sender_phone}</span>
       </div>
     ),
   },
-  {
-    accessorKey: "sender_phone",
-    header: "Phone Number",
-  },
+  // {
+  //   accessorKey: "sender_phone",
+  //   header: "Phone Number",
+  // },
   {
     accessorKey: "organization_name",
     header: "Institution",
@@ -71,6 +76,7 @@ export const columns: ColumnDef<Message>[] = [
   {
     accessorKey: "message_body",
     header: "Message",
+    cell: ({ row }) => <div className="max-w-[320px] whitespace-normal wrap-break-words max-h-30 overflow-y-auto">{row.original.message_body}</div>,
   },
   {
     accessorKey: "message_status",
@@ -82,10 +88,23 @@ export const columns: ColumnDef<Message>[] = [
   {
     id: "actions",
     header: "Action",
-    cell: ({ row }) => {
-      // const mutation = UseDeleteMessage();
-      const messageId = row.original.message_id;
-      return <div className="flex gap-4 flex-wrap">{/* <AlertDialogDelete resourceTitle="Message" identifiers={row.original.sender_name} onConfirm={() => mutation.mutate(messageId)} isLoading={mutation.isPending} /> */}</div>;
-    },
+    cell: ({ row }) => (
+      // <DropdownMenu>
+      //   <DropdownMenuTrigger asChild>
+      //     <Button variant="ghost" size="icon">
+      //       <IconDotsVertical className="size-4" />
+      //     </Button>
+      //   </DropdownMenuTrigger>
+      //   <DropdownMenuContent align="end">
+      //     <DropdownMenuItem>
+      //       <IconListDetails /> Detail
+      //     </DropdownMenuItem>
+      //     <DropdownMenuItem variant="destructive">
+      //       <TrashIcon /> Delete
+      //     </DropdownMenuItem>
+      //   </DropdownMenuContent>
+      // </DropdownMenu>
+      <MessageActions message={row.original} />
+    ),
   },
 ];
