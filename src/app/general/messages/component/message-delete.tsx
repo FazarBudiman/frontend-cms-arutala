@@ -1,18 +1,25 @@
-import { deleteMessageByIdAction } from "@/app/general/messages/action";
 import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogFooter, AlertDialogCancel, AlertDialogAction, AlertDialogDescription, AlertDialogMedia } from "@/components/ui/alert-dialog";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { useDeleteMessage } from "@/hooks/use-message";
 import { TrashIcon } from "lucide-react";
 import { toast } from "sonner";
 
 export function MessageDeleteDialog({ messageId }: { messageId: string }) {
+  const { mutateAsync, isPending } = useDeleteMessage();
+
   const handleDelete = async () => {
-    try {
-      await deleteMessageByIdAction(messageId);
-      toast.success("Message deleted", { position: "top-center" });
-      // TODO: trigger table refresh / mutate
-    } catch {
-      toast.error("Failed to delete message");
-    }
+    toast.promise(mutateAsync(messageId), {
+      loading: "Menghapus pesan...",
+      success: (res) => {
+        if (!res.success) {
+          throw new Error(res.message);
+        }
+        return res.message;
+      },
+      error: (err) => {
+        return err.message || "Failed to delete message";
+      },
+    });
   };
 
   return (
@@ -36,7 +43,7 @@ export function MessageDeleteDialog({ messageId }: { messageId: string }) {
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction className="bg-red-600 hover:bg-red-700" onClick={handleDelete}>
-            Delete
+            {isPending ? "Deleting..." : "Delete"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

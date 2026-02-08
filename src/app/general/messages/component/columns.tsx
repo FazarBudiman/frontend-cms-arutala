@@ -1,11 +1,11 @@
 "use client";
 import { Message, MessageStatus } from "@/types/message";
 import { ColumnDef } from "@tanstack/react-table";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
-import { Checkbox } from "../ui/checkbox";
 import { ArrowUpDown } from "lucide-react";
 import { MessageActions } from "./message-action";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 export const statusColor: Record<MessageStatus, string> = {
   NEW: "bg-blue-500",

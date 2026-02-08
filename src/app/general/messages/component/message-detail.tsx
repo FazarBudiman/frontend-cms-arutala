@@ -2,25 +2,59 @@ import { Message, MessageStatus, messageStatusEnum } from "@/types/message";
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { IconListDetails } from "@tabler/icons-react";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { Textarea } from "../ui/textarea";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
-import { Badge } from "../ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { statusColor } from "./columns";
-import { Field, FieldLabel } from "../ui/field";
+import { Field, FieldLabel } from "@/components/ui/field";
+import { useUpdateMessageStatus } from "@/hooks/use-message";
+import { toast } from "sonner";
 
 export function MessageDetailSheet({ message }: { message: Message }) {
+  const [sheetOpen, setSheetOpen] = useState(false);
   const [statusMessage, setStatusMessage] = useState<MessageStatus>(message.message_status);
+
+  const { mutateAsync, isPending } = useUpdateMessageStatus();
 
   const messageStatus = messageStatusEnum.options.map((status) => ({
     label: status,
     value: status,
   }));
+
+  const handleUpdate = async () => {
+    if (statusMessage === message.message_status) {
+      toast.info("Status tidak berubah");
+      return;
+    }
+
+    toast.promise(
+      mutateAsync({
+        messageId: message.message_id,
+        status: statusMessage,
+      }),
+      {
+        loading: "Menyimpan perubahan…",
+        success: (res) => {
+          if (!res.success) {
+            throw new Error(res.message);
+          }
+          setSheetOpen(false);
+          return res.message;
+        },
+        error: (err) => {
+          setStatusMessage(message.message_status);
+          return err.message || "Gagal memperbarui status";
+        },
+      },
+    );
+  };
+
   return (
-    <Sheet>
+    <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
       <SheetTrigger asChild>
         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
           <IconListDetails className="mr-2 size-4" />
@@ -61,7 +95,7 @@ export function MessageDetailSheet({ message }: { message: Message }) {
           </Field>
           <Field>
             <FieldLabel>Status</FieldLabel>
-            <Select value={statusMessage} onValueChange={(value: MessageStatus) => setStatusMessage(value)}>
+            <Select value={statusMessage} onValueChange={(value: MessageStatus) => setStatusMessage(value)} disabled={isPending}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
@@ -81,8 +115,10 @@ export function MessageDetailSheet({ message }: { message: Message }) {
         </div>
 
         <SheetFooter>
-          <Button type="submit">Save changes</Button>
-          <SheetClose>
+          <Button type="submit" onClick={handleUpdate} disabled={isPending}>
+            {isPending ? "Saving" : "Save changes"}
+          </Button>
+          <SheetClose asChild>
             <Button variant="outline" className="w-full">
               Cancel
             </Button>

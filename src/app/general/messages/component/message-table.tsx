@@ -1,36 +1,35 @@
 "use client";
 
-import React, { useEffect, useMemo } from "react";
-import { Message } from "@/types/message";
+import React, { useMemo } from "react";
 import { DataTable } from "@/components/data-table";
 import { columns } from "./columns";
 import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { getAllMessagesAction } from "@/app/general/messages/action";
-import { toast } from "sonner";
+import { useMessages } from "@/hooks/use-message";
+import { SkeletonTable } from "@/components/skeleton-table";
 
 export function MessageTable() {
-  const [data, setData] = React.useState<Message[]>([]);
+  const { data: messages, isLoading } = useMessages();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [filters, setFilters] = React.useState<ColumnFiltersState>([]);
-  useEffect(() => {
-    getAllMessagesAction()
-      .then((res) => {
-        if (res.success === false) {
-          toast.error(res.message, { position: "top-center" });
-          return;
-        }
-        setData(res.data ?? []);
-      })
-      .catch(() => toast.error("Gagal mengambil data"));
-  }, []);
 
   /* ------------------------------------------------------------------ */
   /* Helpers                                                             */
   /* ------------------------------------------------------------------ */
 
-  const uniqueStatuses = useMemo(() => [...new Set(data.map((d) => d.message_status))], [data]);
+  // const uniqueStatuses = useMemo(() => [...new Set(messages?.map((d) => d.message_status))], [messages]);
+  const uniqueStatuses = useMemo(() => {
+    if (!messages) return [];
+
+    return Array.from(new Set(messages.map((m) => m.message_status))).map((status) => ({
+      value: status,
+      label: status
+        .toLowerCase()
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, (c) => c.toUpperCase()),
+    }));
+  }, [messages]);
 
   const setColumnFilter = (id: string, value: string | null) => {
     setFilters((prev) => {
@@ -58,8 +57,8 @@ export function MessageTable() {
               <SelectItem value="ALL">All Status</SelectItem>
               {uniqueStatuses.map((status) => {
                 return (
-                  <SelectItem value={status} key={status}>
-                    {status}
+                  <SelectItem value={status.value} key={status.value}>
+                    {status.label}
                   </SelectItem>
                 );
               })}
@@ -69,7 +68,8 @@ export function MessageTable() {
       </div>
 
       {/* Table */}
-      <DataTable data={data} columns={columns} getRowId={(row) => row.message_id} sorting={sorting} columnFilters={filters} onSortingChange={setSorting} onColumnFiltersChange={setFilters} />
+
+      {isLoading ? <SkeletonTable /> : <DataTable data={messages ?? []} columns={columns} getRowId={(row) => row.message_id} sorting={sorting} columnFilters={filters} onSortingChange={setSorting} onColumnFiltersChange={setFilters} />}
     </div>
   );
 }
