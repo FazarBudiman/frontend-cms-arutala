@@ -12,17 +12,10 @@ import { Badge } from "@/components/ui/badge";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { useUpdateMessageStatus } from "@/hooks/use-message";
 import { toast } from "sonner";
+import { Contributor } from "@/types/contributor";
 
-export function UserDetailSheet() {
-  //   const [sheetOpen, setSheetOpen] = useState(false);
-  //   const [statusMessage, setStatusMessage] = useState<MessageStatus>(message.message_status);
-
-  //   const { mutateAsync, isPending } = useUpdateMessageStatus();
-
-  //   const messageStatus = messageStatusEnum.options.map((status) => ({
-  //     label: status,
-  //     value: status,
-  //   }));
+export function ContributorDetailSheet({ contributor }: { contributor: Contributor }) {
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const handleUpdate = async () => {
     // if (statusMessage === message.message_status) {
@@ -52,7 +45,7 @@ export function UserDetailSheet() {
   };
 
   return (
-    <Sheet>
+    <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
       <SheetTrigger asChild>
         <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
           <IconListDetails className="mr-2 size-4" />
@@ -62,28 +55,30 @@ export function UserDetailSheet() {
 
       <SheetContent side="right" className="w-120">
         <SheetHeader>
-          <SheetTitle>Message Detail</SheetTitle>
+          <SheetTitle>Contributor Detail</SheetTitle>
           <SheetDescription>Make changes here. Click save when you&apos;re done</SheetDescription>
         </SheetHeader>
 
         <div className="grid flex-1 auto-rows-min gap-6 px-4">
-          {/* <Field className="grid gap-3">
+          <Field className="grid gap-3">
             <Label htmlFor="sheet-demo-name">Name</Label>
-            <Input id="sheet-demo-name" defaultValue={message.sender_name} disabled />
+            <Input id="sheet-demo-name" defaultValue={contributor.contributor_name} disabled />
           </Field>
           <Field className="grid gap-3">
-            <Label htmlFor="sheet-demo-phone">Phone Number</Label>
-            <Input id="sheet-demo-phone" defaultValue={message.sender_phone} disabled />
+            <Label htmlFor="sheet-demo-phone">Job Title</Label>
+            <Input id="sheet-demo-phone" defaultValue={contributor.contributor_job_title} disabled />
           </Field>
           <Field className="grid gap-3">
-            <Label htmlFor="sheet-demo-email">Email</Label>
-            <Input id="sheet-demo-email" defaultValue={message.sender_email} disabled />
+            <Label htmlFor="sheet-demo-email">Company Name</Label>
+            <Input id="sheet-demo-email" defaultValue={contributor.contributor_company_name} disabled />
           </Field>
           <Field className="grid gap-3">
-            <Label htmlFor="sheet-demo-institution">Institution</Label>
-            <Input id="sheet-demo-institution" defaultValue={message.organization_name} disabled />
+            <Label htmlFor="sheet-demo-institution">Expertise</Label>
+            {contributor.contributor_expertise.map((expert) => (
+              <Input id="sheet-demo-institution" defaultValue={expert} key={expert} disabled />
+            ))}
           </Field>
-          <Field className="grid gap-3">
+          {/* <Field className="grid gap-3">
             <Label htmlFor="sheet-demo-subject">Subject</Label>
             <Input id="sheet-demo-subject" defaultValue={message.subject} disabled />
           </Field>
@@ -113,9 +108,11 @@ export function UserDetailSheet() {
         </div>
 
         <SheetFooter>
+          {/* <Button type="submit" onClick={handleUpdate} disabled={isPending}>
+            {isPending ? "Saving" : "Save changes"}
+          </Button> */}
           <Button type="submit" onClick={handleUpdate}>
-            {/* {isPending ? "Saving" : "Save changes"} */}
-            Save Changes
+            Save changes
           </Button>
           <SheetClose asChild>
             <Button variant="outline" className="w-full">

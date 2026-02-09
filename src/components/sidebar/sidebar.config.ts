@@ -1,0 +1,64 @@
+// lib/sidebar/sidebar.config.ts
+import { IconArticle, IconChalkboardTeacher, IconDashboard, IconDeviceImacCode, IconHeartHandshake, IconMessage2, IconMessageCircleUser, IconUserSquareRounded, IconWorldSearch } from "@tabler/icons-react";
+
+export type Role = "ADMIN" | "SUPER_ADMIN";
+
+export const navGeneral = [
+  {
+    title: "Dashboard",
+    url: "/general/dashboard",
+    icon: IconDashboard,
+    roles: ["ADMIN", "SUPER_ADMIN"],
+  },
+  {
+    title: "Message",
+    url: "/general/messages",
+    icon: IconMessage2,
+    roles: ["ADMIN", "SUPER_ADMIN"],
+  },
+  {
+    title: "User",
+    url: "/general/users",
+    icon: IconUserSquareRounded,
+    roles: ["SUPER_ADMIN"],
+  },
+  {
+    title: "SEO Management",
+    url: "#",
+    icon: IconWorldSearch,
+    roles: ["ADMIN", "SUPER_ADMIN"],
+  },
+];
+
+export const navContentWebsite = [
+  {
+    title: "Course",
+    url: "#",
+    icon: IconDeviceImacCode,
+    roles: ["ADMIN", "SUPER_ADMIN"],
+  },
+  {
+    title: "Contributors",
+    url: "/content-website/contributors",
+    icon: IconChalkboardTeacher,
+    roles: ["ADMIN", "SUPER_ADMIN"],
+  },
+  {
+    title: "Mitra",
+    url: "#",
+    icon: IconHeartHandshake,
+    roles: ["ADMIN", "SUPER_ADMIN"],
+  },
+  {
+    title: "Testimoni",
+    url: "#",
+    icon: IconMessageCircleUser,
+    roles: ["ADMIN", "SUPER_ADMIN"],
+  },
+  {
+    title: "Article",
+    url: "#",
+    icon: IconArticle,
+    roles: ["ADMIN", "SUPER_ADMIN"],
+  },
+];

@@ -1,76 +1,22 @@
 "use client";
 
 import * as React from "react";
-import { IconArticle, IconChalkboardTeacher, IconDashboard, IconDeviceImacCode, IconHeartHandshake, IconMessage2, IconMessageCircleUser, IconUserSquareRounded, IconWorldSearch } from "@tabler/icons-react";
 import { NavMain } from "@/components/sidebar/nav-main";
 import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import Image from "next/image";
 import Link from "next/link";
-
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  navGeneral: {
-    groupName: "General",
-    items: [
-      {
-        title: "Dashboard",
-        url: "/general/dashboard",
-        icon: IconDashboard,
-      },
-      {
-        title: "Message",
-        url: "/general/messages",
-        icon: IconMessage2,
-      },
-      {
-        title: "User",
-        url: "/general/users",
-        icon: IconUserSquareRounded,
-      },
-      {
-        title: "SEO Management",
-        url: "#",
-        icon: IconWorldSearch,
-      },
-    ],
-  },
-  navContentWebsite: {
-    groupName: "Content Website",
-    items: [
-      {
-        title: "Course",
-        url: "#",
-        icon: IconDeviceImacCode,
-      },
-      {
-        title: "Contributors",
-        url: "#",
-        icon: IconChalkboardTeacher,
-      },
-      {
-        title: "Mitra",
-        url: "#",
-        icon: IconHeartHandshake,
-      },
-      {
-        title: "Testimoni",
-        url: "#",
-        icon: IconMessageCircleUser,
-      },
-      {
-        title: "Article",
-        url: "#",
-        icon: IconArticle,
-      },
-    ],
-  },
-};
+import { useAuthenticated } from "@/hooks/use-auth";
+import { filterByRole } from "./filter-menu";
+import { navContentWebsite, navGeneral } from "./sidebar.config";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { data: user } = useAuthenticated();
+  if (!user) {
+    return null;
+  }
+
+  const generalMenu = filterByRole(navGeneral, user.role_name);
+  const contentWebsiteMenu = filterByRole(navContentWebsite, user.role_name);
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -88,8 +34,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navGeneral.items} labels={data.navGeneral.groupName} />
-        <NavMain items={data.navContentWebsite.items} labels={data.navContentWebsite.groupName} />
+        <NavMain items={generalMenu} labels="General" />
+        <NavMain items={contentWebsiteMenu} labels="Content Website" />
       </SidebarContent>
     </Sidebar>
   );

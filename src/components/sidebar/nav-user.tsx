@@ -1,62 +1,76 @@
 "use client";
 
 import { IconLogout } from "@tabler/icons-react";
+import { ChevronDown } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
-import { logoutAction } from "@/app/sign-in/action";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
 
-export function NavUser({
-  user,
-}: {
-  user: {
-    name: string;
-    email: string;
-    avatar: string;
-  };
-}) {
+import { logoutAction } from "@/app/sign-in/action";
+import { User } from "@/types/user";
+
+export function NavUser({ user }: { user?: User }) {
   const router = useRouter();
+  if (!user) return null;
 
   const handleLogout = async () => {
     const result = await logoutAction();
+
     if (!result.success) {
-      toast.error(result.message, { position: "top-center" });
+      toast.error(result.message);
       return;
     }
-    toast.success(result.message, { position: "top-center" });
+
+    toast.success(result.message);
     router.push("/sign-in");
   };
+
+  const roleBadgeClass = user.role_name === "SUPER_ADMIN" ? "bg-black text-white" : "bg-muted text-muted-foreground";
+
   return (
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
+          {/* ===== Trigger ===== */}
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton size="lg" className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground">
-              <Avatar className="h-8 w-8 rounded-lg grayscale">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+            <SidebarMenuButton size="lg" className="flex items-center gap-2 data-[state=open]:bg-sidebar-accent">
+              <Avatar className="h-8 w-8 rounded-lg">
+                <AvatarImage src={user.user_profile_url || undefined} alt={user.username} />
+                <AvatarFallback>{user.full_name?.charAt(0)}</AvatarFallback>
               </Avatar>
+
+              <ChevronDown className="h-4 w-4 opacity-50" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg" align="end" sideOffset={4}>
+
+          {/* ===== Content ===== */}
+          <DropdownMenuContent align="end" sideOffset={6} className="min-w-64 rounded-xl p-2">
+            {/* ===== Profile Header ===== */}
             <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+              <div className="flex items-center gap-3 rounded-lg bg-muted/40 px-3 py-3">
+                <Avatar className="h-10 w-10 rounded-lg">
+                  <AvatarImage src={user.user_profile_url || undefined} alt={user.username} />
+                  <AvatarFallback>{user.full_name?.charAt(0)}</AvatarFallback>
                 </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
-                  <span className="text-muted-foreground truncate text-xs">{user.email}</span>
+
+                <div className="flex-1 space-y-0.5">
+                  <p className="truncate text-sm font-semibold">{user.full_name}</p>
+                  <p className="truncate text-xs text-muted-foreground">@{user.username}</p>
+
+                  <Badge className={`mt-1 w-fit px-2 py-0.5 text-[10px] ${roleBadgeClass}`}>{user.role_name}</Badge>
                 </div>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={handleLogout}>
-              <IconLogout />
+
+            <DropdownMenuSeparator className="my-2" />
+
+            {/* ===== Logout ===== */}
+            <DropdownMenuItem onClick={handleLogout} className="text-red-600 focus:text-red-600">
+              <IconLogout className="mr-2 h-4 w-4" />
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>

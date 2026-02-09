@@ -18,7 +18,6 @@ export function MessageTable() {
   /* Helpers                                                             */
   /* ------------------------------------------------------------------ */
 
-  // const uniqueStatuses = useMemo(() => [...new Set(messages?.map((d) => d.message_status))], [messages]);
   const uniqueStatuses = useMemo(() => {
     if (!messages) return [];
 

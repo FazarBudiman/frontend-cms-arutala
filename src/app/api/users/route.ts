@@ -1,3 +1,4 @@
+import { ResponseError, ResponseSuccess } from "@/lib/http/response";
 import { ApiResponse } from "@/types/api";
 import { User } from "@/types/user";
 import { NextRequest, NextResponse } from "next/server";
@@ -31,4 +32,49 @@ export async function GET(req: NextRequest) {
     message: "User Fetched",
     data: json.data,
   });
+}
+
+export async function POST(req: NextRequest) {
+  const accessToken = req.cookies.get("accessToken")?.value;
+  const requestBody = await req.formData();
+
+  const res = await fetch(`${API_EXTERNAL}/users`, {
+    method: "POST",
+    headers: {
+      ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+    },
+    body: requestBody,
+  });
+
+  const json = await res.json();
+
+  console.log(json);
+
+  if (!res.ok) {
+    return ResponseError(json.message ?? "Create User Failed", json.status);
+  }
+
+  return ResponseSuccess(null, json.message);
+}
+
+export async function DELETE(req: NextRequest) {
+  const accessToken = req.cookies.get("accessToken")?.value;
+  const { userId } = await req.json();
+
+  const res = await fetch(`${API_EXTERNAL}/users/${userId}`, {
+    method: "DELETE",
+    headers: {
+      ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
+    },
+  });
+
+  const json = await res.json();
+
+  console.log(json);
+
+  if (!res.ok) {
+    return ResponseError(json.message ?? "Delete Failed", json.status);
+  }
+
+  return ResponseSuccess(null, json.message);
 }

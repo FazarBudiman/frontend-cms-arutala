@@ -6,14 +6,11 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbSeparator } from 
 import { usePathname } from "next/navigation";
 import { generateBreadcrumb } from "@/lib/gen-breadcumb";
 import React from "react";
-
-const user = {
-  name: "shadcn",
-  email: "m@example.com",
-  avatar: "/avatars/shadcn.jpg",
-};
+import { useAuthenticated } from "@/hooks/use-auth";
 
 export function SiteHeader() {
+  const { data: authenticated, isLoading } = useAuthenticated();
+
   const pathname = usePathname();
   const breadcumbs = generateBreadcrumb(pathname);
 
@@ -32,9 +29,7 @@ export function SiteHeader() {
             ))}
           </BreadcrumbList>
         </Breadcrumb>
-        <div className="ml-auto flex items-center gap-2">
-          <NavUser user={user} />
-        </div>
+        <div className="ml-auto flex items-center gap-2">{!isLoading && authenticated && <NavUser user={authenticated} />}</div>
       </div>
     </header>
   );

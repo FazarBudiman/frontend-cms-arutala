@@ -65,3 +65,22 @@ export async function DELETE(req: NextRequest) {
 
   return response;
 }
+
+export async function GET(req: NextRequest) {
+  const accessToken = req.cookies.get("accessToken")?.value;
+
+  if (!accessToken) {
+    return NextResponse.json({ success: false, message: "Unauthenticated" }, { status: 401 });
+  }
+
+  const res = await fetch(`${NEXT_API_EXTERNAL}/auth/me`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  const resJson = await res.json();
+
+  return NextResponse.json(resJson, { status: res.status });
+}

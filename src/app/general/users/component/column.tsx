@@ -3,7 +3,6 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "../../../../components/ui/checkbox";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../../components/ui/avatar";
 import { ActionTable } from "@/components/action-table";
-import { UserDetailSheet } from "./user-detail";
 import { UserDeleteDialog } from "./user-delete";
 
 export const column: ColumnDef<User>[] = [
@@ -16,11 +15,15 @@ export const column: ColumnDef<User>[] = [
     accessorKey: "user_profile_url",
     header: "Profile",
     cell: ({ row }) => (
-      <Avatar size="lg">
+      <Avatar>
         <AvatarImage src={row.original.user_profile_url} alt="user-profile" />
         <AvatarFallback>{row.original.username.charAt(0)}</AvatarFallback>
       </Avatar>
     ),
+  },
+  {
+    accessorKey: "full_name",
+    header: "Full Name",
   },
   {
     accessorKey: "username",
@@ -35,7 +38,6 @@ export const column: ColumnDef<User>[] = [
     header: "Action",
     cell: ({ row }) => (
       <ActionTable>
-        <UserDetailSheet />
         <UserDeleteDialog userId={row.original.user_id} />
       </ActionTable>
     ),
