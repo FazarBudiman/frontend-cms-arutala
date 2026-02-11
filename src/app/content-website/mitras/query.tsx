@@ -43,11 +43,6 @@ export async function updateMitra(id: string, data: CreateMitraInput) {
     body: formData, // ✅ kirim FormData
   });
 
-  // if (!res) {
-  //   const error = await res.json();
-  //   throw new Error(error.message);
-  // }
-
   return res.json();
 }
 
