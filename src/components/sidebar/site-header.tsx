@@ -4,9 +4,9 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { NavUser } from "./nav-user";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbSeparator } from "../ui/breadcrumb";
 import { usePathname } from "next/navigation";
-import { generateBreadcrumb } from "@/lib/gen-breadcumb";
+import { generateBreadcrumb } from "@/shared/utils/breadcumb";
 import React from "react";
-import { useAuthenticated } from "@/hooks/use-auth";
+import { useAuthenticated } from "@/features/auth";
 
 export function SiteHeader() {
   const { data: authenticated, isLoading } = useAuthenticated();

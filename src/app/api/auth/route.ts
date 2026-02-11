@@ -1,7 +1,7 @@
-import { ApiResponse } from "@/types/api";
+import { User } from "@/features/user/type";
+import { ApiError } from "@/server/errors/api-error";
+import { serverFetch } from "@/server/http/server-fetch";
 import { NextRequest, NextResponse } from "next/server";
-
-const { NEXT_API_EXTERNAL } = process.env;
 
 export type SignInResponse = {
   access_token: string;
@@ -9,84 +9,132 @@ export type SignInResponse = {
 };
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
+  try {
+    const body = await req.json();
+    const data = await serverFetch<SignInResponse>("/auth/sign-in", {
+      method: "POST",
+      body: JSON.stringify(body),
+    });
 
-  const res = await fetch(`${NEXT_API_EXTERNAL!}/auth/sign-in`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
+    const response = NextResponse.json({
+      success: true,
+      message: "Login Successfully",
+    });
 
-  const resJson = await res.json();
+    response.cookies.set("accessToken", data.access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60,
+      path: "/",
+    });
+    response.cookies.set("refreshToken", data.refresh_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7,
+      path: "/",
+    });
 
-  if (resJson.success === false) {
-    return NextResponse.json(resJson, { status: res.status });
+    return response;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: error.message,
+        },
+        { status: error.status },
+      );
+    }
+
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Internal Server Error",
+      },
+      { status: 500 },
+    );
   }
-
-  const response = NextResponse.json(resJson);
-  response.cookies.set("accessToken", resJson.data.access_token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 60 * 60,
-    path: "/",
-  });
-
-  response.cookies.set("refreshToken", resJson.data.refresh_token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    maxAge: 60 * 60 * 24 * 7,
-    path: "/",
-  });
-
-  return response;
 }
 
 export async function DELETE(req: NextRequest) {
-  const refreshToken = req.cookies.get("refreshToken")?.value;
+  try {
+    const refreshToken = req.cookies.get("refreshToken")?.value;
+    if (!refreshToken) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "No Refresh Token",
+        },
+        { status: 400 },
+      );
+    }
+    await serverFetch<null>("/auth/sign-out", {
+      method: "DELETE",
+      body: JSON.stringify({ refresh_token: refreshToken }),
+    });
 
-  const res = await fetch(`${NEXT_API_EXTERNAL}/auth/sign-out`, {
-    method: "DELETE",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ refresh_token: refreshToken }),
-  });
+    const response = NextResponse.json({
+      success: true,
+      message: "Logout Berhasil",
+    });
 
-  const resJson = (await res.json()) as ApiResponse<null>;
+    response.cookies.set("accessToken", "", {
+      expires: new Date(0),
+      path: "/",
+    });
+    response.cookies.set("refreshToken", "", {
+      expires: new Date(0),
+      path: "/",
+    });
 
-  if (resJson.success === false) {
-    return NextResponse.json(resJson, { status: res.status });
+    return response;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: error.message,
+        },
+        { status: error.status },
+      );
+    }
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Internal Server Error",
+      },
+      { status: 500 },
+    );
   }
-
-  const response = NextResponse.json(resJson);
-  response.cookies.set("accessToken", "", {
-    expires: new Date(0),
-    path: "/",
-  });
-
-  response.cookies.set("refreshToken", "", {
-    expires: new Date(0),
-    path: "/",
-  });
-
-  return response;
 }
 
-export async function GET(req: NextRequest) {
-  const accessToken = req.cookies.get("accessToken")?.value;
+export async function GET() {
+  try {
+    const user = await serverFetch<User>("/auth/me");
 
-  if (!accessToken) {
-    return NextResponse.json({ success: false, message: "Unauthenticated" }, { status: 401 });
+    return NextResponse.json({
+      success: true,
+      data: user,
+    });
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: error.message,
+        },
+        { status: error.status },
+      );
+    }
+
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Internal Server Error",
+      },
+      { status: 500 },
+    );
   }
-
-  const res = await fetch(`${NEXT_API_EXTERNAL}/auth/me`, {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-    },
-  });
-
-  const resJson = await res.json();
-
-  return NextResponse.json(resJson, { status: res.status });
 }

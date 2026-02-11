@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { decodeJwt } from "./lib/decode-jwt";
+import { decodeJwt } from "./shared/utils/jwt";
 
 const ADMIN_FORBIDDEN_PATHS = ["/general/users"];
 

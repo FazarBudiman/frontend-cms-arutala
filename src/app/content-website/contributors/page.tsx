@@ -1,4 +1,4 @@
-import { ContributorTable } from "./component/contributor-table";
+import { ContributorTable } from "@/features/contributor";
 
 export default async function Page() {
   return (

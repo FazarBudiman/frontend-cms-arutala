@@ -33,7 +33,7 @@ export const navGeneral = [
 export const navContentWebsite = [
   {
     title: "Course",
-    url: "#",
+    url: "/content-website/courses",
     icon: IconDeviceImacCode,
     roles: ["ADMIN", "SUPER_ADMIN"],
   },

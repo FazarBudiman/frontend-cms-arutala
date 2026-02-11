@@ -1,4 +1,4 @@
-import { MitraTable } from "./component/mitra-table";
+import { MitraTable } from "@/features/mitras";
 
 export default async function Page() {
   return (

@@ -1,4 +1,4 @@
-import { TestimoniTable } from "./component/testimoni-table";
+import { TestimoniTable } from "@/features/testimoni";
 
 export default async function Page() {
   return (

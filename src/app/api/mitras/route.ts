@@ -1,67 +1,65 @@
-import { ResponseError, ResponseSuccess } from "@/lib/http/response";
-import { ApiResponse } from "@/types/api";
+import { Mitra } from "@/features/mitras";
+import { ApiError } from "@/server/errors/api-error";
+import { serverFetch } from "@/server/http/server-fetch";
 import { NextRequest, NextResponse } from "next/server";
 
-const API_EXTERNAL = process.env.NEXT_API_EXTERNAL!;
-
 export async function GET() {
-  const res = await fetch(`${API_EXTERNAL}/mitras`);
-  const json = await res.json();
+  try {
+    const mitras = await serverFetch<Mitra[]>("/mitras");
+    return NextResponse.json({
+      success: true,
+      data: mitras,
+    });
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: error.message,
+        },
+        { status: error.status },
+      );
+    }
 
-  if (!res.ok) {
-    return ResponseError(json.message ?? "Failed to fetch data", json.status);
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Internal Server Error",
+      },
+      { status: 500 },
+    );
   }
-  return ResponseSuccess(json.data, json.message);
 }
 
 export async function POST(req: NextRequest) {
-  const accessToken = req.cookies.get("accessToken")?.value;
-  const requestBody = await req.formData();
+  try {
+    const requestBody = await req.formData();
 
-  const res = await fetch(`${API_EXTERNAL}/mitras`, {
-    method: "POST",
-    headers: {
-      ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-    },
-    body: requestBody,
-  });
+    await serverFetch("/mitras", {
+      method: "POST",
+      body: requestBody,
+    });
+    return NextResponse.json({
+      success: true,
+      data: null,
+    });
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: error.message,
+        },
+        { status: error.status },
+      );
+    }
 
-  const json = await res.json();
-
-  if (!res.ok) {
-    return ResponseError(json.message ?? "Create Mitra Failed", json.status);
-  }
-
-  return ResponseSuccess(null, json.message);
-}
-
-export async function DELETE(req: NextRequest) {
-  const accessToken = req.cookies.get("accessToken")?.value;
-  const { mitraId } = await req.json();
-
-  const res = await fetch(`${API_EXTERNAL}/mitras/${mitraId}`, {
-    method: "DELETE",
-    headers: {
-      ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-    },
-  });
-
-  const json = await res.json();
-
-  if (!res.ok) {
-    return NextResponse.json<ApiResponse>(
+    return NextResponse.json(
       {
         success: false,
-        statusCode: String(res.status),
-        message: json.message ?? "Delete failed",
+        message: "Internal Server Error",
       },
-      { status: res.status },
+      { status: 500 },
     );
   }
-
-  return NextResponse.json<ApiResponse>({
-    success: true,
-    message: json.message,
-    data: null,
-  });
 }

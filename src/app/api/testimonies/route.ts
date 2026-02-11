@@ -1,73 +1,64 @@
-import { ResponseError, ResponseSuccess } from "@/lib/http/response";
-import { ApiResponse } from "@/types/api";
+import { Testimoni } from "@/features/testimoni";
+import { ApiError } from "@/server/errors/api-error";
+import { serverFetch } from "@/server/http/server-fetch";
 import { NextRequest, NextResponse } from "next/server";
 
-const API_EXTERNAL = process.env.NEXT_API_EXTERNAL!;
+export async function GET() {
+  try {
+    const testimonies = await serverFetch<Testimoni[]>("/testimonies");
+    return NextResponse.json({
+      success: true,
+      data: testimonies,
+    });
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: error.message,
+        },
+        { status: error.status },
+      );
+    }
 
-export async function GET(req: NextRequest) {
-  const accessToken = req.cookies.get("accessToken")?.value;
-
-  const res = await fetch(`${API_EXTERNAL}/testimonies`, {
-    headers: {
-      ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-    },
-  });
-  const json = await res.json();
-
-  if (!res.ok) {
-    return ResponseError(json.message ?? "Failed to fetch data", json.status);
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Internal Server Error",
+      },
+      { status: 500 },
+    );
   }
-  return ResponseSuccess(json.data, json.message);
 }
 
 export async function POST(req: NextRequest) {
-  const accessToken = req.cookies.get("accessToken")?.value;
-  const requestBody = await req.formData();
+  try {
+    const formData = await req.formData();
+    await serverFetch("/testimonies", {
+      method: "POST",
+      body: formData,
+    });
+    return NextResponse.json({
+      success: true,
+      data: null,
+    });
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: error.message,
+        },
+        { status: error.status },
+      );
+    }
 
-  const res = await fetch(`${API_EXTERNAL}/testimonies`, {
-    method: "POST",
-    headers: {
-      ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-    },
-    body: requestBody,
-  });
-
-  const json = await res.json();
-
-  if (!res.ok) {
-    return ResponseError(json.message ?? "Update Testimoni Failed", json.status);
-  }
-
-  return ResponseSuccess(null, json.message);
-}
-
-export async function DELETE(req: NextRequest) {
-  const accessToken = req.cookies.get("accessToken")?.value;
-  const { testimoniId } = await req.json();
-
-  const res = await fetch(`${API_EXTERNAL}/testimonies/${testimoniId}`, {
-    method: "DELETE",
-    headers: {
-      ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-    },
-  });
-
-  const json = await res.json();
-
-  if (!res.ok) {
-    return NextResponse.json<ApiResponse>(
+    return NextResponse.json(
       {
         success: false,
-        statusCode: String(res.status),
-        message: json.message ?? "Delete failed",
+        message: "Internal Server Error",
       },
-      { status: res.status },
+      { status: 500 },
     );
   }
-
-  return NextResponse.json<ApiResponse>({
-    success: true,
-    message: json.message,
-    data: null,
-  });
 }

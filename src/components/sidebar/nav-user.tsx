@@ -10,8 +10,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import { Badge } from "@/components/ui/badge";
 
-import { logoutAction } from "@/app/sign-in/action";
-import { User } from "@/types/user";
+import { User } from "@/features/user/type";
+import { logoutAction } from "@/features/auth";
 
 export function NavUser({ user }: { user?: User }) {
   const router = useRouter();
@@ -20,9 +20,9 @@ export function NavUser({ user }: { user?: User }) {
   const handleLogout = async () => {
     toast.promise(logoutAction(), {
       loading: "Sign Out...",
-      success: (res) => {
+      success: () => {
         router.push("/sign-in");
-        return res.message || "Sign Out Berhasil";
+        return "Sign Out Berhasil";
       },
       error: (err) => err.message || "Sign Out Gagal",
     });

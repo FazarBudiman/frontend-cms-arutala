@@ -1,76 +1,90 @@
-import { ResponseError, ResponseSuccess } from "@/lib/http/response";
-import { ApiResponse } from "@/types/api";
-import { User } from "@/types/user";
+import { ApiError } from "@/server/errors/api-error";
+import { serverFetch } from "@/server/http/server-fetch";
+import { User } from "@/features/user/type";
 import { NextRequest, NextResponse } from "next/server";
 
-const API_EXTERNAL = process.env.NEXT_API_EXTERNAL!;
+export async function GET() {
+  try {
+    const users = await serverFetch<User[]>("/users");
+    return NextResponse.json({
+      success: true,
+      data: users,
+    });
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: error.message,
+        },
+        { status: error.status },
+      );
+    }
 
-export async function GET(req: NextRequest) {
-  const accessToken = req.cookies.get("accessToken")?.value;
-
-  const res = await fetch(`${API_EXTERNAL}/users`, {
-    headers: {
-      ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-    },
-  });
-
-  const json = await res.json();
-
-  if (!res.ok) {
-    return NextResponse.json<ApiResponse>(
+    return NextResponse.json(
       {
         success: false,
-        statusCode: String(res.status),
-        message: json.message ?? "Failed to fetch users",
+        message: "Internal Server Error",
       },
-      { status: res.status },
+      { status: 500 },
     );
   }
-
-  return NextResponse.json<ApiResponse<User[]>>({
-    success: true,
-    message: "User Fetched",
-    data: json.data,
-  });
 }
 
 export async function POST(req: NextRequest) {
-  const accessToken = req.cookies.get("accessToken")?.value;
-  const requestBody = await req.formData();
+  try {
+    const requestBody = await req.formData();
+    const response = await serverFetch("/users", {
+      method: "POST",
+      body: requestBody,
+    });
 
-  const res = await fetch(`${API_EXTERNAL}/users`, {
-    method: "POST",
-    headers: {
-      ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-    },
-    body: requestBody,
-  });
+    return NextResponse.json({
+      success: true,
+      data: response,
+    });
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: error.message,
+        },
+        { status: error.status },
+      );
+    }
 
-  const json = await res.json();
-
-  if (!res.ok) {
-    return ResponseError(json.message ?? "Create User Failed", json.status);
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Internal Server Error",
+      },
+      { status: 500 },
+    );
   }
-
-  return ResponseSuccess(null, json.message);
 }
 
-export async function DELETE(req: NextRequest) {
-  const accessToken = req.cookies.get("accessToken")?.value;
-  const { userId } = await req.json();
+// export async function DELETE(req: NextRequest) {
+//   try {
+//     const { userId } = await req.json();
+//     await serverFetch(`/users/${userId}`, { method: "DELETE" });
+//   } catch (error) {
+//     if (error instanceof ApiError) {
+//       return NextResponse.json(
+//         {
+//           success: false,
+//           message: error.message,
+//         },
+//         { status: error.status },
+//       );
+//     }
 
-  const res = await fetch(`${API_EXTERNAL}/users/${userId}`, {
-    method: "DELETE",
-    headers: {
-      ...(accessToken && { Authorization: `Bearer ${accessToken}` }),
-    },
-  });
-
-  const json = await res.json();
-
-  if (!res.ok) {
-    return ResponseError(json.message ?? "Delete Failed", json.status);
-  }
-
-  return ResponseSuccess(null, json.message);
-}
+//     return NextResponse.json(
+//       {
+//         success: false,
+//         message: "Internal Server Error",
+//       },
+//       { status: 500 },
+//     );
+//   }
+// }
