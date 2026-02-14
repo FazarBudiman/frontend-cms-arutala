@@ -1,7 +1,6 @@
 "use client";
 
-import { CourseBatchTable } from "@/features/course/component/course-batch/course-batch-table";
-import { CourseDetailCard } from "@/features/course/component/course-detail-card";
+import { CourseBatchDetailCard } from "@/features/course/component/course-batch/course-batch-detail-card";
 import { useCourseDetail } from "@/features/course/hook";
 import { useParams } from "next/navigation";
 
@@ -22,12 +21,12 @@ export default function CourseDetailPage() {
   if (!data) {
     return <div>Course not found</div>;
   }
+  console.log(data.courseBatch);
 
   return (
     <div className="flex flex-1 flex-col">
       <div className="p-4 lg:px-6 flex flex-col gap-10">
-        <CourseDetailCard courseDetail={data} />
-        <CourseBatchTable batch={data.courseBatch} courseId={courseId} />
+        <CourseBatchDetailCard courseBatchDetail={data.courseBatch[0]} />
       </div>
     </div>
   );

@@ -5,3 +5,8 @@ import { Page } from "./type";
 export async function fetchPages(): Promise<Page[]> {
   return await clientApi.get<Page[]>("/api/pages");
 }
+
+/* ---------- DELETE ---------- */
+export async function deletePage(pageId: string) {
+  return await clientApi.delete(`/api/pages/${pageId}`);
+}

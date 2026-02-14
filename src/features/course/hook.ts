@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Course, CourseBenefit, CourseCategory, CourseDetail, CourseField } from "./type";
-import { createCourse, deleteCourse, fetchCourseBenefit, fetchCourseById, fetchCourseCategory, fetchCourseField, fetchCourses } from "./api";
+import { Course, CourseBatchInput, CourseBenefit, CourseCategory, CourseDetail, CourseField, CourseInput } from "./type";
+import { createCourse, createCourseBatch, deleteCourse, fetchCourseBenefit, fetchCourseById, fetchCourseCategory, fetchCourseField, fetchCourses, updateCourse } from "./api";
 
 export function useCourses() {
   return useQuery<Course[]>({
@@ -9,11 +9,11 @@ export function useCourses() {
   });
 }
 
-export function useCourseDetail(courseId: string) {
+export function useCourseDetail(courseId: string, options?: { enabled?: boolean }) {
   return useQuery<CourseDetail>({
     queryKey: ["coursesdetail", courseId],
     queryFn: () => fetchCourseById(courseId),
-    enabled: !!courseId,
+    enabled: options?.enabled ?? !!courseId,
   });
 }
 
@@ -47,12 +47,32 @@ export function useCreateCourse() {
   });
 }
 
+export function useUpdateCourse() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ courseId, body }: { courseId: string; body: CourseInput }) => updateCourse(courseId, body),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["coursesdetail"] });
+    },
+  });
+}
+
 export function useDeleteCourse() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: deleteCourse,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["courses"] });
+    },
+  });
+}
+
+export function useCreateCourseBatch() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ courseId, body }: { courseId: string; body: CourseBatchInput }) => createCourseBatch(courseId, body),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["coursesdetail"] });
     },
   });
 }

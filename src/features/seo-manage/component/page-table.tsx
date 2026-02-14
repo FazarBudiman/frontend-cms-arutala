@@ -10,7 +10,7 @@ import { SkeletonTable } from "@/components/skeleton-table";
 import { usePages } from "../hook";
 
 export function PageTable() {
-  const { data: testimonies, isLoading } = usePages();
+  const { data: pages, isLoading } = usePages();
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [filters, setFilters] = React.useState<ColumnFiltersState>([]);
   const [pagination, setPagination] = React.useState({
@@ -26,7 +26,7 @@ export function PageTable() {
   }, [filters, sorting]);
 
   React.useEffect(() => {
-    const pageCount = Math.ceil((testimonies?.length ?? 0) / pagination.pageSize);
+    const pageCount = Math.ceil((pages?.length ?? 0) / pagination.pageSize);
 
     if (pagination.pageIndex >= pageCount && pageCount > 0) {
       setPagination((prev) => ({
@@ -34,17 +34,17 @@ export function PageTable() {
         pageIndex: pageCount - 1,
       }));
     }
-  }, [testimonies, pagination.pageSize, pagination.pageIndex]);
+  }, [pages, pagination.pageSize, pagination.pageIndex]);
 
   // const uniqueCategory = useMemo(() => {
-  //   if (!testimonies) {
+  //   if (!pages) {
   //     return [];
   //   }
-  //   return Array.from(new Set(testimonies.map((testimoni) => testimoni.testimoni_category))).map((type) => ({
+  //   return Array.from(new Set(pages.map((testimoni) => testimoni.testimoni_category))).map((type) => ({
   //     value: type,
   //     label: type === "SISWA" ? "Siswa" : "Talent",
   //   }));
-  // }, [testimonies]);
+  // }, [pages]);
 
   // Fungsi helper untuk update filter tanpa menghapus filter id lain
   const setColumnFilter = (id: string, value: string | null) => {
@@ -86,7 +86,7 @@ export function PageTable() {
       </div>
 
       <DataTable
-        data={testimonies ?? []}
+        data={pages ?? []}
         columns={columns}
         getRowId={(row) => row.page_id}
         sorting={sorting}

@@ -1,28 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PlusCircle, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-import { CourseInput, courseInputSchema } from "../type";
-import { useCourseBenefit, useCourseCategory, useCourseField, useCreateCourse } from "../hook";
+import { CourseDetail, CourseInput, courseInputSchema } from "../type";
+import { useCourseBenefit, useCourseCategory, useCourseField, useUpdateCourse } from "../hook";
+import { Trash2 } from "lucide-react";
 
-export function CourseAddDialog() {
+type CourseEditDialogProps = {
+  courseDetail: Partial<CourseDetail>;
+};
+
+export function CourseEditDialog({ courseDetail }: CourseEditDialogProps) {
   const [open, setOpen] = useState(false);
-  const { mutateAsync, isPending } = useCreateCourse();
+  const { mutateAsync, isPending } = useUpdateCourse();
   const { data: coursescategory } = useCourseCategory();
   const { data: coursesfield } = useCourseField();
   const { data: coursesbenefits } = useCourseBenefit();
-
-  // console.log(coursescategory);
-  // console.log(coursesfield);
 
   const form = useForm<CourseInput>({
     resolver: zodResolver(courseInputSchema),
@@ -30,7 +30,7 @@ export function CourseAddDialog() {
       courseTitle: "",
       courseDescription: "",
       courseCategoryId: "",
-      courseFieldId: "",
+      courseFieldId: "fieldId",
       courseBenefits: [],
       courseMaterials: [],
     },
@@ -55,23 +55,55 @@ export function CourseAddDialog() {
   });
 
   const handleCreate = async (values: CourseInput) => {
-    // console.log(values);
-    toast.promise(mutateAsync(values), {
-      loading: "Membuat course...",
+    console.log(values);
+    toast.promise(mutateAsync({ courseId: courseDetail.course_id!, body: values }), {
+      loading: "Mengubah course...",
       success: () => {
         setOpen(false);
         form.reset();
-        return "Course berhasil dibuat";
+        return "Mengubah course berhasil";
       },
-      error: (err) => err.message || "Gagal membuat course",
+      error: (err) => err.message || "Gagal mengubah course",
     });
   };
+
+  useEffect(() => {
+    if (!coursescategory || !coursesfield || !courseDetail) return;
+
+    const categoryId = coursescategory.find((cat) => cat.name === courseDetail.course_category_name)?.id;
+
+    const fieldId = coursesfield.find((field) => field.field === courseDetail.course_field_name)?.id;
+
+    form.reset({
+      courseTitle: courseDetail.course_title ?? "",
+      courseDescription: courseDetail.course_description ?? "",
+      courseCategoryId: categoryId ?? "",
+      courseFieldId: fieldId ?? "",
+
+      courseMaterials:
+        courseDetail.courseMaterial?.map((m, index) => ({
+          title: m.title,
+          description: m.description,
+          orderNum: index + 1,
+        })) ?? [],
+
+      courseBenefits:
+        courseDetail.courseBenefit?.map((b, index) => {
+          const benefitId = coursesbenefits?.find((benefit) => benefit.title === b.title)?.id;
+
+          return {
+            courseBenefitId: benefitId ?? "",
+            orderNum: index + 1,
+          };
+        }) ?? [],
+    });
+  }, [coursescategory, coursesfield, coursesbenefits, courseDetail, form]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm">
-          Tambah Course <PlusCircle className="ml-2 w-4 h-4" />
+        <Button variant="outline" size="sm">
+          Edit Course
         </Button>
       </DialogTrigger>
 
@@ -216,8 +248,9 @@ export function CourseAddDialog() {
 
           <DialogFooter>
             <Button type="submit" disabled={isPending}>
-              {isPending ? "Creating..." : "Create Course"}
+              {isPending ? "Saving..." : "Save Changes"}
             </Button>
+            {/* <Button type="submit">Save Changes</Button> */}
           </DialogFooter>
         </form>
       </DialogContent>

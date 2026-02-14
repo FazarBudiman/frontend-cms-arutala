@@ -1,33 +1,35 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React from "react";
 import { DataTable } from "@/components/data-table";
 import { columns } from "./columns";
 import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { SkeletonTable } from "@/components/skeleton-table";
-import { useCourses } from "../hook";
-import { CourseAddDialog } from "./course-add";
+import { CourseBatch } from "../../type";
 
-export function CourseTable() {
-  const { data: courses, isLoading } = useCourses();
+type CourseBatchProps = {
+  batch: CourseBatch[];
+  courseId: string;
+};
+
+export function CourseBatchTable({ batch, courseId }: CourseBatchProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [filters, setFilters] = React.useState<ColumnFiltersState>([]);
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
     pageSize: 8,
   });
+  // console.log(courses);
+
+  //   React.useEffect(() => {
+  //     setPagination((prev) => ({
+  //       ...prev,
+  //       pageIndex: 0,
+  //     }));
+  //   }, [filters, sorting]);
 
   React.useEffect(() => {
-    setPagination((prev) => ({
-      ...prev,
-      pageIndex: 0,
-    }));
-  }, [filters, sorting]);
-
-  React.useEffect(() => {
-    const pageCount = Math.ceil((courses?.length ?? 0) / pagination.pageSize);
+    const pageCount = Math.ceil((batch?.length ?? 0) / pagination.pageSize);
 
     if (pagination.pageIndex >= pageCount && pageCount > 0) {
       setPagination((prev) => ({
@@ -35,27 +37,27 @@ export function CourseTable() {
         pageIndex: pageCount - 1,
       }));
     }
-  }, [courses, pagination.pageSize, pagination.pageIndex]);
+  }, [batch, pagination.pageSize, pagination.pageIndex]);
 
-  const uniqueCategoryCourse = useMemo(() => {
-    if (!courses) {
-      return [];
-    }
-    return Array.from(new Set(courses.map((course) => course.course_category_name))).map((category) => ({
-      value: category,
-      label: category,
-    }));
-  }, [courses]);
+  //   const uniqueCategoryCourse = useMemo(() => {
+  //     if (!courses) {
+  //       return [];
+  //     }
+  //     return Array.from(new Set(courses.map((course) => course.course_category_name))).map((category) => ({
+  //       value: category,
+  //       label: category,
+  //     }));
+  //   }, [courses]);
 
-  const uniqueFieldCourse = useMemo(() => {
-    if (!courses) {
-      return [];
-    }
-    return Array.from(new Set(courses.map((course) => course.course_field_name))).map((field) => ({
-      value: field,
-      label: field,
-    }));
-  }, [courses]);
+  //   const uniqueFieldCourse = useMemo(() => {
+  //     if (!courses) {
+  //       return [];
+  //     }
+  //     return Array.from(new Set(courses.map((course) => course.course_field_name))).map((field) => ({
+  //       value: field,
+  //       label: field,
+  //     }));
+  //   }, [courses]);
 
   // Fungsi helper untuk update filter tanpa menghapus filter id lain
   const setColumnFilter = (id: string, value: string | null) => {
@@ -65,14 +67,14 @@ export function CourseTable() {
     });
   };
 
-  if (isLoading) return <SkeletonTable />;
+  //   if (isLoading) return <SkeletonTable />;
 
   return (
     <div className="space-y-4">
       <div className=" flex justify-between  px-8">
         <div className="flex items-center gap-4">
           {/* Search by Name: Mengisi filter array dengan id 'contributor_name' */}
-          <Input placeholder="Search by name..." onChange={(e) => setColumnFilter("course_title", e.target.value)} className="max-w-sm" />
+          <Input placeholder="Search by name..." onChange={(e) => setColumnFilter("name", e.target.value)} className="max-w-sm" />
 
           {/* Filter by Expertise: Mengisi filter array dengan id 'contributor_expertise' */}
           {/* <Select onValueChange={(v) => setColumnFilter("contributor_expertise", v !== "ALL" ? v : null)}>
@@ -92,7 +94,7 @@ export function CourseTable() {
           </Select> */}
 
           {/* Filter by Category */}
-          <Select onValueChange={(v) => setColumnFilter("course_category_name", v !== "ALL" ? v : null)}>
+          {/* <Select onValueChange={(v) => setColumnFilter("course_category_name", v !== "ALL" ? v : null)}>
             <SelectTrigger className="w-50">
               <SelectValue placeholder="All Category" />
             </SelectTrigger>
@@ -108,10 +110,10 @@ export function CourseTable() {
                 })}
               </SelectGroup>
             </SelectContent>
-          </Select>
+          </Select> */}
 
           {/* Filter by Field */}
-          <Select onValueChange={(v) => setColumnFilter("course_field_name", v !== "ALL" ? v : null)}>
+          {/* <Select onValueChange={(v) => setColumnFilter("course_field_name", v !== "ALL" ? v : null)}>
             <SelectTrigger className="w-50">
               <SelectValue placeholder="All Field" />
             </SelectTrigger>
@@ -127,16 +129,16 @@ export function CourseTable() {
                 })}
               </SelectGroup>
             </SelectContent>
-          </Select>
+          </Select> */}
         </div>
 
-        <CourseAddDialog />
+        {/* <CourseAddDialog /> */}
       </div>
 
       <DataTable
-        data={courses ?? []}
-        columns={columns}
-        getRowId={(row) => row.course_id}
+        data={batch ?? []}
+        columns={columns(courseId)}
+        getRowId={(row) => row.name}
         sorting={sorting}
         columnFilters={filters}
         pagination={pagination}

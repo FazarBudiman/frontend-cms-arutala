@@ -6,6 +6,7 @@ export function generateBreadcrumb(pathname: string) {
       const href = "/" + array.slice(0, index + 1).join("/");
 
       return {
+        segment,
         label: segment.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
         href,
       };

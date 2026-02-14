@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group";
 
 import { Page } from "../type";
+import { PageDeleteDialog } from "./page-delete";
 
 export const columns: ColumnDef<Page>[] = [
   {
@@ -13,25 +14,17 @@ export const columns: ColumnDef<Page>[] = [
     header: ({ table }) => <Checkbox checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")} onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)} aria-label="Select all" />,
     cell: ({ row }) => <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />,
   },
-  // {
-  //   accessorKey: "author_profile_url",
-  //   header: "Profile",
-  //   cell: ({ row }) => (
-  //     <Avatar>
-  //       <AvatarImage src={row.original.author_profile_url} alt="user-profile" />
-  //       <AvatarFallback>{row.original.author_name.charAt(0)}</AvatarFallback>
-  //     </Avatar>
-  //   ),
-  // },
-  // {
-  //   accessorKey: "testimoni_category",
-  //   header: "Type",
-  //   cell: ({ row }) => (
-  //     <div className="flex gap-1 flex-wrap">
-  //       <Badge>{row.original.testimoni_category.toLowerCase()}</Badge>
-  //     </div>
-  //   ),
-  // },
+  {
+    id: "parent_page_title",
+    accessorKey: "parent_page_title",
+    header: "Parent Page",
+    enableColumnFilter: true,
+    cell: ({ row }) => (
+      <div className="flex flex-col">
+        <span className="font-medium">{row.original.parent_page_title !== null && row.original.parent_page_title}</span>
+      </div>
+    ),
+  },
   {
     id: "page_title",
     accessorKey: "page_title",
@@ -61,10 +54,7 @@ export const columns: ColumnDef<Page>[] = [
     header: "Action",
     cell: ({ row }) => (
       <ButtonGroup>
-        <></>
-        {/* <TestimoniDetailDialog testimoni={row.original} />
-        <ButtonGroupSeparator />
-        <TestimoniDeleteDialog testimoniId={row.original.testimoni_id} /> */}
+        <PageDeleteDialog pageId={row.original.page_id} />
       </ButtonGroup>
       // <ActionTable>
       //   {/* <ContributorDetai1lSheet contributor={row.original} /> */}

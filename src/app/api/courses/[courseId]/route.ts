@@ -32,6 +32,39 @@ export async function GET(req: NextRequest, context: { params: Promise<{ courseI
   }
 }
 
+export async function PATCH(req: NextRequest, context: { params: Promise<{ courseId: string }> }) {
+  try {
+    const { courseId } = await context.params;
+    const requestBody = await req.json();
+    await serverFetch(`/courses/${courseId}`, {
+      method: "PATCH",
+      body: JSON.stringify(requestBody),
+    });
+    return NextResponse.json({
+      success: true,
+      data: null,
+    });
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: error.message,
+        },
+        { status: error.status },
+      );
+    }
+
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Internal Server Error",
+      },
+      { status: 500 },
+    );
+  }
+}
+
 export async function DELETE(req: NextRequest, context: { params: Promise<{ courseId: string }> }) {
   try {
     const { courseId } = await context.params;

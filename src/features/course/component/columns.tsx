@@ -5,7 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Course } from "../type";
 import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group";
-import { CourseDeleteDialog } from "./testimoni-delete";
+import { CourseDeleteDialog } from "./course-delete";
 import { IconListDetails } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -54,11 +54,6 @@ export const columns: ColumnDef<Course>[] = [
         <ButtonGroupSeparator />
         <CourseDeleteDialog courseId={row.original.course_id} />
       </ButtonGroup>
-      //   // <></>
-      //   {/* <ContributorDetai1lSheet contributor={row.original} /> */}
-      //   {/* <ContributorDetailDialog contributor={row.original} />
-      //   <ContributorDeleteDialog contributorId={row.original.contributor_id} /> */}
-      // // </ActionTable>
     ),
   },
 ];

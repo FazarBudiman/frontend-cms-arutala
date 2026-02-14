@@ -1,15 +1,16 @@
-import { Page } from "@/features/seo-manage";
 import { ApiError } from "@/server/errors/api-error";
 import { serverFetch } from "@/server/http/server-fetch";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+export async function DELETE(req: NextRequest, context: { params: Promise<{ pageId: string }> }) {
   try {
-    const pages = await serverFetch<Page[]>("/pages");
-    console.log(pages);
+    const { pageId } = await context.params;
+    await serverFetch(`/pages/${pageId}`, {
+      method: "DELETE",
+    });
     return NextResponse.json({
       success: true,
-      data: pages,
+      data: null,
     });
   } catch (error) {
     if (error instanceof ApiError) {
@@ -31,8 +32,3 @@ export async function GET() {
     );
   }
 }
-
-// export async function POST(req: NextRequest) {
-//   try {
-//   } catch (error) {}
-// }
