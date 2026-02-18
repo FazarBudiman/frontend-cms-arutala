@@ -5,19 +5,17 @@ import * as React from "react";
 import { useState } from "react";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
-import { CalendarIcon, ChevronDownIcon, Plus, Trash } from "lucide-react";
+import { Plus, Trash } from "lucide-react";
 import { toast } from "sonner";
 import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Calendar } from "@/components/ui/calendar";
+
 import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
-import { type DateRange } from "react-day-picker";
 import { CourseBatch, CourseBatchInput, courseBatchInputSchema, CourseBatchStatus } from "../../type";
 import { useContributors } from "@/features/contributor/hook";
 import { useUpdateCourseBatch } from "../../hook";

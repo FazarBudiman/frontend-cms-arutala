@@ -3,7 +3,7 @@
 
 import * as React from "react";
 import { useState } from "react";
-import { format, parse } from "date-fns";
+import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
 import { CalendarIcon, ChevronDownIcon, Plus, Trash } from "lucide-react";
 import { toast } from "sonner";
@@ -145,8 +145,6 @@ export default function CourseBatchAddDialog() {
 
       (payload.batchPrice as any).finalPrice = Math.max(0, finalPrice);
     }
-
-    // console.log("Payload:", payload);
 
     toast.promise(mutateAsync({ courseId, body: payload }), {
       loading: "Membuat course batch...",
