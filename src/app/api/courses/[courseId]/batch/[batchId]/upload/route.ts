@@ -6,7 +6,6 @@ export async function POST(req: NextRequest, context: { params: Promise<{ course
   try {
     const { courseId, batchId } = await context.params;
     const formData = await req.formData();
-    // console.log(formData)
     await serverFetch<null>(`/courses/${courseId}/batch/${batchId}/upload`, {
       method: "POST",
       body: formData,

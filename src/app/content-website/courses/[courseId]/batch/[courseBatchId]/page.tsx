@@ -23,13 +23,11 @@ export default function CourseDetailPage() {
   if (!coursesbatch) {
     return <div>Course not found</div>;
   }
-  // console.log(coursesbatch);
 
   return (
     <div className="flex flex-1 flex-col">
       <div className="p-4 lg:px-6 flex flex-col gap-10">
         <CourseBatchDetailCard courseBatchDetail={coursesbatch} />
-        {/* <CourseBatchDetailCard /> */}
       </div>
     </div>
   );
