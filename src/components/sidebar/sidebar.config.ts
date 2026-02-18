@@ -57,7 +57,7 @@ export const navContentWebsite = [
   },
   {
     title: "Article",
-    url: "#",
+    url: "/content-website/articles",
     icon: IconArticle,
     roles: ["ADMIN", "SUPER_ADMIN"],
   },
