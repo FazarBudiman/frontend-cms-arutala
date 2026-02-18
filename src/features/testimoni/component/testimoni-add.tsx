@@ -10,7 +10,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
-import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { useCreateTestimoni } from "../hook";
 import { CreateTestimoniInput, createTestimoniSchema, TestimoniType } from "../type";
 
@@ -71,94 +70,105 @@ export function TestimoniAddDialog() {
       </AlertDialogTrigger>
 
       {/* Content */}
-      <AlertDialogContent className="max-h-[120vh] flex flex-col sm:max-w-3xl">
-        <form onSubmit={form.handleSubmit(handleCreate)} className="flex flex-col h-full">
-          {/* Header */}
+      <AlertDialogContent className="w-[95vw] max-w-4xl! max-h-[95vh] flex flex-col">
+        <form onSubmit={form.handleSubmit(handleCreate)} className="flex flex-col h-full ">
+          {/* HEADER */}
           <AlertDialogHeader className="shrink-0">
             <AlertDialogTitle>Tambah Testimoni</AlertDialogTitle>
-            <AlertDialogDescription>Make changes here. Click save when you&apos;re done</AlertDialogDescription>
+            <AlertDialogDescription>Make changes here. Click save when you are done</AlertDialogDescription>
           </AlertDialogHeader>
 
-          <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2 ">
-            <Controller
-              name="authorProfile"
-              control={form.control}
-              render={({ field, fieldState }) => {
-                return (
-                  <div className="">
-                    <Field data-invalid={fieldState.invalid} orientation="horizontal" className="grid grid-cols-1 md:grid-cols-[1fr,160px] items-start w-fit">
-                      <FieldLabel htmlFor="profile">Profile</FieldLabel>
-                      <Input
-                        id="profile"
-                        type="file"
-                        accept="image/jpeg, image/png, image/webp"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (!file) return;
-                          field.onChange(file);
-                          setPreviewProfile(URL.createObjectURL(file));
-                        }}
-                      />
-                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                      {previewProfile && (
-                        <div className="w-full p-2 max-w-sm ">
-                          <AspectRatio ratio={4 / 2} className="bg-accent rounded-lg border">
-                            <Image src={previewProfile} alt="testimoni-profile" fill className="object-contain p-2" />
-                          </AspectRatio>
-                        </div>
-                      )}
-                    </Field>
-                  </div>
-                );
-              }}
-            />
+          {/* BODY */}
+          <div className="flex-1 overflow-y-auto py-6">
+            {/* GRID 4 KOLOM */}
+            <div className="grid grid-cols-1 md:grid-cols-6 gap-2">
+              {/* ================= PROFILE (2x2) ================= */}
+              <Controller
+                name="authorProfile"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid} className="md:col-span-2 md:row-span-2">
+                    <FieldLabel>Profile</FieldLabel>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <Input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      className="w-full"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+
+                        field.onChange(file);
+                        setPreviewProfile(URL.createObjectURL(file));
+                      }}
+                    />
+
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+
+                    {previewProfile && (
+                      <div className="w-full max-w-sm">
+                        <div className="relative h-48 w-48 rounded-lg border bg-accent overflow-hidden">
+                          <Image src={previewProfile} alt="preview" fill className="object-cover" />
+                        </div>
+                      </div>
+                    )}
+                  </Field>
+                )}
+              />
+
+              {/* ================= NAME ================= */}
               <Controller
                 name="authorName"
                 control={form.control}
                 render={({ field, fieldState }) => (
-                  <Field className="grid gap-1" data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="authorName">Name</FieldLabel>
-                    <Input {...field} id="authorName" aria-invalid={fieldState.invalid} autoComplete="off" />
-                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                  </Field>
-                )}
-              />
-              <Controller
-                name="authorJobTitle"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field className="grid gap-1" data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="authorJobTitle">Job Title</FieldLabel>
-                    <Input {...field} id="authorJobTitle" aria-invalid={fieldState.invalid} autoComplete="off" />
-                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                  </Field>
-                )}
-              />
-              <Controller
-                name="authorCompanyName"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field className="grid gap-1" data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="authorCompanyName">Company Name</FieldLabel>
-                    <Input {...field} id="authorCompanyName" aria-invalid={fieldState.invalid} autoComplete="off" />
+                  <Field className="md:col-span-2" data-invalid={fieldState.invalid}>
+                    <FieldLabel>Name</FieldLabel>
+                    <Input {...field} className="w-full" />
                     {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   </Field>
                 )}
               />
 
+              {/* ================= JOB TITLE ================= */}
+              <Controller
+                name="authorJobTitle"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field className="md:col-span-2" data-invalid={fieldState.invalid}>
+                    <FieldLabel>Job Title</FieldLabel>
+                    <Input {...field} className="w-full" />
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  </Field>
+                )}
+              />
+
+              {/* ================= COMPANY ================= */}
+              <Controller
+                name="authorCompanyName"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field className="md:col-span-2" data-invalid={fieldState.invalid}>
+                    <FieldLabel>Company Name</FieldLabel>
+                    <Input {...field} className="w-full" />
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  </Field>
+                )}
+              />
+
+              {/* ================= CATEGORY ================= */}
               <Controller
                 name="testimoniCategory"
                 control={form.control}
                 render={({ field, fieldState }) => (
-                  <Field className="gap-1">
+                  <Field className="md:col-span-2" data-invalid={fieldState.invalid}>
                     <FieldLabel>Category</FieldLabel>
+
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger className="w-full">
                         <SelectValue placeholder="Choose Category" />
                       </SelectTrigger>
-                      <SelectContent position="popper">
+
+                      <SelectContent>
                         <SelectGroup>
                           {testimoniCategoryOptions.map((type) => (
                             <SelectItem value={type} key={type}>
@@ -168,34 +178,39 @@ export function TestimoniAddDialog() {
                         </SelectGroup>
                       </SelectContent>
                     </Select>
+
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  </Field>
+                )}
+              />
+
+              {/* ================= TESTIMONI FULL WIDTH ================= */}
+              <Controller
+                name="testimoniContent"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field className="md:col-span-6" data-invalid={fieldState.invalid}>
+                    <FieldLabel>Testimoni</FieldLabel>
+                    <Textarea {...field} className="w-full min-h-35" />
                     {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   </Field>
                 )}
               />
             </div>
-            <Controller
-              name="testimoniContent"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field className="grid gap-1 h-36" data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="testimoniContent">Testimoni</FieldLabel>
-                  <Textarea {...field} id="testimoniContent" aria-invalid={fieldState.invalid} autoComplete="off" />
-                  {/* <Input {...field} id="testimoniContent" aria-invalid={fieldState.invalid} autoComplete="off" /> */}
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
           </div>
 
-          {/* Footer */}
+          {/* FOOTER */}
           <AlertDialogFooter className="shrink-0 flex justify-between">
             <AlertDialogCancel
               onClick={() => {
+                setPreviewProfile(null);
                 setOpen(false);
+                form.reset();
               }}
             >
               Cancel
             </AlertDialogCancel>
+
             <Button type="submit" disabled={isPending}>
               Create
             </Button>

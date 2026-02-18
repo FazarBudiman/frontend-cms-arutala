@@ -383,7 +383,7 @@ export default function CourseBatchEditDialog({ batch }: { batch: CourseBatch })
                         />
                     )} */}
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => form.reset()}>Cancel</AlertDialogCancel>
             <Button type="submit" disabled={isPending}>
               {isPending ? "Menyimpan..." : "Simpan"}
             </Button>

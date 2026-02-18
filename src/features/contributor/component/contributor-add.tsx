@@ -226,6 +226,7 @@ export function ContributorAddDialog() {
           <AlertDialogFooter className="shrink-0 flex justify-between">
             <AlertDialogCancel
               onClick={() => {
+                form.reset();
                 setOpen(false);
               }}
             >
