@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     const pages = await serverFetch<Page[]>("/pages");
-    console.log(pages);
+    // console.log(pages);
     return NextResponse.json({
       success: true,
       data: pages,

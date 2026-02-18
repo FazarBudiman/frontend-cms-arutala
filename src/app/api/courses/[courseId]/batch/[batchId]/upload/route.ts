@@ -1,16 +1,15 @@
 import { ApiError } from "@/server/errors/api-error";
 import { serverFetch } from "@/server/http/server-fetch";
 import { NextRequest, NextResponse } from "next/server";
-import z from "zod";
 
-export async function POST(req: NextRequest, context: { params: Promise<{ courseId: string }> }) {
+export async function POST(req: NextRequest, context: { params: Promise<{ courseId: string; batchId: string }> }) {
   try {
-    const body = await req.json();
-    const { courseId } = await context.params;
-
-    await serverFetch<null>(`/courses/${courseId}/batch`, {
+    const { courseId, batchId } = await context.params;
+    const formData = await req.formData();
+    // console.log(formData)
+    await serverFetch<null>(`/courses/${courseId}/batch/${batchId}/upload`, {
       method: "POST",
-      body: JSON.stringify(body),
+      body: formData,
     });
     const response = NextResponse.json({
       success: true,
@@ -18,16 +17,6 @@ export async function POST(req: NextRequest, context: { params: Promise<{ course
     });
     return response;
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: error.cause,
-        },
-        { status: 400 },
-      );
-    }
-
     if (error instanceof ApiError) {
       return NextResponse.json(
         {
@@ -47,4 +36,3 @@ export async function POST(req: NextRequest, context: { params: Promise<{ course
     );
   }
 }
-

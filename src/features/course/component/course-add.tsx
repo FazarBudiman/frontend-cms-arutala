@@ -8,7 +8,7 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 import { CourseInput, courseInputSchema } from "../type";
@@ -20,9 +20,6 @@ export function CourseAddDialog() {
   const { data: coursescategory } = useCourseCategory();
   const { data: coursesfield } = useCourseField();
   const { data: coursesbenefits } = useCourseBenefit();
-
-  // console.log(coursescategory);
-  // console.log(coursesfield);
 
   const form = useForm<CourseInput>({
     resolver: zodResolver(courseInputSchema),
@@ -68,20 +65,20 @@ export function CourseAddDialog() {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogTrigger asChild>
         <Button size="sm">
           Tambah Course <PlusCircle className="ml-2 w-4 h-4" />
         </Button>
-      </DialogTrigger>
+      </AlertDialogTrigger>
 
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
+      <AlertDialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
         {/* <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-6"> */}
         <form onSubmit={form.handleSubmit(handleCreate, (err) => console.log("ERROR:", err))} className="space-y-6">
-          <DialogHeader>
-            <DialogTitle>Tambah Course</DialogTitle>
-            <DialogDescription>Isi detail course di bawah ini</DialogDescription>
-          </DialogHeader>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Tambah Course</AlertDialogTitle>
+            <AlertDialogDescription>Isi detail course di bawah ini</AlertDialogDescription>
+          </AlertDialogHeader>
 
           {/* ================= BASIC INFO ================= */}
 
@@ -214,13 +211,21 @@ export function CourseAddDialog() {
 
           {/* ================= FOOTER ================= */}
 
-          <DialogFooter>
-            <Button type="submit" disabled={isPending}>
+          <AlertDialogFooter>
+            <AlertDialogCancel size="sm"
+              onClick={() => {
+                setOpen(false);
+                form.reset();
+              }}
+            >
+              Cancel
+            </AlertDialogCancel>
+            <Button type="submit" disabled={isPending} size="sm">
               {isPending ? "Creating..." : "Create Course"}
             </Button>
-          </DialogFooter>
+          </AlertDialogFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 import { CourseDetail, CourseInput, courseInputSchema } from "../type";
@@ -55,7 +55,7 @@ export function CourseEditDialog({ courseDetail }: CourseEditDialogProps) {
   });
 
   const handleCreate = async (values: CourseInput) => {
-    console.log(values);
+    // console.log(values);
     toast.promise(mutateAsync({ courseId: courseDetail.course_id!, body: values }), {
       loading: "Mengubah course...",
       success: () => {
@@ -100,20 +100,20 @@ export function CourseEditDialog({ courseDetail }: CourseEditDialogProps) {
   }, [coursescategory, coursesfield, coursesbenefits, courseDetail, form]);
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogTrigger asChild>
         <Button variant="outline" size="sm">
           Edit Course
         </Button>
-      </DialogTrigger>
+      </AlertDialogTrigger>
 
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
+      <AlertDialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl">
         {/* <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-6"> */}
         <form onSubmit={form.handleSubmit(handleCreate, (err) => console.log("ERROR:", err))} className="space-y-6">
-          <DialogHeader>
-            <DialogTitle>Tambah Course</DialogTitle>
-            <DialogDescription>Isi detail course di bawah ini</DialogDescription>
-          </DialogHeader>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Edit Course</AlertDialogTitle>
+            <AlertDialogDescription>Isi detail course di bawah ini</AlertDialogDescription>
+          </AlertDialogHeader>
 
           {/* ================= BASIC INFO ================= */}
 
@@ -246,14 +246,23 @@ export function CourseEditDialog({ courseDetail }: CourseEditDialogProps) {
 
           {/* ================= FOOTER ================= */}
 
-          <DialogFooter>
-            <Button type="submit" disabled={isPending}>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              size="sm"
+              onClick={() => {
+                setOpen(false);
+                form.reset();
+              }}
+            >
+              Cancel
+            </AlertDialogCancel>
+            <Button type="submit" disabled={isPending} size="sm">
               {isPending ? "Saving..." : "Save Changes"}
             </Button>
             {/* <Button type="submit">Save Changes</Button> */}
-          </DialogFooter>
+          </AlertDialogFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }

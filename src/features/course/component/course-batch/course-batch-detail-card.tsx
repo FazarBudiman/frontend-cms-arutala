@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { CourseBatch } from "../../type";
 import { formatedDate } from "@/shared/utils/date";
 import Image from "next/image";
+import { CourseBatchUpload } from "./course-batch-upload";
+import CourseBatchEditDialog from "./course-batch-edit";
 
 type CourseDetailCardProps = {
   courseBatchDetail: Partial<CourseBatch>;
@@ -51,7 +53,7 @@ export function CourseBatchDetailCard({ courseBatchDetail }: CourseDetailCardPro
         {/* ================= LEFT ================= */}
         <div className="space-y-6">
           {/* Poster (Tidak Dominan) */}
-          {poster_url && <Image src={poster_url} alt="Poster" width={600} height={350} className="w-full max-h-72 object-contain" />}
+          {poster_url ? <Image src={poster_url} alt="Poster" width={600} height={350} className="w-full max-h-72 object-contain" /> : <CourseBatchUpload />}
 
           <div className="space-y-4 text-sm">
             <div>
@@ -119,7 +121,7 @@ export function CourseBatchDetailCard({ courseBatchDetail }: CourseDetailCardPro
 
       {/* ================= FOOTER ================= */}
       <CardFooter className="flex justify-end">
-        <Button>Manage Batch</Button>
+        <CourseBatchEditDialog batch={courseBatchDetail as CourseBatch} />
       </CardFooter>
     </Card>
   );

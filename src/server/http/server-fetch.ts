@@ -30,7 +30,7 @@ export async function serverFetch<T>(path: string, options: RequestInit = {}): P
     throw new ApiError("Invalid JSON response", res.status);
   }
 
-  // console.log(json);
+  console.log(json);
 
   if (!json.success) {
     throw new ApiError(json.message, res.status, json);

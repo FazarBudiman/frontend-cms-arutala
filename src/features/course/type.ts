@@ -57,6 +57,7 @@ export const courseBatch = z.object({
   instructor_job_title: z.string(),
   instructor_company_name: z.string(),
   instructor_profile_url: z.string(),
+  instructor_id: z.string().optional(),
 
   base_price: z.number(),
   discount_type: z.string(),

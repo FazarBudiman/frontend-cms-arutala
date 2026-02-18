@@ -9,6 +9,8 @@ import { formatedDate } from "@/shared/utils/date";
 import { Button } from "@/components/ui/button";
 import { IconListDetails } from "@tabler/icons-react";
 import Link from "next/link";
+import { CourseBatchDeleteDialog } from "./course-batch-delete";
+import { redirect } from "next/navigation";
 
 export const columns = (courseId: string): ColumnDef<CourseBatch>[] => [
   {
@@ -102,12 +104,11 @@ export const columns = (courseId: string): ColumnDef<CourseBatch>[] => [
     cell: ({ row }) => {
       return (
         <ButtonGroup>
-          <Link href={`/content-website/courses/${courseId}/batch/${row.original.course_batch_id}`}>
-            <Button variant="outline" size="icon-sm">
-              <IconListDetails />
-            </Button>
-          </Link>
+          <Button variant="outline" size="icon-sm" onClick={() => redirect(`/content-website/courses/${courseId}/batch/${row.original.course_batch_id}`)}>
+            <IconListDetails />
+          </Button>
           <ButtonGroupSeparator />
+          <CourseBatchDeleteDialog courseId={courseId} batchId={row.original.course_batch_id} />
         </ButtonGroup>
       );
     },

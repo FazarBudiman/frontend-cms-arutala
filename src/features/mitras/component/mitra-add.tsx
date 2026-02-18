@@ -2,7 +2,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { PlusCircle, X } from "lucide-react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -64,22 +64,22 @@ export function MitraAddDialog() {
     name: "businessField",
   });
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <AlertDialog open={open} onOpenChange={setOpen}>
       {/* Trigger */}
-      <DialogTrigger asChild>
+      <AlertDialogTrigger asChild>
         <Button size="sm">
           Tambah Mitra <PlusCircle />
         </Button>
-      </DialogTrigger>
+      </AlertDialogTrigger>
 
       {/* Content */}
-      <DialogContent className="max-h-[90vh] flex flex-col sm:max-w-3xl">
+      <AlertDialogContent className="max-h-[90vh] flex flex-col sm:max-w-3xl">
         <form onSubmit={form.handleSubmit(handleCreate)} className="flex flex-col h-full">
           {/* Header */}
-          <DialogHeader className="shrink-0">
-            <DialogTitle>Tambah Mitra</DialogTitle>
-            <DialogDescription>Make changes here. Click save when you&apos;re done</DialogDescription>
-          </DialogHeader>
+          <AlertDialogHeader className="shrink-0">
+            <AlertDialogTitle>Tambah Mitra</AlertDialogTitle>
+            <AlertDialogDescription>Make changes here. Click save when you&apos;re done</AlertDialogDescription>
+          </AlertDialogHeader>
 
           <div className="flex flex-col flex-1 overflow-y-auto px-4 py-4 gap-4  ">
             {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> */}
@@ -169,23 +169,20 @@ export function MitraAddDialog() {
           </div>
 
           {/* Footer */}
-          <DialogFooter className="shrink-0 flex justify-between">
-            <DialogClose asChild>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setOpen(false);
-                }}
-              >
-                Cancel
-              </Button>
-            </DialogClose>
+          <AlertDialogFooter className="shrink-0 flex justify-between">
+            <AlertDialogCancel
+              onClick={() => {
+                setOpen(false);
+              }}
+            >
+              Cancel
+            </AlertDialogCancel>
             <Button type="submit" disabled={isPending}>
               Create
             </Button>
-          </DialogFooter>
+          </AlertDialogFooter>
         </form>
-      </DialogContent>
-    </Dialog>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
