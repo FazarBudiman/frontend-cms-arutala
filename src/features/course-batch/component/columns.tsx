@@ -4,12 +4,12 @@ import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group";
-import { CourseBatch } from "../../type";
 import { formatedDate } from "@/shared/utils/date";
 import { Button } from "@/components/ui/button";
 import { IconListDetails } from "@tabler/icons-react";
-import { CourseBatchDeleteDialog } from "./course-batch-delete";
 import { redirect } from "next/navigation";
+import { CourseBatch } from "../type";
+import { CourseBatchDeleteDialog } from "./course-batch-delete";
 
 export const columns = (courseId: string): ColumnDef<CourseBatch>[] => [
   {

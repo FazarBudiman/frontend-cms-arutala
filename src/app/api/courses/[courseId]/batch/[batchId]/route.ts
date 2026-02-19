@@ -1,4 +1,4 @@
-import { CourseBatch } from "@/features/course/type";
+import { CourseBatch } from "@/features/course-batch/type";
 import { ApiError } from "@/server/errors/api-error";
 import { serverFetch } from "@/server/http/server-fetch";
 import { NextRequest, NextResponse } from "next/server";
@@ -40,6 +40,7 @@ export async function PATCH(req: NextRequest, context: { params: Promise<{ cours
   try {
     const { courseId, batchId } = await context.params;
     const body = await req.json();
+    console.log(body);
 
     await serverFetch(`/courses/${courseId}/batch/${batchId}`, {
       method: "PATCH",

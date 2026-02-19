@@ -1,9 +1,9 @@
 "use client";
 
-import { CourseBatchDetailCard } from "@/features/course/component/course-batch/course-batch-detail-card";
-import { useCourseBatch } from "@/features/course/hook";
 import { useParams } from "next/navigation";
 import { SkeletonBatchDetail } from "@/components/skeleton-detail-card";
+import { useCourseBatch } from "@/features/course-batch/hook";
+import { CourseBatchDetailCard } from "@/features/course-batch/component/course-batch-detail-card";
 
 export default function CourseDetailPage() {
   const params = useParams();

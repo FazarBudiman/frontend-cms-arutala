@@ -1,18 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { PlusCircle, Trash2 } from "lucide-react";
+import { PlusCircle } from "lucide-react";
 import { toast } from "sonner";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-
 import { CourseInput, courseInputSchema } from "../type";
 import { useCourseBenefit, useCourseCategory, useCourseField, useCreateCourse } from "../hook";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function CourseAddDialog() {
   const [open, setOpen] = useState(false);
@@ -51,8 +52,22 @@ export function CourseAddDialog() {
     name: "courseBenefits",
   });
 
+  const selectedBenefitIds = form.watch("courseBenefits")?.map((b) => b.courseBenefitId) ?? [];
+
   const handleCreate = async (values: CourseInput) => {
-    toast.promise(mutateAsync(values), {
+    const formatted = {
+      ...values,
+      courseMaterials: values.courseMaterials.map((m, index) => ({
+        ...m,
+        orderNum: index + 1,
+      })),
+      courseBenefits: values.courseBenefits.map((b, index) => ({
+        ...b,
+        orderNum: index + 1,
+      })),
+    };
+
+    toast.promise(mutateAsync(formatted), {
       loading: "Membuat course...",
       success: () => {
         setOpen(false);
@@ -67,148 +82,215 @@ export function CourseAddDialog() {
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
         <Button size="sm">
-          Tambah Course <PlusCircle className="ml-2 w-4 h-4" />
+          Tambah Course <PlusCircle />
         </Button>
       </AlertDialogTrigger>
 
-      <AlertDialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-3xl max-w-4xl!">
-        {/* <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-6"> */}
-        <form onSubmit={form.handleSubmit(handleCreate, (err) => console.log("ERROR:", err))} className="space-y-6">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Tambah Course</AlertDialogTitle>
-            <AlertDialogDescription>Isi detail course di bawah ini</AlertDialogDescription>
-          </AlertDialogHeader>
+      <AlertDialogContent className="sm:max-w-3xl max-h-max h-fit max-w-4xl!">
+        <AlertDialogHeader>
+          <AlertDialogTitle>Tambah Course</AlertDialogTitle>
+          <AlertDialogDescription>Isi detail course di bawah ini</AlertDialogDescription>
+        </AlertDialogHeader>
 
-          {/* ================= BASIC INFO ================= */}
+        {/* ================= BASIC INFO ================= */}
+        <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4">
+          <ScrollArea className="h-96 px-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-3 -mx-4 max-h-max overflow-y-auto px-4">
+              <Controller
+                name="courseTitle"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field className="md:col-span-2 gap-1" data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="courseTitle">Title</FieldLabel>
+                    <Input {...field} id="courseTitle" aria-invalid={fieldState.invalid} autoComplete="off" />
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  </Field>
+                )}
+              />
+              <Controller
+                name="courseDescription"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field className="md:col-span-2 gap-1" data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="courseDescription">Description</FieldLabel>
+                    <Textarea {...field} id="courseDescription" aria-invalid={fieldState.invalid} autoComplete="off" className="min-h-20" />
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  </Field>
+                )}
+              />
 
-          <div className="space-y-4">
-            <Controller name="courseTitle" control={form.control} render={({ field }) => <Input {...field} placeholder="Course Title" />} />
-            <Controller name="courseDescription" control={form.control} render={({ field }) => <textarea {...field} placeholder="Course Description" className="w-full border rounded-md p-2 min-h-25" />} />
-
-            <div className="flex gap-4 w-full">
               <Controller
                 name="courseCategoryId"
                 control={form.control}
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Choose Category" />
-                    </SelectTrigger>
-                    <SelectContent position="popper">
-                      {coursescategory?.map((cat) => (
-                        <SelectItem key={cat.id} value={cat.id}>
-                          {cat.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                render={({ field, fieldState }) => (
+                  <Field className="md:col-span-1 gap-1" data-invalid={fieldState.invalid}>
+                    <FieldLabel>Category</FieldLabel>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Choose Category" />
+                      </SelectTrigger>
+                      <SelectContent position="popper">
+                        {coursescategory?.map((cat) => (
+                          <SelectItem key={cat.id} value={cat.id}>
+                            {cat.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  </Field>
                 )}
               />
 
               <Controller
                 name="courseFieldId"
                 control={form.control}
-                render={({ field }) => (
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Choose Field" />
-                    </SelectTrigger>
-                    <SelectContent position="popper">
-                      {coursesfield?.map((f) => (
-                        <SelectItem key={f.id} value={f.id}>
-                          {f.field}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                render={({ field, fieldState }) => (
+                  <Field className="md:col-span-1 gap-1" data-invalid={fieldState.invalid}>
+                    <FieldLabel>Field</FieldLabel>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Choose Field" />
+                      </SelectTrigger>
+                      <SelectContent position="popper">
+                        {coursesfield?.map((f) => (
+                          <SelectItem key={f.id} value={f.id}>
+                            {f.field}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                  </Field>
                 )}
               />
-            </div>
-          </div>
 
-          <div className="flex gap-4">
-            {/* ================= MATERIALS ================= */}
-            <div className="space-y-4">
-              <h3 className="font-semibold">Course Materials</h3>
+              <div className="md:col-span-2 space-y-2">
+                <div className="flex items-center justify-between">
+                  <Field>
+                    <FieldLabel>Course Benefits</FieldLabel>
+                  </Field>
 
-              {materialFields.map((item, index) => (
-                <div key={item.id} className="border p-4 rounded-md space-y-2">
-                  <Controller name={`courseMaterials.${index}.title`} control={form.control} render={({ field }) => <Input {...field} placeholder="Title" />} />
-
-                  <Controller name={`courseMaterials.${index}.description`} control={form.control} render={({ field }) => <Input {...field} placeholder="Description" />} />
-
-                  <Controller name={`courseMaterials.${index}.orderNum`} control={form.control} render={({ field }) => <Input type="number" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />} />
-
-                  <Button type="button" variant="destructive" size="sm" onClick={() => removeMaterial(index)}>
-                    <Trash2 className="w-4 h-4 mr-1" />
-                    Remove
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() =>
+                      appendBenefit({
+                        courseBenefitId: "",
+                      })
+                    }
+                  >
+                    <PlusCircle />
+                    Add Benefit
                   </Button>
                 </div>
-              ))}
 
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() =>
-                  appendMaterial({
-                    title: "",
-                    description: "",
-                    orderNum: materialFields.length + 1,
-                  })
-                }
-              >
-                + Add Material
-              </Button>
-            </div>
+                {benefitFields.map((item, index) => (
+                  <div key={item.id} className="border rounded-md p-2 space-y-2 bg-muted/30">
+                    <Controller
+                      name={`courseBenefits.${index}.courseBenefitId`}
+                      control={form.control}
+                      render={({ field, fieldState }) => (
+                        <Field data-invalid={fieldState.invalid}>
+                          <FieldLabel>Benefit {index + 1}</FieldLabel>
 
-            {/* ================= BENEFITS ================= */}
+                          <Select value={field.value} onValueChange={field.onChange}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Choose Benefit" />
+                            </SelectTrigger>
 
-            <div className="space-y-4">
-              <h3 className="font-semibold">Course Benefits</h3>
+                            <SelectContent position="popper">
+                              {coursesbenefits
+                                ?.filter((b) => {
+                                  // Jangan tampilkan yang sudah dipilih,
+                                  // kecuali milik index sekarang
+                                  return !selectedBenefitIds.includes(b.id) || b.id === field.value;
+                                })
+                                .map((b) => (
+                                  <SelectItem key={b.id} value={b.id}>
+                                    {b.title}
+                                  </SelectItem>
+                                ))}
+                            </SelectContent>
+                          </Select>
 
-              {benefitFields.map((item, index) => (
-                <div key={item.id} className="flex gap-2 items-center">
-                  <Controller
-                    name={`courseBenefits.${index}.courseBenefitId`}
-                    control={form.control}
-                    render={({ field }) => (
-                      <Select value={field.value} onValueChange={field.onChange}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Choose Benefit" />
-                        </SelectTrigger>
-                        <SelectContent position="popper">
-                          {coursesbenefits?.map((b) => (
-                            <SelectItem key={b.id} value={b.id}>
-                              {b.title}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    )}
-                  />
+                          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                        </Field>
+                      )}
+                    />
 
-                  <Controller name={`courseBenefits.${index}.orderNum`} control={form.control} render={({ field }) => <Input type="number" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />} />
+                    <div className="flex justify-end">
+                      <Button type="button" variant="destructive" size="sm" onClick={() => removeBenefit(index)}>
+                        Remove
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
 
-                  <Button type="button" variant="destructive" size="icon" onClick={() => removeBenefit(index)}>
-                    <Trash2 className="w-4 h-4" />
+              <div className="md:col-span-2 space-y-2">
+                <div className="flex items-center justify-between">
+                  <Field>
+                    <FieldLabel>Course Materials</FieldLabel>
+                  </Field>
+
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() =>
+                      appendMaterial({
+                        title: "",
+                        description: "",
+                      })
+                    }
+                  >
+                    <PlusCircle />
+                    Add Material
                   </Button>
                 </div>
-              ))}
 
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() =>
-                  appendBenefit({
-                    courseBenefitId: "",
-                    orderNum: benefitFields.length + 1,
-                  })
-                }
-              >
-                + Add Benefit
-              </Button>
+                {materialFields.map((item, index) => (
+                  <div key={item.id} className="border rounded-md p-2 space-y-2 bg-muted/30">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {/* Title */}
+                      <Controller
+                        name={`courseMaterials.${index}.title`}
+                        control={form.control}
+                        render={({ field, fieldState }) => (
+                          <Field data-invalid={fieldState.invalid}>
+                            <FieldLabel>Title {index + 1}</FieldLabel>
+                            <Input {...field} />
+                            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                          </Field>
+                        )}
+                      />
+
+                      {/* Description */}
+                      <Controller
+                        name={`courseMaterials.${index}.description`}
+                        control={form.control}
+                        render={({ field, fieldState }) => (
+                          <Field className="md:col-span-2" data-invalid={fieldState.invalid}>
+                            <FieldLabel>Description {index + 1}</FieldLabel>
+                            <Textarea {...field} />
+                            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                          </Field>
+                        )}
+                      />
+                    </div>
+
+                    <div className="flex justify-end">
+                      <Button type="button" variant="destructive" size="sm" onClick={() => removeMaterial(index)}>
+                        Remove
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          </ScrollArea>
 
           {/* ================= FOOTER ================= */}
           <AlertDialogFooter>
