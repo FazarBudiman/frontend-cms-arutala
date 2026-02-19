@@ -2,9 +2,8 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { CourseDetail } from "../type";
 import { Item, ItemContent, ItemDescription, ItemTitle } from "@/components/ui/item";
-import { Button } from "@/components/ui/button";
 import { CourseEditDialog } from "./course-edit";
-import CourseBatchAddDialog from "./course-batch/course-batch-add";
+import CourseBatchAddDialog from "@/features/course-batch/component/course-batch-add";
 
 type CourseDetailCardProps = {
   courseDetail: Partial<CourseDetail>;
@@ -59,7 +58,6 @@ export function CourseDetailCard({ courseDetail }: CourseDetailCardProps) {
 
       <CardFooter className="flex justify-end gap-3">
         <CourseEditDialog courseDetail={courseDetail} />
-        {/* <Button size="sm">Create A New Batch</Button> */}
         <CourseBatchAddDialog />
       </CardFooter>
     </Card>

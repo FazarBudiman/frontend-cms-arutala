@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { courseBatch, CourseBatchInput } from "../course-batch/type";
 
 /* =========================================================
    ================== ENTITY / RESPONSE ====================
@@ -18,56 +19,6 @@ export const courseSchema = z.object({
 });
 
 export type Course = z.infer<typeof courseSchema>;
-
-/**
- * ---------------------------
- * COURSE SESSION (RESPONSE)
- * ---------------------------
- */
-export const courseSessions = z.object({
-  course_session_id: z.string(),
-  topic: z.string(),
-  date: z.string(),
-  start_time: z.string(),
-  end_time: z.string(),
-});
-
-export type CourseSession = z.infer<typeof courseSessions>;
-
-/**
- * ---------------------------
- * COURSE BATCH (RESPONSE)
- * ---------------------------
- */
-export const courseBatch = z.object({
-  course_batch_id: z.string(),
-  name: z.string(),
-  status: z.string(),
-  poster_url: z.string(),
-
-  registration_start: z.string(),
-  registration_end: z.string(),
-
-  start_date: z.string(),
-  end_date: z.string(),
-
-  batch_status: z.string(),
-
-  instructor_name: z.string(),
-  instructor_job_title: z.string(),
-  instructor_company_name: z.string(),
-  instructor_profile_url: z.string(),
-  instructor_id: z.string().optional(),
-
-  base_price: z.number(),
-  discount_type: z.string(),
-  discount_value: z.number(),
-  final_price: z.number(),
-
-  sessions: z.optional(z.array(courseSessions)),
-});
-
-export type CourseBatch = z.infer<typeof courseBatch>;
 
 /**
  * ---------------------------
@@ -110,8 +61,8 @@ export type CourseDetail = z.infer<typeof courseDetailSchema>;
  * ---------------------------
  */
 const courseBenefitSchema = z.object({
-  courseBenefitId: z.string().uuid(),
-  orderNum: z.number().int().positive(),
+  courseBenefitId: z.string().min(1, "Benefit tidak boleh kosong"),
+  orderNum: z.number().int().positive().optional(),
 });
 
 /**
@@ -122,7 +73,7 @@ const courseBenefitSchema = z.object({
 const courseMaterialSchema = z.object({
   title: z.string().min(5, "Title is required"),
   description: z.string().min(50, "Description is required"),
-  orderNum: z.number().int().positive(),
+  orderNum: z.number().int().positive().optional(),
 });
 
 /**
@@ -132,81 +83,29 @@ const courseMaterialSchema = z.object({
  */
 export const courseInputSchema = z
   .object({
-    courseTitle: z.string().min(5, "Title minimal 5 karakter"),
-    courseDescription: z.string().min(50, "Deskripsi minimal 50 karakter"),
+    courseTitle: z.string().min(5, "Title minimal 5 karakter").trim(),
+    courseDescription: z.string().min(50, "Deskripsi minimal 50 karakter").trim(),
 
-    courseCategoryId: z.string().uuid(),
-    courseFieldId: z.string().uuid(),
+    courseCategoryId: z.string().min(1, "Category wajib dipilih").trim(),
+    courseFieldId: z.string().min(1, "Field wajib dipilig"),
 
-    courseBenefits: z.array(courseBenefitSchema),
-    courseMaterials: z.array(courseMaterialSchema),
+    courseBenefits: z
+      .array(courseBenefitSchema)
+      .min(1, "Minimal 1 Benefit")
+      .refine(
+        (benefits) => {
+          const ids = benefits.map((b) => b.courseBenefitId);
+          return new Set(ids).size === ids.length;
+        },
+        {
+          message: "Duplicate benefit not allowed",
+        },
+      ),
+    courseMaterials: z.array(courseMaterialSchema).min(1, "Minimal 1 Materials"),
   })
   .strict();
 
 export type CourseInput = z.infer<typeof courseInputSchema>;
-
-/* =========================================================
-   ================= COURSE BATCH INPUT ====================
-   ========================================================= */
-
-/**
- * ---------------------------
- * BATCH SESSION INPUT
- * (sesuai payload kamu)
- * ---------------------------
- */
-export const courseBatchSessionInputSchema = z.object({
-  topic: z.string().min(5, "Topic minimal 5 karakter"),
-  sessionDate: z.string(),
-  sessionStartTime: z.string(),
-  sessionEndTime: z.string(),
-});
-
-/**
- * ---------------------------
- * BATCH PRICE INPUT
- * ---------------------------
- */
-export const courseBatchPriceInputSchema = z.object({
-  basePrice: z.number().min(0),
-  discountType: z.string().optional(),
-  discountValue: z.number().optional(),
-});
-
-/**
- * ---------------------------
- * COURSE BATCH CREATE INPUT
- * ---------------------------
- */
-
-export const CourseBatchStatus = {
-  DRAFT: "DRAFT",
-  SCHEDULED: "SCHEDULED",
-  OPEN: "OPEN",
-  ON_GOING: "ON_GOING",
-  COMPLETED: "COMPLETED",
-} as const;
-
-export const courseBatchInputSchema = z
-  .object({
-    batchName: z.string().min(3, "Nama batch minimal 3 karakter"),
-    contributorId: z.string().uuid(),
-
-    registrationStart: z.string(),
-    registrationEnd: z.string(),
-
-    startDate: z.string(),
-    endDate: z.string(),
-
-    batchStatus: z.enum(Object.values(CourseBatchStatus) as [string, ...string[]]),
-
-    batchSession: z.array(courseBatchSessionInputSchema).min(1, "Minimal 1 session"),
-
-    batchPrice: courseBatchPriceInputSchema,
-  })
-  .strict();
-
-export type CourseBatchInput = z.infer<typeof courseBatchInputSchema>;
 
 /* =========================================================
    ================= MASTER DATA ===========================

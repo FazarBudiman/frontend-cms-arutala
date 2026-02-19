@@ -1,9 +1,8 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { CourseBatch } from "../../type";
 import { formatedDate } from "@/shared/utils/date";
 import Image from "next/image";
+import { CourseBatch } from "../type";
 import { CourseBatchUpload } from "./course-batch-upload";
 import CourseBatchEditDialog from "./course-batch-edit";
 
@@ -41,21 +40,30 @@ export function CourseBatchDetailCard({ courseBatchDetail }: CourseDetailCardPro
     }).format(value);
 
   return (
-    <Card>
+    <Card className="max-w-full max-h-full">
       {/* ================= HEADER ================= */}
-      <CardHeader className="space-y-2">
-        {batch_status && <Badge>{batch_status}</Badge>}
-        <CardTitle>{name}</CardTitle>
+      <CardHeader className="space-y-1">
+        <div className="flex justify-between">
+          <div className="flex flex-col gap-2">
+            {batch_status && (
+              <Badge variant="outline" className="to-blue-700">
+                {batch_status}
+              </Badge>
+            )}
+            <CardTitle>{name}</CardTitle>
+          </div>
+          <CourseBatchEditDialog batch={courseBatchDetail as CourseBatch} />
+        </div>
       </CardHeader>
 
       {/* ================= CONTENT ================= */}
       <CardContent className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* ================= LEFT ================= */}
-        <div className="space-y-6">
+        <div className="space-y-2">
           {/* Poster (Tidak Dominan) */}
-          {poster_url ? <Image src={poster_url} alt="Poster" width={600} height={350} className="w-full max-h-72 object-contain" /> : <CourseBatchUpload />}
+          <CourseBatchUpload posterUrl={poster_url} />
 
-          <div className="space-y-4 text-sm">
+          <div className="space-y-3 text-sm">
             <div>
               <p className="text-muted-foreground">Pendaftaran</p>
               <p className="font-medium">
@@ -120,9 +128,9 @@ export function CourseBatchDetailCard({ courseBatchDetail }: CourseDetailCardPro
       </CardContent>
 
       {/* ================= FOOTER ================= */}
-      <CardFooter className="flex justify-end">
+      {/* <CardFooter className="flex justify-end">
         <CourseBatchEditDialog batch={courseBatchDetail as CourseBatch} />
-      </CardFooter>
+      </CardFooter> */}
     </Card>
   );
 }

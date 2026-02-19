@@ -74,25 +74,8 @@ export function CourseTable() {
           {/* Search by Name: Mengisi filter array dengan id 'contributor_name' */}
           <Input placeholder="Search by name..." onChange={(e) => setColumnFilter("course_title", e.target.value)} className="max-w-sm" />
 
-          {/* Filter by Expertise: Mengisi filter array dengan id 'contributor_expertise' */}
-          {/* <Select onValueChange={(v) => setColumnFilter("contributor_expertise", v !== "ALL" ? v : null)}>
-            <SelectTrigger className="w-50">
-              <SelectValue placeholder="All Expertise" />
-            </SelectTrigger>
-            <SelectContent position="popper">
-              <SelectGroup>
-                <SelectItem value="ALL">All Expertise</SelectItem>
-                {uniqueExpertise.map((expert) => (
-                  <SelectItem value={expert.value} key={expert.value}>
-                    {expert.label}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select> */}
-
           {/* Filter by Category */}
-          <Select onValueChange={(v) => setColumnFilter("course_category_name", v !== "ALL" ? v : null)}>
+          <Select defaultValue="ALL" onValueChange={(v) => setColumnFilter("course_category_name", v !== "ALL" ? v : null)}>
             <SelectTrigger className="w-50">
               <SelectValue placeholder="All Category" />
             </SelectTrigger>
@@ -111,7 +94,7 @@ export function CourseTable() {
           </Select>
 
           {/* Filter by Field */}
-          <Select onValueChange={(v) => setColumnFilter("course_field_name", v !== "ALL" ? v : null)}>
+          <Select defaultValue="ALL" onValueChange={(v) => setColumnFilter("course_field_name", v !== "ALL" ? v : null)}>
             <SelectTrigger className="w-50">
               <SelectValue placeholder="All Field" />
             </SelectTrigger>
