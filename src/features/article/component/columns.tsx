@@ -10,34 +10,30 @@ import { Article } from "../type";
 import { ArticleDeleteDialog } from "./article-delete";
 import { ArticleEditSheet } from "./article-edit";
 import { ArticleStatusBadge } from "./article-status-badge";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import Image from "next/image";
+import { formatedDate } from "@/shared/utils/date";
 
 export const columns: ColumnDef<Article>[] = [
   {
     id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
+    header: ({ table }) => <Checkbox checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")} onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)} aria-label="Select all" />,
+    cell: ({ row }) => <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />,
   },
   {
     accessorKey: "article_cover_url",
     header: "Cover",
     cell: ({ row }) => (
-      <img
-        src={row.original.article_cover_url}
-        alt={row.original.article_title}
-        className="h-12 w-20 rounded object-cover"
-      />
+      // <img
+      //   src={row.original.article_cover_url}
+      //   alt={row.original.article_title}
+      //   className="h-12 w-20 rounded object-cover"
+      // />
+      <div className=" min-w-36">
+        <AspectRatio ratio={4 / 2} className="bg-accent rounded-lg border">
+          <Image src={row.original.article_cover_url} alt={row.original.article_id} fill className="object-contain" />
+        </AspectRatio>
+      </div>
     ),
   },
   {
@@ -55,15 +51,7 @@ export const columns: ColumnDef<Article>[] = [
   {
     accessorKey: "created_date",
     header: "Date",
-    cell: ({ row }) => (
-      <span className="text-sm">
-        {new Date(row.original.created_date).toLocaleDateString("id-ID", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        })}
-      </span>
-    ),
+    cell: ({ row }) => formatedDate(row.original.created_date),
   },
   {
     id: "article_status",

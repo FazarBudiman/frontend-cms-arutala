@@ -25,16 +25,6 @@ export const columns: ColumnDef<Contributor>[] = [
     ),
   },
   {
-    accessorKey: "contributor_type",
-    header: "Type",
-    cell: ({ row }) => (
-      <div className="flex gap-1 flex-wrap">
-        <Badge>{row.original.contributor_type === "INTERNAL" ? "Mentor" : "Bukan Mentor"}</Badge>
-      </div>
-    ),
-    filterFn: "arrIncludes",
-  },
-  {
     id: "contributor_name",
     accessorKey: "contributor_name",
     header: "Name",
@@ -53,7 +43,16 @@ export const columns: ColumnDef<Contributor>[] = [
     accessorKey: "contributor_company_name",
     header: "Company Name",
   },
-
+  {
+    accessorKey: "contributor_type",
+    header: "Type",
+    cell: ({ row }) => (
+      <div className="flex gap-1 flex-wrap">
+        <Badge>{row.original.contributor_type === "INTERNAL" ? "Mentor" : "Bukan Mentor"}</Badge>
+      </div>
+    ),
+    filterFn: "arrIncludes",
+  },
   {
     accessorKey: "contributor_expertise",
     header: "Expertise",

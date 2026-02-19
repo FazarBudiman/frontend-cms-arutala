@@ -25,15 +25,6 @@ export const columns: ColumnDef<Testimoni>[] = [
     ),
   },
   {
-    accessorKey: "testimoni_category",
-    header: "Type",
-    cell: ({ row }) => (
-      <div className="flex gap-1 flex-wrap">
-        <Badge>{row.original.testimoni_category.toLowerCase()}</Badge>
-      </div>
-    ),
-  },
-  {
     id: "author_name",
     accessorKey: "author_name",
     header: "Name",
@@ -51,6 +42,15 @@ export const columns: ColumnDef<Testimoni>[] = [
   {
     accessorKey: "author_company_name",
     header: "Company Name",
+  },
+  {
+    accessorKey: "testimoni_category",
+    header: "Category",
+    cell: ({ row }) => (
+      <div className="flex gap-1 flex-wrap">
+        <Badge>{row.original.testimoni_category === "SISWA" ? "Siswa" : "Talent"}</Badge>
+      </div>
+    ),
   },
   {
     accessorKey: "testimoni_content",

@@ -10,6 +10,3 @@ export { loginAction, logoutAction, fetchUserAuthenticated } from "./api";
 // schema
 export { signInSchema } from "./schema";
 export type { SignInInput } from "./schema";
-
-// // types
-// export type { User } from "./type";

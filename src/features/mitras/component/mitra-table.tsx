@@ -65,7 +65,7 @@ export function MitraTable() {
           <Input placeholder="Search by name..." onChange={(e) => setColumnFilter("mitra_name", e.target.value)} className="max-w-sm" />
 
           {/* Filter by Expertise: Mengisi filter array dengan id 'business_field' */}
-          <Select onValueChange={(v) => setColumnFilter("business_field", v !== "ALL" ? v : null)}>
+          <Select defaultValue="ALL" onValueChange={(v) => setColumnFilter("business_field", v !== "ALL" ? v : null)}>
             <SelectTrigger className="w-50">
               <SelectValue placeholder="All Field" />
             </SelectTrigger>

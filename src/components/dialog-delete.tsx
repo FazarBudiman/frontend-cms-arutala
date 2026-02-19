@@ -42,9 +42,9 @@ export function DeleteDialog<TVariables>({
         </Button>
       </AlertDialogTrigger>
 
-      <AlertDialogContent>
+      <AlertDialogContent size="sm">
         <AlertDialogHeader>
-          <AlertDialogMedia className="bg-red-100">
+          <AlertDialogMedia className="bg-red-100 ">
             <TrashIcon className="text-red-500" />
           </AlertDialogMedia>
 

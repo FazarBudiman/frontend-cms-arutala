@@ -74,25 +74,8 @@ export function ContributorTable() {
           {/* Search by Name: Mengisi filter array dengan id 'contributor_name' */}
           <Input placeholder="Search by name..." onChange={(e) => setColumnFilter("contributor_name", e.target.value)} className="max-w-sm" />
 
-          {/* Filter by Expertise: Mengisi filter array dengan id 'contributor_expertise' */}
-          <Select onValueChange={(v) => setColumnFilter("contributor_expertise", v !== "ALL" ? v : null)}>
-            <SelectTrigger className="w-50">
-              <SelectValue placeholder="All Expertise" />
-            </SelectTrigger>
-            <SelectContent position="popper">
-              <SelectGroup>
-                <SelectItem value="ALL">All Expertise</SelectItem>
-                {uniqueExpertise.map((expert) => (
-                  <SelectItem value={expert.value} key={expert.value}>
-                    {expert.label}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-
           {/* Filter by Type */}
-          <Select onValueChange={(v) => setColumnFilter("contributor_type", v !== "ALL" ? v : null)}>
+          <Select defaultValue="ALL" onValueChange={(v) => setColumnFilter("contributor_type", v !== "ALL" ? v : null)}>
             <SelectTrigger className="w-50">
               <SelectValue placeholder="All Type" />
             </SelectTrigger>
@@ -106,6 +89,23 @@ export function ContributorTable() {
                     </SelectItem>
                   );
                 })}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+
+          {/* Filter by Expertise: Mengisi filter array dengan id 'contributor_expertise' */}
+          <Select defaultValue="ALL" onValueChange={(v) => setColumnFilter("contributor_expertise", v !== "ALL" ? v : null)}>
+            <SelectTrigger className="w-50">
+              <SelectValue placeholder="All Expertise" />
+            </SelectTrigger>
+            <SelectContent position="popper">
+              <SelectGroup>
+                <SelectItem value="ALL">All Expertise</SelectItem>
+                {uniqueExpertise.map((expert) => (
+                  <SelectItem value={expert.value} key={expert.value}>
+                    {expert.label}
+                  </SelectItem>
+                ))}
               </SelectGroup>
             </SelectContent>
           </Select>

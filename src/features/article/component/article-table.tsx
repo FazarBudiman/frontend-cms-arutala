@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import { DataTable } from "@/components/data-table";
 import { columns } from "./columns";
 import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
@@ -30,6 +30,20 @@ export function ArticleTable() {
     }
   }, [articles, pagination.pageSize, pagination.pageIndex]);
 
+  const uniqueStatus = useMemo(() => {
+    if (!articles) {
+      return [];
+    }
+
+    return Array.from(new Set(articles.map((article) => article.article_status))).map((status) => ({
+      value: status,
+      label: status
+        .toLowerCase()
+        .replace(/_/g, " ")
+        .replace(/\b\w/g, (c) => c.toUpperCase()),
+    }));
+  }, [articles]);
+
   const setColumnFilter = (id: string, value: string | null) => {
     setFilters((prev) => {
       const others = prev.filter((f) => f.id !== id);
@@ -43,20 +57,24 @@ export function ArticleTable() {
     <div className="space-y-4">
       <div className="flex justify-between px-8">
         <div className="flex items-center gap-4">
-          <Input
-            placeholder="Search by title..."
-            onChange={(e) => setColumnFilter("article_title", e.target.value)}
-            className="max-w-sm"
-          />
-          <Select onValueChange={(v) => setColumnFilter("article_status", v !== "ALL" ? v : null)}>
+          {/* Search by Title */}
+          <Input placeholder="Search by title..." onChange={(e) => setColumnFilter("article_title", e.target.value)} className="max-w-sm" />
+
+          {/* Filter by Status */}
+          <Select defaultValue="ALL" onValueChange={(v) => setColumnFilter("article_status", v !== "ALL" ? v : null)}>
             <SelectTrigger className="w-40">
               <SelectValue placeholder="All Status" />
             </SelectTrigger>
             <SelectContent position="popper">
               <SelectGroup>
                 <SelectItem value="ALL">All Status</SelectItem>
-                <SelectItem value="PUBLISHED">Published</SelectItem>
-                <SelectItem value="DRAFT">Draft</SelectItem>
+                {uniqueStatus.map((status) => {
+                  return (
+                    <SelectItem value={status.value} key={status.value}>
+                      {status.label}
+                    </SelectItem>
+                  );
+                })}
               </SelectGroup>
             </SelectContent>
           </Select>

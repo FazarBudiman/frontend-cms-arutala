@@ -35,7 +35,6 @@ export const columns: ColumnDef<Message>[] = [
   },
   {
     accessorKey: "created_date",
-    // header: "Date",
     header: ({ column }) => {
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>

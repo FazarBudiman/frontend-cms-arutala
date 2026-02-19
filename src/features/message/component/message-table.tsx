@@ -42,8 +42,8 @@ export function MessageTable() {
 
   const uniqueSubject = useMemo(() => {
     if (!messages) return [];
-    const allExpertise = messages.flatMap((message) => message.subject);
-    return Array.from(new Set(allExpertise)).map((subject) => ({
+    const allSubject = messages.flatMap((message) => message.subject);
+    return Array.from(new Set(allSubject)).map((subject) => ({
       value: subject,
       label: subject,
     }));
@@ -96,9 +96,9 @@ export function MessageTable() {
         </Select>
 
         {/* Filter by Subejct: Mengisi filter array dengan id 'subject' */}
-        <Select onValueChange={(v) => setColumnFilter("subject", v !== "ALL" ? v : null)}>
+        <Select defaultValue="ALL" onValueChange={(v) => setColumnFilter("subject", v !== "ALL" ? v : null)}>
           <SelectTrigger className="text-sm h-90">
-            <SelectValue placeholder="All Subject" />
+            <SelectValue placeholder="Filter Subject" />
           </SelectTrigger>
           <SelectContent position="popper">
             <SelectGroup>

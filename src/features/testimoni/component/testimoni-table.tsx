@@ -65,7 +65,7 @@ export function TestimoniTable() {
           <Input placeholder="Search by name..." onChange={(e) => setColumnFilter("author_name", e.target.value)} className="max-w-sm" />
 
           {/* Filter by Type */}
-          <Select onValueChange={(v) => setColumnFilter("testimoni_category", v !== "ALL" ? v : null)}>
+          <Select defaultValue="ALL" onValueChange={(v) => setColumnFilter("testimoni_category", v !== "ALL" ? v : null)}>
             <SelectTrigger className="w-50">
               <SelectValue placeholder="All Type" />
             </SelectTrigger>
