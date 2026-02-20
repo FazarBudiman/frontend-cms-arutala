@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Article, ArticleDetail, ArticleInput } from "./type";
-import { createArticle, deleteArticle, fetchArticleById, fetchArticles, updateArticle, uploadArticleCover } from "./api";
+import { Article, ArticleDetail } from "./type";
+import { createArticle, deleteArticle, fetchArticleById, fetchArticles } from "./api";
 
 export function useArticles() {
   return useQuery<Article[]>({

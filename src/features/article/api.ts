@@ -10,11 +10,19 @@ export async function fetchArticleById(articleId: string): Promise<ArticleDetail
 }
 
 export async function createArticle(payload: ArticleInput) {
-  return clientApi.post<null>("/api/article", JSON.stringify(payload));
+  return clientApi.post<null>("/api/article", JSON.stringify({
+    contentBlocks: payload.article_content_blocks,
+    ...(payload.status ? { status: payload.status } : {}),
+    ...(payload.cover_url ? { coverUrl: payload.cover_url } : {}),
+  }));
 }
 
-export async function uploadArticleCover(formData: FormData): Promise<{ url: string }> {
-  return clientApi.post<{ url: string }>("/api/article/upload", formData);
+export async function uploadArticleCover(formData: FormData): Promise<{ cover_url: string }> {
+  return clientApi.post<{ cover_url: string }>("/api/article/upload", formData);
+}
+
+export async function uploadArticleImage(formData: FormData): Promise<{ cover_url: string }> {
+  return clientApi.post<{ cover_url: string }>("/api/article/upload", formData);
 }
 
 export async function updateArticle(articleId: string, payload: { contentBlocks?: ArticleInput["contentBlocks"]; status?: "DRAFT" | "PUBLISHED" }) {
