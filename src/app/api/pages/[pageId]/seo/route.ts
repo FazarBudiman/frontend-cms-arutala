@@ -1,18 +1,33 @@
-import { Page } from "@/features/seo-manage/page";
+import { Seo } from "@/features/seo-manage/seo/type";
 import { ApiError } from "@/server/errors/api-error";
 import { serverFetch } from "@/server/http/server-fetch";
 import { NextRequest, NextResponse } from "next/server";
+import z from "zod";
 
-export async function GET(req: NextRequest, context: { params: Promise<{ pageId: string }> }) {
+export async function POST(req: NextRequest, context: { params: Promise<{ pageId: string }> }) {
   try {
     const { pageId } = await context.params;
-    const page = await serverFetch<Page>(`/pages/${pageId}`);
-    // console.log(page);
-    return NextResponse.json({
-      success: true,
-      data: page,
+    const body = await req.json();
+    await serverFetch<null>(`/pages/${pageId}/seo`, {
+      method: "POST",
+      body: JSON.stringify(body),
     });
+    const response = NextResponse.json({
+      success: true,
+      data: null,
+    });
+    return response;
   } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: error.cause,
+        },
+        { status: 400 },
+      );
+    }
+
     if (error instanceof ApiError) {
       return NextResponse.json(
         {
@@ -33,15 +48,14 @@ export async function GET(req: NextRequest, context: { params: Promise<{ pageId:
   }
 }
 
-export async function DELETE(req: NextRequest, context: { params: Promise<{ pageId: string }> }) {
+export async function GET(req: NextRequest, context: { params: Promise<{ pageId: string }> }) {
   try {
     const { pageId } = await context.params;
-    await serverFetch(`/pages/${pageId}`, {
-      method: "DELETE",
-    });
+    const seo = await serverFetch<Seo>(`/pages/${pageId}/seo`);
+    // console.log(seo);
     return NextResponse.json({
       success: true,
-      data: null,
+      data: seo,
     });
   } catch (error) {
     if (error instanceof ApiError) {

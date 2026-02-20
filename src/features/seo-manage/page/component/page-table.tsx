@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React from "react";
 import { DataTable } from "@/components/data-table";
 import { columns } from "./columns";
 import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SkeletonTable } from "@/components/skeleton-table";
 import { usePages } from "../hook";
 
@@ -36,16 +35,6 @@ export function PageTable() {
     }
   }, [pages, pagination.pageSize, pagination.pageIndex]);
 
-  // const uniqueCategory = useMemo(() => {
-  //   if (!pages) {
-  //     return [];
-  //   }
-  //   return Array.from(new Set(pages.map((testimoni) => testimoni.testimoni_category))).map((type) => ({
-  //     value: type,
-  //     label: type === "SISWA" ? "Siswa" : "Talent",
-  //   }));
-  // }, [pages]);
-
   // Fungsi helper untuk update filter tanpa menghapus filter id lain
   const setColumnFilter = (id: string, value: string | null) => {
     setFilters((prev) => {
@@ -61,28 +50,8 @@ export function PageTable() {
       <div className=" flex justify-between  px-8">
         <div className="flex items-center gap-4">
           {/* Search by Name: Mengisi filter array dengan id 'contributor_name' */}
-          <Input placeholder="Search by name..." onChange={(e) => setColumnFilter("page_title", e.target.value)} className="max-w-sm" />
-
-          {/* Filter by Type */}
-          {/* <Select onValueChange={(v) => setColumnFilter("testimoni_category", v !== "ALL" ? v : null)}>
-            <SelectTrigger className="w-50">
-              <SelectValue placeholder="All Type" />
-            </SelectTrigger>
-            <SelectContent position="popper">
-              <SelectGroup>
-                <SelectItem value="ALL">All Category</SelectItem>
-                {uniqueCategory.map((category) => {
-                  return (
-                    <SelectItem value={category.value} key={category.value}>
-                      {category.label}
-                    </SelectItem>
-                  );
-                })}
-              </SelectGroup>
-            </SelectContent>
-          </Select> */}
+          <Input placeholder="Search by page name..." onChange={(e) => setColumnFilter("page_title", e.target.value)} className="max-w-sm" />
         </div>
-        {/* <TestimoniAddDialog /> */}
       </div>
 
       <DataTable

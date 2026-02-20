@@ -6,6 +6,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     const articles = await serverFetch<Article[]>("/article");
+    // console.log(articles.length);
     return NextResponse.json({
       success: true,
       data: articles,

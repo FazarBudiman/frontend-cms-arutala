@@ -1,4 +1,4 @@
-import { Page } from "@/features/seo-manage";
+import { Page } from "@/features/seo-manage/page";
 import { ApiError } from "@/server/errors/api-error";
 import { serverFetch } from "@/server/http/server-fetch";
 import { NextResponse } from "next/server";
@@ -6,7 +6,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
   try {
     const pages = await serverFetch<Page[]>("/pages");
-    // console.log(pages);
+
     return NextResponse.json({
       success: true,
       data: pages,
@@ -31,8 +31,3 @@ export async function GET() {
     );
   }
 }
-
-// export async function POST(req: NextRequest) {
-//   try {
-//   } catch (error) {}
-// }

@@ -4,6 +4,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Page } from "../type";
 import { PageDeleteDialog } from "./page-delete";
+import { Button } from "@/components/ui/button";
+import { redirect } from "next/navigation";
 
 export const columns: ColumnDef<Page>[] = [
   {
@@ -25,10 +27,10 @@ export const columns: ColumnDef<Page>[] = [
   {
     id: "page_title",
     accessorKey: "page_title",
-    header: "Name",
+    header: "Page Name",
     enableColumnFilter: true,
     cell: ({ row }) => (
-      <div className="flex flex-col">
+      <div className="max-w-xs whitespace-normal wrap-break-words">
         <span className="font-medium">{row.original.page_title}</span>
       </div>
     ),
@@ -42,6 +44,15 @@ export const columns: ColumnDef<Page>[] = [
     header: "Action",
     cell: ({ row }) => (
       <ButtonGroup>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => {
+            redirect(`/general/seo-manage/${row.original.page_id}`);
+          }}
+        >
+          Detail SEO
+        </Button>
         <PageDeleteDialog pageId={row.original.page_id} />
       </ButtonGroup>
     ),

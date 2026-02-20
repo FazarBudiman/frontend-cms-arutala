@@ -1,15 +1,17 @@
-import { Course } from "@/features/course";
 import { ApiError } from "@/server/errors/api-error";
 import { serverFetch } from "@/server/http/server-fetch";
 import { NextRequest, NextResponse } from "next/server";
-import z from "zod";
 
-export async function GET() {
+export async function PUT(req: NextRequest, context: { params: Promise<{ pageId: string; seoId: string }> }) {
   try {
-    const courses = await serverFetch<Course[]>("/courses");
+    const { pageId, seoId } = await context.params;
+    await serverFetch(`/pages/${pageId}/seo/${seoId}`, {
+      method: "PUT",
+    });
+
     return NextResponse.json({
       success: true,
-      data: courses,
+      data: null,
     });
   } catch (error) {
     if (error instanceof ApiError) {
@@ -32,30 +34,52 @@ export async function GET() {
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function PATCH(req: NextRequest, context: { params: Promise<{ pageId: string; seoId: string }> }) {
   try {
+    const { pageId, seoId } = await context.params;
     const body = await req.json();
-
-    await serverFetch<null>("/courses", {
-      method: "POST",
+    await serverFetch(`/pages/${pageId}/seo/${seoId}`, {
+      method: "PATCH",
       body: JSON.stringify(body),
     });
-    const response = NextResponse.json({
+
+    return NextResponse.json({
       success: true,
       data: null,
     });
-    return response;
   } catch (error) {
-    if (error instanceof z.ZodError) {
+    if (error instanceof ApiError) {
       return NextResponse.json(
         {
           success: false,
-          message: error.cause,
+          message: error.message,
         },
-        { status: 400 },
+        { status: error.status },
       );
     }
 
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Internal Server Error",
+      },
+      { status: 500 },
+    );
+  }
+}
+
+export async function DELETE(req: NextRequest, context: { params: Promise<{ pageId: string; seoId: string }> }) {
+  try {
+    const { pageId, seoId } = await context.params;
+    await serverFetch(`/pages/${pageId}/seo/${seoId}`, {
+      method: "DELETE",
+    });
+
+    return NextResponse.json({
+      success: true,
+      data: null,
+    });
+  } catch (error) {
     if (error instanceof ApiError) {
       return NextResponse.json(
         {

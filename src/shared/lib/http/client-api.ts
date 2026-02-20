@@ -31,7 +31,7 @@ export const clientApi = {
       body,
     }),
 
-  put: <T>(url: string, body: BodyInit) =>
+  put: <T>(url: string, body: BodyInit | null) =>
     request<T>(url, {
       method: "PUT",
       body,

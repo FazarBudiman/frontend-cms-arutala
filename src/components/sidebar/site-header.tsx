@@ -53,7 +53,7 @@ export function SiteHeader() {
       <div className="flex w-full items-center gap-1 px-4 lg:gap-2 lg:px-6">
         <SidebarTrigger className="-ml-1" />
         <Separator orientation="vertical" className="mx-2 data-[orientation=vertical]:h-4" />
-        <Breadcrumb>
+        {/* <Breadcrumb>
           <BreadcrumbList>
             {finalBreadcrumbs.map((item, index) => (
               <React.Fragment key={item.href}>
@@ -62,7 +62,7 @@ export function SiteHeader() {
               </React.Fragment>
             ))}
           </BreadcrumbList>
-        </Breadcrumb>
+        </Breadcrumb> */}
         <div className="ml-auto flex items-center gap-2">{!isLoading && authenticated && <NavUser user={authenticated} />}</div>
       </div>
     </header>

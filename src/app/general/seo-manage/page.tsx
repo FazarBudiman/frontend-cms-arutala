@@ -1,4 +1,4 @@
-import { PageTable } from "@/features/seo-manage";
+import { PageTable } from "@/features/seo-manage/page";
 
 export default async function Page() {
   return (
