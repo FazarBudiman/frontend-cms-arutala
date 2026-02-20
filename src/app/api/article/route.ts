@@ -21,12 +21,10 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const article = await serverFetch("/article", {
+    const article = await serverFetch<Article>("/article/", {
       method: "POST",
       body: JSON.stringify({
         contentBlocks: body.contentBlocks,
-        ...(body.status ? { status: body.status } : {}),
-        ...(body.coverUrl ? { coverUrl: body.coverUrl } : {}),
       }),
     });
     return NextResponse.json({ success: true, data: article });

@@ -25,10 +25,13 @@ export function ArticleTable() {
 
   React.useEffect(() => {
     const pageCount = Math.ceil((articles?.length ?? 0) / pagination.pageSize);
-    if (pagination.pageIndex >= pageCount && pageCount > 0) {
-      setPagination((prev) => ({ ...prev, pageIndex: pageCount - 1 }));
-    }
-  }, [articles, pagination.pageSize, pagination.pageIndex]);
+    setPagination((prev) => {
+      if (prev.pageIndex >= pageCount && pageCount > 0) {
+        return { ...prev, pageIndex: pageCount - 1 };
+      }
+      return prev;
+    });
+  }, [articles, pagination.pageSize]);
 
   const uniqueStatus = useMemo(() => {
     if (!articles) {

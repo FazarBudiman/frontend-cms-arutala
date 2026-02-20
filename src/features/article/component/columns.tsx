@@ -31,7 +31,19 @@ export const columns: ColumnDef<Article>[] = [
       // />
       <div className=" min-w-36">
         <AspectRatio ratio={4 / 2} className="bg-accent rounded-lg border">
-          <Image src={row.original.article_cover_url} alt={row.original.article_id} fill className="object-contain" />
+          {row.original.article_cover_url ? (
+            <Image
+              src={row.original.article_cover_url}
+              alt={row.original.article_id}
+              fill
+              sizes="144px"
+              className="object-contain"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
+              No cover
+            </div>
+          )}
         </AspectRatio>
       </div>
     ),

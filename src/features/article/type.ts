@@ -2,14 +2,19 @@ import { z } from 'zod';
 
 export const ArticleStatus = {
   DRAFT: "DRAFT",
+  REVIEW: "REVIEW",
   PUBLISHED: "PUBLISHED",
+  UNPUBLISHED: "UNPUBLISHED",
 } as const;
+
+export type ArticleStatusType = keyof typeof ArticleStatus;
 
 export const articleSchema = z.object({
   article_id: z.string(),
   article_title: z.string(),
-  article_cover_url: z.string(),
-  article_status: z.enum(["DRAFT", "PUBLISHED"]),
+  article_cover_url: z.string().nullable().optional(),
+  article_cover_description: z.string().nullable().optional(),
+  article_status: z.enum(["DRAFT", "REVIEW", "PUBLISHED", "UNPUBLISHED"]),
   created_date: z.string(),
   full_name: z.string(),
 });
@@ -61,32 +66,30 @@ export const ContentBlock = z.union([
 export const articleDetailSchema = z.object({
     article_id: z.string(),
     article_title: z.string(),
-    article_cover_url: z.string(),
+    article_cover_url: z.string().nullable().optional(),
     article_content_blocks: z.array(ContentBlock),
     article_content_text: z.string(),
-    article_status: z.string(),
+    article_status: z.enum(["DRAFT", "REVIEW", "PUBLISHED", "UNPUBLISHED"]),
+    article_cover_description: z.string().nullable().optional(),
     created_date: z.string(),
     full_name: z.string(),
 });
 
 export type ArticleDetail = z.infer<typeof articleDetailSchema>;
 
-export const articleInputCoverSchema = z.object({
-    article_id: z.string(),
-    article_title: z.string(),
-    article_cover_url: z.string(),
-    article_content_text: z.string(),
-    article_status: z.string(),
-    created_date: z.string(),
-});
+// POST /article/ — only contentBlocks required (minItems: 1)
+export type CreateArticleBlocks = z.infer<typeof ContentBlock>[];
 
-export type ArticleInputCover = z.infer<typeof articleInputCoverSchema>;
+// PATCH /article/{id} — title required (minLength 10), additionalProperties: false
+export type UpdateArticleBody = {
+  title: string;
+  contentBlocks?: z.infer<typeof ContentBlock>[];
+  status?: "DRAFT" | "REVIEW" | "PUBLISHED" | "UNPUBLISHED";
+};
 
-
+// Legacy type alias kept for existing imports
 export const articleInputSchema = z.object({
     article_content_blocks: z.array(ContentBlock),
-    status: z.enum(["DRAFT", "PUBLISHED"]).optional(),
-    cover_url: z.string().optional(),
 });
 
 export type ArticleInput = z.infer<typeof articleInputSchema>;

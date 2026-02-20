@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Article, ArticleDetail, ArticleInput } from "./type";
+import { Article, ArticleDetail, UpdateArticleBody } from "./type";
 import {
   createArticle,
   deleteArticle,
@@ -7,7 +7,7 @@ import {
   fetchArticles,
   updateArticle,
   uploadArticleCover,
-  uploadArticleImage,
+  patchArticleCover,
 } from "./api";
 
 export function useArticles() {
@@ -28,22 +28,10 @@ export function useArticleDetail(articleId: string, options?: { enabled?: boolea
 export function useCreateArticle() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: createArticle,
+    mutationFn: (title?: string) => createArticle(title),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["articles"] });
     },
-  });
-}
-
-export function useUploadArticleCover() {
-  return useMutation({
-    mutationFn: uploadArticleCover,
-  });
-}
-
-export function useUploadArticleImage() {
-  return useMutation({
-    mutationFn: uploadArticleImage,
   });
 }
 
@@ -55,11 +43,37 @@ export function useUpdateArticle() {
       body,
     }: {
       articleId: string;
-      body: { contentBlocks?: ArticleInput["article_content_blocks"]; status?: "DRAFT" | "PUBLISHED" };
+      body: UpdateArticleBody;
     }) => updateArticle(articleId, body),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["articles"] });
       queryClient.invalidateQueries({ queryKey: ["article", variables.articleId] });
+    },
+  });
+}
+
+/** POST /article/{id}/cover — adds cover to article that has no cover yet */
+export function useUploadArticleCover() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ articleId, formData }: { articleId: string; formData: FormData }) =>
+      uploadArticleCover(articleId, formData),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["article", variables.articleId] });
+      queryClient.invalidateQueries({ queryKey: ["articles"] });
+    },
+  });
+}
+
+/** PATCH /article/{id}/cover — updates existing cover */
+export function usePatchArticleCover() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ articleId, formData }: { articleId: string; formData: FormData }) =>
+      patchArticleCover(articleId, formData),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["article", variables.articleId] });
+      queryClient.invalidateQueries({ queryKey: ["articles"] });
     },
   });
 }

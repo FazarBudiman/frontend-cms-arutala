@@ -20,9 +20,13 @@ export async function PATCH(req: NextRequest, context: { params: Promise<{ artic
   try {
     const { articleId } = await context.params;
     const body = await req.json();
+    // Only forward fields accepted by backend (additionalProperties: false)
+    const payload: Record<string, unknown> = { title: body.title };
+    if (body.contentBlocks !== undefined) payload.contentBlocks = body.contentBlocks;
+    if (body.status) payload.status = body.status;
     await serverFetch(`/article/${articleId}`, {
       method: "PATCH",
-      body: JSON.stringify(body),
+      body: JSON.stringify(payload),
     });
     return NextResponse.json({ success: true, data: null });
   } catch (error) {
