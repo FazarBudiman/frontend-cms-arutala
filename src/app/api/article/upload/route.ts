@@ -5,11 +5,12 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
-    const result = await serverFetch<{ url: string }>("/article/upload", {
+    const result = await serverFetch<string>("/article/upload", {
       method: "POST",
       body: formData,
-    });
-    return NextResponse.json({ success: true, data: result });
+    })
+    console.log(result);
+    return NextResponse.json({ success: true, data: result});
   } catch (error) {
     if (error instanceof ApiError) {
       return NextResponse.json(

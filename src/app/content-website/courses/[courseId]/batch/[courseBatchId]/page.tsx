@@ -4,6 +4,8 @@ import { useParams } from "next/navigation";
 import { SkeletonBatchDetail } from "@/components/skeleton-detail-card";
 import { useCourseBatch } from "@/features/course-batch/hook";
 import { CourseBatchDetailCard } from "@/features/course-batch/component/course-batch-detail-card";
+import { useSetBreadcrumbLabel } from "@/providers/breadcrumb-provider";
+import { useCourseDetail } from "@/features/course/hook";
 
 export default function CourseDetailPage() {
   const params = useParams();
@@ -11,6 +13,10 @@ export default function CourseDetailPage() {
   const courseBatchId = params.courseBatchId as string;
 
   const { data: coursesbatch, isLoading, isError, error } = useCourseBatch(courseId, courseBatchId);
+  const { data: courseDetail } = useCourseDetail(courseId);
+
+  useSetBreadcrumbLabel(`/content-website/courses/${courseId}`, courseDetail?.course_title);
+  useSetBreadcrumbLabel(`/content-website/courses/${courseId}/batch/${courseBatchId}`, coursesbatch?.name);
 
   if (isLoading) {
     return <SkeletonBatchDetail />;

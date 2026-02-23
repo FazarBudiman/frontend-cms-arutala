@@ -2,14 +2,9 @@
 
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ActionTable } from "@/components/action-table";
-import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { IconListDetails } from "@tabler/icons-react";
-import Link from "next/link";
 import { Article } from "../type";
 import { ArticleDeleteDialog } from "./article-delete";
-// import { ArticleEditSheet } from "./article-edit";
-// import { ArticleStatusBadge } from "./article-status-badge";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Image from "next/image";
 import { formatedDate } from "@/shared/utils/date";
@@ -17,6 +12,8 @@ import { ButtonGroup } from "@/components/ui/button-group";
 import { Button } from "@/components/ui/button";
 import { redirect } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
+import { ArticleCoverAddDialog } from "./article-cover-add";
+import { ArticleChangeStatusDialog } from "./article-change-status";
 
 export const columns: ColumnDef<Article>[] = [
   {
@@ -28,14 +25,13 @@ export const columns: ColumnDef<Article>[] = [
     accessorKey: "article_cover_url",
     header: "Cover",
     cell: ({ row }) => {
-      if (row.original.article_cover_url === null) {
-        return <span></span>;
-      }
+   
       return (
-        <div className=" min-w-36">
-          <AspectRatio ratio={4 / 2} className="bg-accent rounded-lg border">
+        <div className="min-w-36 items-center flex justify-center">
+          {row.original.article_cover_url === null ? <ArticleCoverAddDialog articleId={row.original.article_id} /> : <AspectRatio ratio={4 / 2} className="bg-accent rounded-lg border">
             <Image src={row.original.article_cover_url} alt={row.original.article_id} fill className="object-contain" />
-          </AspectRatio>
+          </AspectRatio> 
+          }
         </div>
       );
     },
@@ -63,7 +59,6 @@ export const columns: ColumnDef<Article>[] = [
     header: "Status",
     enableColumnFilter: true,
     cell: ({ row }) => <Badge>{row.original.article_status}</Badge>,
-    // cell: ({ row }) => <ArticleStatusBadge status={row.original.article_status} />,
     filterFn: "arrIncludes",
   },
   {
@@ -71,12 +66,11 @@ export const columns: ColumnDef<Article>[] = [
     header: "Action",
     cell: ({ row }) => (
       <ButtonGroup>
-        <ArticleDeleteDialog articleId={row.original.article_id} />
-
-        <Button size="sm" onClick={() => redirect(`/content-website/articles/${row.original.article_id}`)}>
+        <ArticleChangeStatusDialog article={row.original} />
+        <Button size="icon-sm" variant="outline" onClick={() => redirect(`/content-website/articles/${row.original.article_id}`)}>
           <IconListDetails />
-          Lihat Detail
         </Button>
+        <ArticleDeleteDialog articleId={row.original.article_id} />
       </ButtonGroup>
     ),
   },

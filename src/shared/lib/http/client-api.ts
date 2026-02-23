@@ -5,7 +5,7 @@ async function request<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
     credentials: "include",
     ...init,
   });
-  // console.log(res);
+  console.log(res);
 
   const json: ApiResponse<T> = await res.json();
 
@@ -13,6 +13,9 @@ async function request<T>(input: RequestInfo, init?: RequestInit): Promise<T> {
     // console.log(json);
     throw new Error(json.message);
   }
+
+  console.log(await json.data);
+
   return json.data as T;
 }
 

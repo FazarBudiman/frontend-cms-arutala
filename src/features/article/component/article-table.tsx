@@ -54,6 +54,7 @@ export function ArticleTable() {
   };
 
   if (isLoading) return <SkeletonTable />;
+  console.log(articles);
 
   return (
     <div className="space-y-4">

@@ -133,6 +133,34 @@ export const sampleArticle = {
         text: "Dengan menggabungkan Next.js dan EditorJS, kita dapat membangun CMS yang modular, scalable, dan SEO-friendly. Struktur block-based memungkinkan fleksibilitas tinggi untuk rendering dan pengembangan fitur lanjutan seperti preview, autosave, dan analytics.",
       },
     },
+    {
+      id: "closing-p2",
+      type: "paragraph",
+      data: {
+        text: "Dengan menggabungkan Next.js dan EditorJS, kita dapat membangun CMS yang modular, scalable, dan SEO-friendly. Struktur block-based memungkinkan fleksibilitas tinggi untuk rendering dan pengembangan fitur lanjutan seperti preview, autosave, dan analytics.",
+      },
+    },
+    {
+      id: "closing-p3",
+      type: "paragraph",
+      data: {
+        text: "Dengan menggabungkan Next.js dan EditorJS, kita dapat membangun CMS yang modular, scalable, dan SEO-friendly. Struktur block-based memungkinkan fleksibilitas tinggi untuk rendering dan pengembangan fitur lanjutan seperti preview, autosave, dan analytics.",
+      },
+    },
+    {
+      id: "closing-p4",
+      type: "paragraph",
+      data: {
+        text: "Dengan menggabungkan Next.js dan EditorJS, kita dapat membangun CMS yang modular, scalable, dan SEO-friendly. Struktur block-based memungkinkan fleksibilitas tinggi untuk rendering dan pengembangan fitur lanjutan seperti preview, autosave, dan analytics.",
+      },
+    },
+    {
+      id: "closing-p5",
+      type: "paragraph",
+      data: {
+        text: "Dengan menggabungkan Next.js dan EditorJS, kita dapat membangun CMS yang modular, scalable, dan SEO-friendly. Struktur block-based memungkinkan fleksibilitas tinggi untuk rendering dan pengembangan fitur lanjutan seperti preview, autosave, dan analytics.",
+      },
+    },
   ],
   version: "2.28.0",
 };

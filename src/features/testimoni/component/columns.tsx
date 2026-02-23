@@ -39,10 +39,10 @@ export const columns: ColumnDef<Testimoni>[] = [
     accessorKey: "author_job_title",
     header: "Job Title",
   },
-  {
-    accessorKey: "author_company_name",
-    header: "Company Name",
-  },
+  // {
+  //   accessorKey: "author_company_name",
+  //   header: "Company Name",
+  // },
   {
     accessorKey: "testimoni_category",
     header: "Category",
