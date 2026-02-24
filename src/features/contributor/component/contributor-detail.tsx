@@ -54,7 +54,6 @@ export function ContributorDetailDialog({ contributor }: { contributor: Contribu
         expertise: contributor.contributor_expertise.map((e) => ({ value: e })),
         profile: undefined,
       });
-      // setPreviewProfile(contributor.contributor_profile_url);
     }
   }, [open, contributor, form]);
 
@@ -113,138 +112,136 @@ export function ContributorDetailDialog({ contributor }: { contributor: Contribu
         </Button>
       }
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <Controller
-          name="profile"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <div className="md:col-span-2">
-              <Field data-invalid={fieldState.invalid} orientation="horizontal" className="grid grid-cols-1 md:grid-cols-[1fr,160px] gap-2 items-start">
-                <FieldLabel htmlFor="profile">Profile</FieldLabel>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/jpeg, image/png, image/webp"
-                  className="hidden"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
-                    field.onChange(file);
-                    if (previewProfile && previewProfile !== contributor.contributor_profile_url) {
-                      URL.revokeObjectURL(previewProfile);
-                    }
-                    setPreviewProfile(URL.createObjectURL(file));
-                  }}
-                />
-                <div className="flex flex-row items-center gap-4">
-                  {previewProfile ? (
-                    <div className="relative h-24 w-24 rounded-md overflow-hidden border">
-                      <Image src={previewProfile} alt="contributor-profile" fill unoptimized className="object-contain" />
-                    </div>
-                  ) : null}
-                  <Button type="button" size="sm" variant="outline" onClick={() => fileInputRef.current?.click()}>
-                    {previewProfile ? "Ganti Foto" : "Upload Foto"}
-                  </Button>
-                </div>
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-              </Field>
-            </div>
-          )}
-        />
-
-        <Controller
-          name="contributorName"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field className="gap-1" data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="contributorName">Name</FieldLabel>
-              <Input {...field} id="contributorName" aria-invalid={fieldState.invalid} autoComplete="off" />
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
-
-        <Controller
-          name="jobTitle"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field className="gap-1" data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="jobTitle">Job Title</FieldLabel>
-              <Input {...field} id="jobTitle" aria-invalid={fieldState.invalid} autoComplete="off" />
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
-
-        <Controller
-          name="companyName"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field className="gap-1" data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="companyName">Company Name</FieldLabel>
-              <Input {...field} id="companyName" aria-invalid={fieldState.invalid} autoComplete="off" />
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
-
-        <Controller
-          name="contributorType"
-          control={form.control}
-          render={({ field }) => (
-            <Field className="gap-1">
-              <FieldLabel>Type</FieldLabel>
-              <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Choose Type" />
-                </SelectTrigger>
-                <SelectContent position="popper">
-                  <SelectGroup>
-                    {contributorTypeOptions.map((type) => (
-                      <SelectItem value={type} key={type}>
-                        {type === "INTERNAL" ? "Mentor" : "Bukan Mentor"}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </Field>
-          )}
-        />
-
-        <Controller
-          name="expertise"
-          control={form.control}
-          render={({ fieldState }) => (
-            <Field className="md:col-span-2 gap-2" data-invalid={fieldState.invalid}>
-              <FieldLabel>Expertise</FieldLabel>
-              <Input
-                placeholder="Ketik expertise lalu Enter"
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    const value = e.currentTarget.value.trim();
-                    if (!value) return;
-                    append({ value });
-                    e.currentTarget.value = "";
+      <Controller
+        name="profile"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <div className="md:col-span-2">
+            <Field data-invalid={fieldState.invalid} orientation="horizontal" className="grid grid-cols-1 md:grid-cols-[1fr,160px] gap-2 items-start">
+              <FieldLabel htmlFor="profile">Profile</FieldLabel>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg, image/png, image/webp"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  field.onChange(file);
+                  if (previewProfile && previewProfile !== contributor.contributor_profile_url) {
+                    URL.revokeObjectURL(previewProfile);
                   }
+                  setPreviewProfile(URL.createObjectURL(file));
                 }}
               />
-              <div className="flex flex-wrap gap-2 mt-2">
-                {expertiseFields.map((item, index) => (
-                  <Badge key={item.id} variant="outline" className="flex items-center gap-1.5">
-                    {item.value}
-                    <button type="button" onClick={() => remove(index)} className="rounded-full hover:bg-muted p-0.5">
-                      <X className="w-3 h-3" />
-                    </button>
-                  </Badge>
-                ))}
+              <div className="flex flex-row items-center gap-4">
+                {previewProfile ? (
+                  <div className="relative h-24 w-24 rounded-md overflow-hidden border">
+                    <Image src={previewProfile} alt="contributor-profile" fill unoptimized className="object-contain" />
+                  </div>
+                ) : null}
+                <Button type="button" size="sm" variant="outline" onClick={() => fileInputRef.current?.click()}>
+                  {previewProfile ? "Ganti Foto" : "Upload Foto"}
+                </Button>
               </div>
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
-          )}
-        />
-      </div>
+          </div>
+        )}
+      />
+
+      <Controller
+        name="contributorName"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field className="gap-1" data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor="contributorName">Name</FieldLabel>
+            <Input {...field} id="contributorName" aria-invalid={fieldState.invalid} autoComplete="off" />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
+
+      <Controller
+        name="jobTitle"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field className="gap-1" data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor="jobTitle">Job Title</FieldLabel>
+            <Input {...field} id="jobTitle" aria-invalid={fieldState.invalid} autoComplete="off" />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
+
+      <Controller
+        name="companyName"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field className="gap-1" data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor="companyName">Company Name</FieldLabel>
+            <Input {...field} id="companyName" aria-invalid={fieldState.invalid} autoComplete="off" />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
+
+      <Controller
+        name="contributorType"
+        control={form.control}
+        render={({ field }) => (
+          <Field className="gap-1">
+            <FieldLabel>Type</FieldLabel>
+            <Select value={field.value} onValueChange={field.onChange}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Choose Type" />
+              </SelectTrigger>
+              <SelectContent position="popper">
+                <SelectGroup>
+                  {contributorTypeOptions.map((type) => (
+                    <SelectItem value={type} key={type}>
+                      {type === "INTERNAL" ? "Mentor" : "Bukan Mentor"}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </Field>
+        )}
+      />
+
+      <Controller
+        name="expertise"
+        control={form.control}
+        render={({ fieldState }) => (
+          <Field className="md:col-span-2 gap-2" data-invalid={fieldState.invalid}>
+            <FieldLabel>Expertise</FieldLabel>
+            <Input
+              placeholder="Ketik expertise lalu Enter"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  const value = e.currentTarget.value.trim();
+                  if (!value) return;
+                  append({ value });
+                  e.currentTarget.value = "";
+                }
+              }}
+            />
+            <div className="flex flex-wrap gap-2 mt-2">
+              {expertiseFields.map((item, index) => (
+                <Badge key={item.id} variant="outline" className="flex items-center gap-1.5">
+                  {item.value}
+                  <button type="button" onClick={() => remove(index)} className="rounded-full hover:bg-muted p-0.5">
+                    <X className="w-3 h-3" />
+                  </button>
+                </Badge>
+              ))}
+            </div>
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
     </EntityDialog>
   );
 }

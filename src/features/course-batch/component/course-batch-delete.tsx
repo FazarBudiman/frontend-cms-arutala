@@ -1,4 +1,4 @@
-import { DeleteDialog } from "@/components/dialog-delete";
+import { DeleteDialog } from "@/components/shared/dialog-delete";
 import { useDeleteCourseBatch } from "../hook";
 
 export function CourseBatchDeleteDialog({ courseId, batchId }: { courseId: string; batchId: string }) {

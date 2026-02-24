@@ -1,5 +1,5 @@
 import { useDeleteUser } from "../hooks";
-import { DeleteDialog } from "@/components/dialog-delete";
+import { DeleteDialog } from "@/components/shared/dialog-delete";
 
 export function UserDeleteDialog({ userId }: { userId: string }) {
   const { mutateAsync, isPending } = useDeleteUser();

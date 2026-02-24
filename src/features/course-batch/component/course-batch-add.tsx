@@ -14,13 +14,16 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
-import { RangeDatePicker, SingleDatePicker } from "@/components/date-picker";
+import { RangeDatePicker, SingleDatePicker } from "@/components/shared/date-picker";
 
 import { useParams } from "next/navigation";
 import { useContributors } from "@/features/contributor";
 import { useCreateCourseBatch } from "../hook";
 import { CourseBatchInput, courseBatchInputSchema, CourseBatchStatus } from "../type";
 import { EntityDialog } from "@/components/shared/entity-dialog";
+import { formatSnakeCaseToTitle } from "@/shared/utils/string";
+import { Badge } from "@/components/ui/badge";
+import { StatusColorCoursebatch } from "./columns";
 
 // ================= PRICE HELPER =================
 function formatRupiah(value: number): string {
@@ -179,7 +182,7 @@ export default function CourseBatchAddDialog() {
                     <SelectContent position="popper">
                       {Object.values(CourseBatchStatus).map((status) => (
                         <SelectItem key={status} value={status}>
-                          {status}
+                          <Badge className={StatusColorCoursebatch[status]}>{formatSnakeCaseToTitle(status)}</Badge>
                         </SelectItem>
                       ))}
                     </SelectContent>

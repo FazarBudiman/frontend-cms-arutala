@@ -1,15 +1,15 @@
 "use client";
+import { SkeletonCard } from "@/components/shared/skeleton-dashboard";
 import { useOverview } from "../hook";
 import { ChartArea } from "./chart-area";
 import { RecentMessages } from "./recent-messages";
 import { UpcomingCourses } from "./upcoming-courses";
-import { SkeletonDashboard } from "@/components/skeleton-dashboard";
 
 export default function OverviewPage() {
   const { data, isPending } = useOverview();
 
   if (isPending) {
-    return <SkeletonDashboard />;
+    return <SkeletonCard />;
   }
 
   if (!data) {

@@ -50,29 +50,31 @@ export default function CreateArticlePage() {
       </div>
 
       <div className="flex-1 overflow-hidden">
-        <Tabs value={mode} onValueChange={(v) => setMode(v as "edit" | "preview")} className="h-full flex flex-col">
+        <Tabs
+          value={mode}
+          onValueChange={(v) => {
+            console.log("TAB CHANGE:", v);
+            setMode(v as "edit" | "preview");
+          }}
+          className="h-full flex flex-col"
+          defaultValue="edit"
+        >
           <div className="px-4 border-b bg-background shrink-0">
             <TabsList className="h-12 bg-transparent p-0 gap-6">
-              <TabsTrigger
-                value="edit"
-                className="h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2"
-              >
+              <TabsTrigger value="edit" className="h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2">
                 <CodeIcon className="w-4 h-4 mr-2" />
                 Editor
               </TabsTrigger>
-              <TabsTrigger
-                value="preview"
-                className="h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2"
-              >
+              <TabsTrigger value="preview" className="h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2">
                 <AppWindowIcon className="w-4 h-4 mr-2" />
                 Preview
               </TabsTrigger>
             </TabsList>
           </div>
 
-          <div className="flex-1 overflow-hidden relative">
-            <TabsContent value="edit" className="h-full m-0 p-4 lg:p-6 overflow-y-auto no-scrollbar bg-muted/5">
-              <Card className="max-w-4xl mx-auto min-h-[500px]">
+          <div className="flex-1 relative">
+            <TabsContent value="edit" className="h-full m-0 p-4 lg:p-6 overflow-y-auto no-scrollbar bg-muted/5 data-[state=inactive]:hidden" forceMount>
+              <Card className="max-w-full mx-auto min-h-125">
                 <CardHeader className="border-b bg-muted/10 py-4">
                   <CardTitle className="text-sm font-medium">Article Content</CardTitle>
                 </CardHeader>
@@ -82,15 +84,13 @@ export default function CreateArticlePage() {
               </Card>
             </TabsContent>
 
-            <TabsContent value="preview" className="h-full m-0 p-4 lg:p-6 overflow-y-auto no-scrollbar bg-muted/5">
-              <div className="max-w-4xl mx-auto">
+            <TabsContent value="preview" className="h-full m-0 p-4 lg:p-6 overflow-y-auto no-scrollbar bg-muted/5 data-[state=inactive]:hidden" forceMount>
+              <div className="max-w-full mx-auto">
                 <Card>
                   <CardHeader className="border-b bg-muted/10 py-4">
                     <CardTitle className="text-sm font-medium">Content Preview</CardTitle>
                   </CardHeader>
-                  <CardContent className="p-6 lg:p-8">
-                    {mappedBlocks ? <ArticlePreview blocks={mappedBlocks} /> : <div className="text-center py-10 text-muted-foreground">Start writing to see preview.</div>}
-                  </CardContent>
+                  <CardContent className="p-6 lg:p-8">{mappedBlocks ? <ArticlePreview blocks={mappedBlocks} /> : <div className="text-center py-10 text-muted-foreground">Start writing to see preview.</div>}</CardContent>
                 </Card>
               </div>
             </TabsContent>

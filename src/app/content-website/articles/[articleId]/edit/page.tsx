@@ -12,6 +12,9 @@ import { useParams, useRouter } from "next/navigation";
 import { useSetBreadcrumbLabel } from "@/providers";
 import { mapEditorBlocks, handleUploadImage } from "@/shared/utils/editor";
 import { ContentBlockType } from "@/features/article/type";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import Image from "next/image";
+import { SkeletonDetailCard } from "@/components/shared/skeleton-detail-card";
 
 export default function EditArticlePage() {
   const router = useRouter();
@@ -24,6 +27,15 @@ export default function EditArticlePage() {
   const [editorData, setEditorData] = useState<OutputData | undefined>(undefined);
 
   useSetBreadcrumbLabel(`/content-website/articles/${articleId}/edit`, articleDetail?.article_title ? `Edit ${articleDetail.article_title}` : undefined);
+
+  const initialData = useMemo(() => {
+    if (!articleDetail?.article_content_blocks) return undefined;
+    return {
+      time: new Date().getTime(),
+      blocks: articleDetail.article_content_blocks as OutputBlockData[],
+      version: "",
+    };
+  }, [articleDetail]);
 
   const mappedBlocks = useMemo(() => {
     if (editorData?.blocks) {
@@ -49,8 +61,7 @@ export default function EditArticlePage() {
   };
 
   if (isLoading) {
-    // TODO: Implement Skeleton
-    return <div>Loading...</div>;
+    return <SkeletonDetailCard />;
   }
 
   return (
@@ -69,48 +80,52 @@ export default function EditArticlePage() {
         </div>
       </div>
 
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1">
         <Tabs defaultValue="editor" className="h-full flex flex-col">
           <div className="px-4 border-b bg-background shrink-0">
             <TabsList className="h-12 bg-transparent p-0 gap-6">
-              <TabsTrigger
-                value="editor"
-                className="h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2"
-              >
+              <TabsTrigger value="editor" className="h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2">
                 <CodeIcon className="w-4 h-4 mr-2" />
                 Editor
               </TabsTrigger>
-              <TabsTrigger
-                value="preview"
-                className="h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2"
-              >
+              <TabsTrigger value="preview" className="h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2">
                 <AppWindowIcon className="w-4 h-4 mr-2" />
                 Preview
               </TabsTrigger>
             </TabsList>
           </div>
 
-          <div className="flex-1 overflow-hidden relative">
-            <TabsContent value="editor" className="h-full m-0 p-4 lg:p-6 overflow-y-auto no-scrollbar bg-muted/5">
-              <Card className="max-w-4xl mx-auto min-h-[500px]">
+          <div className="flex-1 relative">
+            <TabsContent value="editor" className="m-0 p-4 lg:p-6  bg-muted/5">
+              <Card className="max-w-full mx-auto min-h-125">
                 <CardHeader className="border-b bg-muted/10 py-4">
                   <CardTitle className="text-sm font-medium">Article Content</CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
-                  <ArticleEditor defaultData={articleDetail?.article_content_blocks as unknown as OutputData} onChange={setEditorData} onUploadImage={handleUploadImage} />
+                  <ArticleEditor defaultData={initialData} onChange={setEditorData} onUploadImage={handleUploadImage} />
                 </CardContent>
               </Card>
             </TabsContent>
 
-            <TabsContent value="preview" className="h-full m-0 p-4 lg:p-6 overflow-y-auto no-scrollbar bg-muted/5">
-              <div className="max-w-4xl mx-auto space-y-6">
+            <TabsContent value="preview" className=" m-0 p-4 lg:p-6 bg-muted/5">
+              <div className="max-w-full mx-auto space-y-6">
                 <Card>
                   <CardHeader className="border-b bg-muted/10 py-4">
                     <CardTitle className="text-sm font-medium">Header Preview</CardTitle>
                   </CardHeader>
-                  <CardContent className="p-6">
-                    <h1 className="text-3xl font-bold mb-4">{articleDetail?.article_title}</h1>
-                    <p className="text-muted-foreground">{articleDetail?.article_cover_description}</p>
+                  <CardContent>
+                    <div className="space-y-4 p-6">
+                      <div className="space-y-2">
+                        <h1 className="text-xl font-bold tracking-tight">{articleDetail?.article_title}</h1>
+                        <p className="text-muted-foreground text-md">{articleDetail?.article_cover_description}</p>
+                      </div>
+
+                      {articleDetail?.article_cover_url && (
+                        <AspectRatio ratio={4 / 2} className="overflow-hidden rounded-lg border bg-muted">
+                          <Image src={articleDetail.article_cover_url} alt={articleDetail.article_title || "Article cover"} fill className="object-cover" />
+                        </AspectRatio>
+                      )}
+                    </div>
                   </CardContent>
                 </Card>
 
@@ -118,9 +133,7 @@ export default function EditArticlePage() {
                   <CardHeader className="border-b bg-muted/10 py-4">
                     <CardTitle className="text-sm font-medium">Content Preview</CardTitle>
                   </CardHeader>
-                  <CardContent className="p-6 lg:p-8">
-                    {mappedBlocks ? <ArticlePreview blocks={mappedBlocks} /> : <div className="text-center py-10 text-muted-foreground">Start writing to see preview.</div>}
-                  </CardContent>
+                  <CardContent className="p-6 lg:p-8">{mappedBlocks ? <ArticlePreview blocks={mappedBlocks} /> : <div className="text-center py-10 text-muted-foreground">Start writing to see preview.</div>}</CardContent>
                 </Card>
               </div>
             </TabsContent>

@@ -1,5 +1,5 @@
 import { useDeleteCourse } from "../hook";
-import { DeleteDialog } from "@/components/dialog-delete";
+import { DeleteDialog } from "@/components/shared/dialog-delete";
 
 export function CourseDeleteDialog({ courseId }: { courseId: string }) {
   const { mutateAsync, isPending } = useDeleteCourse();

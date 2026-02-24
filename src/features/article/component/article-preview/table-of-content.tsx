@@ -70,7 +70,7 @@ export function TableOfContents({ blocks }: TableOfContentsProps) {
   let subItemCounter = 0;
 
   return (
-    <div className="sticky top-24 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+    <div className=" bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
       <h3 className="text-orange-500 font-bold text-lg mb-4 pb-3 border-b border-orange-200">Table of Contents</h3>
       <nav>
         <ul className="space-y-0">

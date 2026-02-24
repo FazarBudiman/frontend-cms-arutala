@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/shared/data-table";
 import { columns } from "./columns";
 import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { SkeletonTable } from "@/components/skeleton-table";
+import { SkeletonTable } from "@/components/shared/skeleton-table";
 import { useCourses } from "../hook";
 import { CourseAddDialog } from "./course-add";
 
@@ -18,24 +18,6 @@ export function CourseTable() {
     pageIndex: 0,
     pageSize: 8,
   });
-
-  React.useEffect(() => {
-    setPagination((prev) => ({
-      ...prev,
-      pageIndex: 0,
-    }));
-  }, [filters, sorting]);
-
-  React.useEffect(() => {
-    const pageCount = Math.ceil((courses?.length ?? 0) / pagination.pageSize);
-
-    if (pagination.pageIndex >= pageCount && pageCount > 0) {
-      setPagination((prev) => ({
-        ...prev,
-        pageIndex: pageCount - 1,
-      }));
-    }
-  }, [courses, pagination.pageSize, pagination.pageIndex]);
 
   const uniqueCategoryCourse = useMemo(() => {
     if (!courses) {

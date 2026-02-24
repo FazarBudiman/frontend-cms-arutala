@@ -1,5 +1,5 @@
 import { useDeleteTestimoni } from "../hook";
-import { DeleteDialog } from "@/components/dialog-delete";
+import { DeleteDialog } from "@/components/shared/dialog-delete";
 
 export function TestimoniDeleteDialog({ testimoniId }: { testimoniId: string }) {
   const { mutateAsync, isPending } = useDeleteTestimoni();

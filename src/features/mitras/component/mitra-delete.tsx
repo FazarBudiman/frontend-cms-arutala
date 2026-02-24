@@ -1,5 +1,5 @@
 import { useDeleteMitra } from "../hook";
-import { DeleteDialog } from "@/components/dialog-delete";
+import { DeleteDialog } from "@/components/shared/dialog-delete";
 
 export function MitraDeleteDialog({ mitraId }: { mitraId: string }) {
   const { mutateAsync, isPending } = useDeleteMitra();

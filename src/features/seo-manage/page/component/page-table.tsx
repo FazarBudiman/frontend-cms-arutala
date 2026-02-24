@@ -1,11 +1,11 @@
 "use client";
 
 import React from "react";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/shared/data-table";
 import { columns } from "./columns";
 import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
 import { Input } from "@/components/ui/input";
-import { SkeletonTable } from "@/components/skeleton-table";
+import { SkeletonTable } from "@/components/shared/skeleton-table";
 import { usePages } from "../hook";
 
 export function PageTable() {
@@ -16,24 +16,6 @@ export function PageTable() {
     pageIndex: 0,
     pageSize: 8,
   });
-
-  React.useEffect(() => {
-    setPagination((prev) => ({
-      ...prev,
-      pageIndex: 0,
-    }));
-  }, [filters, sorting]);
-
-  React.useEffect(() => {
-    const pageCount = Math.ceil((pages?.length ?? 0) / pagination.pageSize);
-
-    if (pagination.pageIndex >= pageCount && pageCount > 0) {
-      setPagination((prev) => ({
-        ...prev,
-        pageIndex: pageCount - 1,
-      }));
-    }
-  }, [pages, pagination.pageSize, pagination.pageIndex]);
 
   // Fungsi helper untuk update filter tanpa menghapus filter id lain
   const setColumnFilter = (id: string, value: string | null) => {

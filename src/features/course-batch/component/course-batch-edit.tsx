@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
-import { RangeDatePicker, SingleDatePicker } from "@/components/date-picker";
+import { RangeDatePicker, SingleDatePicker } from "@/components/shared/date-picker";
 
 import { useParams } from "next/navigation";
 import { useContributors } from "@/features/contributor";

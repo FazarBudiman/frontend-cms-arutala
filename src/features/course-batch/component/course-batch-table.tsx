@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/shared/data-table";
 import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
 import { Input } from "@/components/ui/input";
 import { CourseBatch } from "../type";
@@ -21,17 +21,6 @@ export function CourseBatchTable({ batch, courseId }: CourseBatchProps) {
     pageIndex: 0,
     pageSize: 8,
   });
-
-  React.useEffect(() => {
-    const pageCount = Math.ceil((batch?.length ?? 0) / pagination.pageSize);
-
-    if (pagination.pageIndex >= pageCount && pageCount > 0) {
-      setPagination((prev) => ({
-        ...prev,
-        pageIndex: pageCount - 1,
-      }));
-    }
-  }, [batch, pagination.pageSize, pagination.pageIndex]);
 
   const uniqueStatuses = useMemo(() => {
     if (!batch) return [];

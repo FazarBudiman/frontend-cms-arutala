@@ -1,7 +1,19 @@
 "use client";
 
 import * as React from "react";
-import { ColumnDef, ColumnFiltersState, OnChangeFn, PaginationState, SortingState, flexRender, getCoreRowModel, getFilteredRowModel, getPaginationRowModel, getSortedRowModel, useReactTable } from "@tanstack/react-table";
+import {
+  ColumnDef,
+  ColumnFiltersState,
+  OnChangeFn,
+  PaginationState,
+  SortingState,
+  flexRender,
+  getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
@@ -41,12 +53,19 @@ export interface DataTableProps<TData, TValue> {
    Component
 ======================= */
 
-export function DataTable<TData, TValue>({ columns, data, getRowId, sorting, columnFilters, pagination, onPaginationChange, onSortingChange, onColumnFiltersChange, pageSizeOptions = [8, 15, 30, 50] }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({
+  columns,
+  data,
+  getRowId,
+  sorting,
+  columnFilters,
+  pagination,
+  onPaginationChange,
+  onSortingChange,
+  onColumnFiltersChange,
+  pageSizeOptions = [8, 15, 30, 50],
+}: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = React.useState({});
-  // const [pagination, setPagination] = React.useState({
-  //   pageIndex: 0,
-  //   pageSize: pageSizeOptions[0],
-  // });
 
   const table = useReactTable({
     data,
@@ -72,6 +91,22 @@ export function DataTable<TData, TValue>({ columns, data, getRowId, sorting, col
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
   });
+
+  // Reset pagination to first page when filtering or sorting changes
+  React.useEffect(() => {
+    table.setPageIndex(0);
+  }, [columnFilters, sorting, table]);
+
+  // Ensure pageIndex is within bounds when data size changes (clamping)
+  const pageSize = table.getState().pagination.pageSize;
+  React.useEffect(() => {
+    const pageCount = table.getPageCount();
+    const { pageIndex } = table.getState().pagination;
+
+    if (pageIndex >= pageCount && pageCount > 0) {
+      table.setPageIndex(pageCount - 1);
+    }
+  }, [data.length, pageSize, table]);
 
   const pageCount = table.getPageCount();
   const currentPage = table.getState().pagination.pageIndex;
@@ -138,13 +173,13 @@ export function DataTable<TData, TValue>({ columns, data, getRowId, sorting, col
           <Label className="text-xs text-muted-foreground">Total Data: {data.length}</Label>
 
           <Label className="text-xs text-muted-foreground">
-            Page {currentPage + 1} of {pageCount}
+            Page {data.length === 0 ? 0 : currentPage + 1} of {pageCount}
           </Label>
 
           <Pagination>
             <PaginationContent>
               <PaginationItem>
-                <PaginationPrevious onClick={() => table.previousPage()} aria-disabled={!table.getCanPreviousPage()} />
+                <PaginationPrevious onClick={() => table.getCanPreviousPage() && table.previousPage()} aria-disabled={!table.getCanPreviousPage()} />
               </PaginationItem>
 
               {Array.from({ length: pageCount }).map((_, index) => (
@@ -156,7 +191,7 @@ export function DataTable<TData, TValue>({ columns, data, getRowId, sorting, col
               ))}
 
               <PaginationItem>
-                <PaginationNext onClick={() => table.nextPage()} aria-disabled={!table.getCanNextPage()} />
+                <PaginationNext onClick={() => table.getCanNextPage() && table.nextPage()} aria-disabled={!table.getCanNextPage()} />
               </PaginationItem>
             </PaginationContent>
           </Pagination>
