@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { CourseDetail } from "../type";
 import { Item, ItemContent, ItemDescription, ItemTitle } from "@/components/ui/item";
 import { CourseEditDialog } from "./course-edit";
-import CourseBatchAddDialog from "@/features/course-batch/component/course-batch-add";
+import { CourseBatchAddDialog } from "@/features/course-batch";
 
 type CourseDetailCardProps = {
   courseDetail: Partial<CourseDetail>;

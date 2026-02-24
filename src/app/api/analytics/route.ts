@@ -1,11 +1,11 @@
-import { Overview } from "@/features/dashboard";
+import { OverviewType } from "@/features/dashboard";
 import { ApiError } from "@/server/errors/api-error";
 import { serverFetch } from "@/server/http/server-fetch";
 import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const overview = await serverFetch<Overview>("/analytics/overview");
+    const overview = await serverFetch<OverviewType>("/analytics/overview");
     return NextResponse.json({
       success: true,
       data: overview,

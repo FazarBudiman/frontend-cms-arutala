@@ -1,8 +1,8 @@
-import { useDeletePages } from "../hook";
 import { DeleteDialog } from "@/components/dialog-delete";
+import { useDeletePage } from "../hook";
 
 export function PageDeleteDialog({ pageId }: { pageId: string }) {
-  const { mutateAsync, isPending } = useDeletePages();
+  const { mutateAsync, isPending } = useDeletePage();
 
   return (
     <DeleteDialog

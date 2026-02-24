@@ -1,18 +1,15 @@
 "use client";
 
 import { useMemo } from "react";
-import type { OutputBlockData,} from "@editorjs/editorjs";
-import { ArticlePreview } from "@/features/article/component/article-preview/article-preview";
-import {  ContentBlockType } from "@/features/article/type";
+import type { OutputBlockData } from "@editorjs/editorjs";
+import { ArticlePreview, ContentBlockType, useArticleDetail, ArticleCoverEditDialog } from "@/features/article";
 import { useParams, useRouter } from "next/navigation";
-import { useArticleDetail } from "@/features/article/hook";
 import Image from "next/image";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Separator } from "@/components/ui/separator";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Button } from "@/components/ui/button";
-import { ArticleCoverEditDialog } from "@/features/article/component/article-cover-edit";
-import { useSetBreadcrumbLabel } from "@/providers/breadcrumb-provider";
+import { useSetBreadcrumbLabel } from "@/providers";
 
 function mapEditorBlocks(blocks: OutputBlockData[]): ContentBlockType[] {
   return blocks.map((block, index) => ({
@@ -42,16 +39,16 @@ export default function DetailArticlePage() {
           {data && <ArticleCoverEditDialog articleDetail={data} />}
         </ButtonGroup>
         <div className="mx-auto max-w-6xl">
-            {data?.article_cover_url && (
-              <div className="mb-4 overflow-hidden rounded-xl border bg-accent shadow-lg">
-                <AspectRatio ratio={9 / 3}>
-                  <Image src={data.article_cover_url} alt={data.article_title || "Article cover"} fill className="object-cover" priority />
-                </AspectRatio>
-              </div>
-            )}
-            {data?.article_cover_description && <div className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-6xl">{data.article_cover_description}</div>}
-            <Separator className="my-8" />
-            <ArticlePreview blocks={mappedBlocks} />
+          {data?.article_cover_url && (
+            <div className="mb-4 overflow-hidden rounded-xl border bg-accent shadow-lg">
+              <AspectRatio ratio={9 / 3}>
+                <Image src={data.article_cover_url} alt={data.article_title || "Article cover"} fill className="object-cover" priority />
+              </AspectRatio>
+            </div>
+          )}
+          {data?.article_cover_description && <div className="text-lg md:text-xl text-muted-foreground leading-relaxed max-w-6xl">{data.article_cover_description}</div>}
+          <Separator className="my-8" />
+          <ArticlePreview blocks={mappedBlocks} />
         </div>
       </div>
     </div>

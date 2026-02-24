@@ -16,6 +16,8 @@ export default function OverviewPage() {
     return <div>No data available</div>;
   }
 
+  console.log(data);
+
   return (
     <div className="space-y-6 px-4 lg:px-6">
       <div className="grid gap-6 lg:grid-cols-2">

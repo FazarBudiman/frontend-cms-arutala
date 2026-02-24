@@ -3,12 +3,18 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatedDate } from "@/shared/utils/date";
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
+import { IconBrandWhatsappFilled, IconMessage2 } from "@tabler/icons-react";
+import { Button } from "@/components/ui/button";
+import { generateWhatsAppMessage, generateWhatsAppNumber } from "@/shared/utils/whatsapp";
+import Link from "next/link";
 
 type RecentMessagesProps = {
   messages: {
     message_id: string;
     sender_name: string;
     sender_email: string;
+    sender_phone: string;
     subject: string[];
     created_date: string;
   }[];
@@ -22,27 +28,45 @@ export function RecentMessages({ messages }: RecentMessagesProps) {
         <CardDescription>Latest incoming messages</CardDescription>
       </CardHeader>
 
-      <CardContent className="space-y-2">
-        {messages.map((msg) => (
-          <div key={msg.message_id} className="flex flex-col gap-2 border-b pb-2 last:border-0">
-            <div className="flex items-center justify-between">
-              <div className="flex flex-col gap-1">
-                <p className="text-sm font-medium">{msg.sender_name}</p>
-                <p className="text-xs text-muted-foreground">{msg.sender_email}</p>
+      <CardContent className="space-y-1">
+        {messages.length ? (
+          messages.map((message) => {
+            const WaPhone = generateWhatsAppNumber(message.sender_phone);
+            const messageWa = generateWhatsAppMessage(message.sender_name);
+            return (
+              <div key={message.message_id} className="p-3 border rounded-md flex flex-col">
+                <div className="flex justify-between">
+                  <p className="text-xs text-muted-foreground">Dikirim pada: {formatedDate(message.created_date)}</p>
+                  <Link href={`https://wa.me/${WaPhone}?text=${messageWa}`} target="_blank" rel="noopener noreferrer">
+                    <Button size="icon-xs">
+                      <IconBrandWhatsappFilled />
+                    </Button>
+                  </Link>
+                </div>
+                <div className="space-y-1.5">
+                  <p className="font-medium text-sm">{message.sender_name}</p>
+                  <div className="flex flex-wrap gap-1">
+                    {message.subject.map((subj, i) => (
+                      <Badge key={i} variant="outline" className="text-xs">
+                        {subj}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
               </div>
-
-              <span className="text-xs text-muted-foreground">{formatedDate(msg.created_date)}</span>
-            </div>
-
-            <div className="flex flex-wrap gap-3">
-              {msg.subject.map((subj, i) => (
-                <Badge key={i} variant="secondary">
-                  {subj}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        ))}
+            );
+          })
+        ) : (
+          <Empty className="border border-dashed">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <IconMessage2 />
+              </EmptyMedia>
+              <EmptyTitle className="text-sm">No messages</EmptyTitle>
+              <EmptyDescription className="text-xs">No messages received yet.</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        )}
       </CardContent>
     </Card>
   );

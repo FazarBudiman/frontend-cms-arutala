@@ -18,7 +18,7 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { RangeDatePicker, SingleDatePicker } from "@/components/date-picker";
 
 import { useParams } from "next/navigation";
-import { useContributors } from "@/features/contributor/hook";
+import { useContributors } from "@/features/contributor";
 import { useUpdateCourseBatch } from "../hook";
 import { CourseBatch, CourseBatchInput, courseBatchInputSchema, CourseBatchStatus } from "../type";
 

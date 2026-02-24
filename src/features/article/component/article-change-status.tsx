@@ -1,6 +1,7 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 
 import { Field, FieldLabel } from "@/components/ui/field";
@@ -9,6 +10,7 @@ import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescript
 import { Separator } from "@/components/ui/separator";
 import { Article, articleStatusEnum, ArticleStatusType } from "../type";
 import { useUpdateArticle } from "../hook";
+import { useState } from "react";
 
 export function ArticleChangeStatusDialog({ article }: { article: Article }) {
   const [open, setOpen] = useState(false);
@@ -50,9 +52,7 @@ export function ArticleChangeStatusDialog({ article }: { article: Article }) {
     <AlertDialog open={open} onOpenChange={setOpen}>
       {/* Trigger */}
       <AlertDialogTrigger asChild>
-        <Button  size="sm">
-          Change Status
-        </Button>
+        <Button size="sm">Change Status</Button>
       </AlertDialogTrigger>
 
       {/* Content */}
@@ -66,7 +66,6 @@ export function ArticleChangeStatusDialog({ article }: { article: Article }) {
 
         {/* Detail */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-4 no-scrollbar -mx-4 max-h-max overflow-y-auto px-4">
-          
           {/* Status */}
           <Field className="md:col-span-1 gap-1">
             <FieldLabel>Status</FieldLabel>
@@ -78,7 +77,7 @@ export function ArticleChangeStatusDialog({ article }: { article: Article }) {
                 <SelectGroup>
                   {articleStatus.map((status) => (
                     <SelectItem key={status.value} value={status.value}>
-                      <Badge >{status.label}</Badge>
+                      <Badge>{status.label}</Badge>
                     </SelectItem>
                   ))}
                 </SelectGroup>
@@ -94,7 +93,7 @@ export function ArticleChangeStatusDialog({ article }: { article: Article }) {
               Cancel
             </Button>
           </AlertDialogCancel>
-          
+
           <Button type="submit" size="sm" onClick={handleUpdate} disabled={isPending}>
             {isPending ? "Saving" : "Save Changes"}
           </Button>

@@ -1,6 +1,6 @@
+import { User } from "@/features/user";
 import { ApiError } from "@/server/errors/api-error";
 import { serverFetch } from "@/server/http/server-fetch";
-import { User } from "@/features/user/type";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {

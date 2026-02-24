@@ -1,4 +1,4 @@
-import { MessageTable } from "../../../features/message/component/message-table";
+import { MessageTable } from "@/features/message";
 
 export default async function Page() {
   return (

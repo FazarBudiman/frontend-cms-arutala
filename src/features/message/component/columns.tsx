@@ -16,21 +16,27 @@ import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group"
 import { IconBrandWhatsappFilled } from "@tabler/icons-react";
 
 export const statusColor: Record<MessageStatus, string> = {
-  NEW: "bg-blue-500",
-  CONTACTED: "bg-yellow-500",
-  QUALIFIED: "bg-green-500",
-  NEGOTIATION: "bg-orange-500",
-  PROPOSAL_SENT: "bg-purple-500",
-  VERBAL_COMMITMENT: "bg-purple-700",
-  CLOSED_WON: "bg-yellow-500",
-  CLOSED_LOSS: "bg-orange-500",
-  ON_HOLD: "bg-blue-500",
+  NEW: "bg-status-new text-black hover:bg-status-new",
+  CONTACTED: "bg-status-contacted text-white hover:bg-status-contacted",
+  QUALIFIED: "bg-status-qualified text-white hover:bg-status-qualified",
+  PROPOSAL_SENT: "bg-status-proposal-sent text-white hover:bg-status-proposal-sent",
+  NEGOTIATION: "bg-status-negotiation text-white hover:bg-status-negotiation",
+  VERBAL_COMMITMENT: "bg-status-verbal-commitment text-white hover:bg-status-verbal-commitment",
+  CLOSED_WON: "bg-status-closed-won text-white hover:bg-status-closed-won",
+  CLOSED_LOSS: "bg-status-closed-loss text-white hover:bg-status-closed-loss",
+  ON_HOLD: "bg-status-on-hold text-black hover:bg-status-on-hold",
 };
 
 export const columns: ColumnDef<Message>[] = [
   {
     id: "select",
-    header: ({ table }) => <Checkbox checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")} onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)} aria-label="Select all" />,
+    header: ({ table }) => (
+      <Checkbox
+        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
     cell: ({ row }) => <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />,
   },
   {
@@ -93,7 +99,14 @@ export const columns: ColumnDef<Message>[] = [
     accessorKey: "message_status",
     header: "Status",
     enableColumnFilter: true,
-    cell: ({ row }) => <Badge className={cn("text-shadow-2xs", statusColor[row.original.message_status])}>{row.original.message_status}</Badge>,
+    cell: ({ row }) => (
+      <Badge className={cn("text-shadow-2xs", statusColor[row.original.message_status])}>
+        {row.original.message_status
+          .toLowerCase()
+          .replace(/_/g, " ")
+          .replace(/\b\w/g, (c) => c.toUpperCase())}
+      </Badge>
+    ),
   },
 
   {

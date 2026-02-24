@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useParams } from "next/navigation";
 import { IconListDetails } from "@tabler/icons-react";
 
-export function SeoEditlDialog({ seo, seoId }: { seo: SeoInput; seoId: string }) {
+export function SeoEditDialog({ seo, seoId }: { seo: SeoInput; seoId: string }) {
   const [open, setOpen] = useState(false);
   const { mutateAsync, isPending } = useUpdateDetailSeo();
   const params = useParams();

@@ -72,11 +72,39 @@ export function MessageDetailDialog({ message }: { message: Message }) {
 
         {/* Detail */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-4 no-scrollbar -mx-4 max-h-max overflow-y-auto px-4">
-          <Field className="gap-1 md:col-span-2">
-            <FieldLabel>
-              <Badge className="px-4 py-1"> {formatedDate(message.created_date)}</Badge>
-            </FieldLabel>
-          </Field>
+          {/* Tanggal */}
+          <div className="flex items-end col-span-2">
+            <Field className="gap-1 col-span-1">
+              <FieldLabel>
+                <Badge className="px-4 py-1 w-fit"> {formatedDate(message.created_date)}</Badge>
+              </FieldLabel>
+            </Field>
+            {/* Status */}
+            <Field className="md:col-span-1 gap-1">
+              <FieldLabel>Status</FieldLabel>
+              <Select value={statusMessage} onValueChange={(v: MessageStatus) => setStatusMessage(v)} disabled={isPending}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent position="popper">
+                  <SelectGroup>
+                    {messageStatus.map((status) => (
+                      <SelectItem key={status.value} value={status.value}>
+                        <Badge className={statusColor[status.value]}>
+                          {status.label
+                            .toLowerCase()
+                            .replace(/_/g, " ")
+                            .replace(/\b\w/g, (c) => c.toUpperCase())}
+                        </Badge>
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </Field>
+          </div>
+
+          <Separator className="col-span-2" />
 
           {/* Name */}
           <Field className="gap-1">
@@ -113,32 +141,20 @@ export function MessageDetailDialog({ message }: { message: Message }) {
           {/* Subject */}
           <Field className="md:col-span-2 gap-1">
             <FieldLabel>Subject</FieldLabel>
-            <Input value={message.subject} disabled />
+
+            <div className="flex flex-wrap gap-2.5">
+              {message.subject.map((item) => (
+                <Badge key={item} variant="secondary" className="flex items-center gap-1.5">
+                  {item}
+                </Badge>
+              ))}
+            </div>
           </Field>
 
           {/* Message */}
           <Field className="md:col-span-2 gap-1">
             <FieldLabel>Message</FieldLabel>
             <Textarea value={message.message_body} disabled className="h-fit" />
-          </Field>
-
-          {/* Status */}
-          <Field className="md:col-span-1 gap-1">
-            <FieldLabel>Status</FieldLabel>
-            <Select value={statusMessage} onValueChange={(v: MessageStatus) => setStatusMessage(v)} disabled={isPending}>
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent position="popper">
-                <SelectGroup>
-                  {messageStatus.map((status) => (
-                    <SelectItem key={status.value} value={status.value}>
-                      <Badge className={statusColor[status.value]}>{status.label}</Badge>
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
-            </Select>
           </Field>
         </div>
 

@@ -49,6 +49,7 @@ export function SignInForm() {
       <CardContent>
         <form onSubmit={form.handleSubmit(handleSignIn)}>
           <FieldGroup>
+            {/* Username */}
             <Controller
               name="username"
               control={form.control}
@@ -61,6 +62,7 @@ export function SignInForm() {
               )}
             />
 
+            {/* Password */}
             <Controller
               name="password"
               control={form.control}

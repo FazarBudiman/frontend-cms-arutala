@@ -7,6 +7,7 @@ export const overviewSchema = z.object({
         message_id: z.string(),
         sender_name: z.string(),
         sender_email: z.string(),
+        sender_phone: z.string(),
         subject: z.array(z.string()),
         created_date: z.string(),
       }),

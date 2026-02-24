@@ -2,10 +2,9 @@
 
 import { useParams } from "next/navigation";
 import { SkeletonBatchDetail } from "@/components/skeleton-detail-card";
-import { useCourseBatch } from "@/features/course-batch/hook";
-import { CourseBatchDetailCard } from "@/features/course-batch/component/course-batch-detail-card";
-import { useSetBreadcrumbLabel } from "@/providers/breadcrumb-provider";
-import { useCourseDetail } from "@/features/course/hook";
+import { useCourseBatch, CourseBatchDetailCard } from "@/features/course-batch";
+import { useSetBreadcrumbLabel } from "@/providers";
+import { useCourseDetail } from "@/features/course";
 
 export default function CourseDetailPage() {
   const params = useParams();

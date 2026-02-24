@@ -81,6 +81,7 @@ export function UserAddDialog() {
 
         <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-4 no-scrollbar -mx-4 max-h-max overflow-y-auto px-4">
+            {/* Profile */}
             <Controller
               name="profile"
               control={form.control}
@@ -130,6 +131,7 @@ export function UserAddDialog() {
               }}
             />
 
+            {/* Full Name */}
             <Controller
               name="fullName"
               control={form.control}
@@ -141,6 +143,8 @@ export function UserAddDialog() {
                 </Field>
               )}
             />
+
+            {/* Username */}
             <Controller
               name="username"
               control={form.control}
@@ -152,6 +156,8 @@ export function UserAddDialog() {
                 </Field>
               )}
             />
+
+            {/* Password */}
             <Controller
               name="password"
               control={form.control}
@@ -163,6 +169,8 @@ export function UserAddDialog() {
                 </Field>
               )}
             />
+
+            {/* Confirm Password */}
             <Controller
               name="confirmPassword"
               control={form.control}
@@ -174,6 +182,8 @@ export function UserAddDialog() {
                 </Field>
               )}
             />
+
+            {/* Role */}
             <Controller
               name="userRole"
               control={form.control}
@@ -188,7 +198,10 @@ export function UserAddDialog() {
                       <SelectGroup>
                         {roleOptions.map((role) => (
                           <SelectItem value={role} key={role}>
-                            {role}
+                            {role
+                              .toLowerCase()
+                              .replace(/_/g, " ")
+                              .replace(/\b\w/g, (c) => c.toUpperCase())}
                           </SelectItem>
                         ))}
                       </SelectGroup>

@@ -1,4 +1,4 @@
-import { User } from "@/features/user/type";
+import { User } from "@/features/user";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createUser, deleteUser, fetchUsers } from "./api";
 

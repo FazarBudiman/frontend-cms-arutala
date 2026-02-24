@@ -45,75 +45,194 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
+
+  /* Custom Figma Palettes */
+  --color-primary-50: var(--primary-50);
+  --color-primary-100: var(--primary-100);
+  --color-primary-200: var(--primary-200);
+  --color-primary-300: var(--primary-300);
+  --color-primary-400: var(--primary-400);
+  --color-primary-500: var(--primary-500);
+  --color-primary-600: var(--primary-600);
+  --color-primary-700: var(--primary-700);
+  --color-primary-800: var(--primary-800);
+  --color-primary-900: var(--primary-900);
+
+  --color-accent-50: var(--accent-50);
+  --color-accent-100: var(--accent-100);
+  --color-accent-200: var(--accent-200);
+  --color-accent-300: var(--accent-300);
+  --color-accent-400: var(--accent-400);
+  --color-accent-500: var(--accent-500);
+  --color-accent-600: var(--accent-600);
+  --color-accent-700: var(--accent-700);
+  --color-accent-800: var(--accent-800);
+  --color-accent-900: var(--accent-900);
+
+  --color-neutral-50: var(--neutral-50);
+  --color-neutral-100: var(--neutral-100);
+  --color-neutral-200: var(--neutral-200);
+  --color-neutral-300: var(--neutral-300);
+  --color-neutral-400: var(--neutral-400);
+  --color-neutral-500: var(--neutral-500);
+  --color-neutral-600: var(--neutral-600);
+  --color-neutral-700: var(--neutral-700);
+  --color-neutral-800: var(--neutral-800);
+  --color-neutral-900: var(--neutral-900);
+  --color-neutral-950: var(--neutral-950);
+
+  --color-success: var(--success);
+  --color-failed: var(--failed);
+  --color-warning: var(--warning);
+  --color-info: var(--info);
+
+  --color-action-edit: var(--action-edit);
+  --color-action-delete: var(--action-delete);
+  --color-action-cancel: var(--action-cancel);
+
+  --color-status-new: var(--status-new);
+  --color-status-contacted: var(--status-contacted);
+  --color-status-qualified: var(--status-qualified);
+  --color-status-proposal-sent: var(--status-proposal-sent);
+  --color-status-negotiation: var(--status-negotiation);
+  --color-status-verbal-commitment: var(--status-verbal-commitment);
+  --color-status-closed-won: var(--status-closed-won);
+  --color-status-closed-loss: var(--status-closed-loss);
+  --color-status-on-hold: var(--status-on-hold);
 }
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+
+  /* Figma Color Variables */
+  --primary-50: #fafeff;
+  --primary-100: #f6fbff;
+  --primary-200: #f0f7ff;
+  --primary-300: #e5f1ff;
+  --primary-400: #d7e6ff;
+  --primary-500: #c2d7ff;
+  --primary-600: #a2bfff;
+  --primary-700: #83a3ff;
+  --primary-800: #617bc6;
+  --primary-900: #243992;
+
+  --accent-50: #fffdfc;
+  --accent-100: #fff9ed;
+  --accent-200: #fff4e6;
+  --accent-300: #ffeccd;
+  --accent-400: #ffdfaf;
+  --accent-500: #ffcc8b;
+  --accent-600: #ffa726;
+  --accent-700: #e69412;
+  --accent-800: #b06e00;
+  --accent-900: #683800;
+
+  --neutral-50: #fafafa;
+  --neutral-100: #f5f5f5;
+  --neutral-200: #e5e5e5;
+  --neutral-300: #d4d4d4;
+  --neutral-400: #a3a3a3;
+  --neutral-500: #737373;
+  --neutral-600: #525252;
+  --neutral-700: #404040;
+  --neutral-800: #262626;
+  --neutral-900: #171717;
+  --neutral-950: #0a0a0a;
+
+  --success: #2e7d32;
+  --failed: #d32f2f;
+  --warning: #f9a825;
+  --info: #1e88e5;
+
+  --action-edit: #1976d2;
+  --action-delete: #c62828;
+  --action-cancel: #9e9e9e;
+
+  /* Status Colors from design */
+  --status-new: #e5e7eb;
+  --status-contacted: #3b82f6;
+  --status-qualified: #f59e0b;
+  --status-proposal-sent: #15803d;
+  --status-negotiation: #6366f1;
+  --status-verbal-commitment: #14b816;
+  --status-closed-won: #22c55e;
+  --status-closed-loss: #ef4444;
+  --status-on-hold: #facc15;
+
+  /* Theme Mappings (Revised for Professional Aesthetics) */
+  --background: var(--neutral-50);
+  --foreground: var(--neutral-900);
+  --card: var(--neutral-50);
+  --card-foreground: var(--neutral-900);
+  --popover: var(--neutral-50);
+  --popover-foreground: var(--neutral-900);
+
+  /* Brand Primary */
+  --primary: var(--primary-900);
+  --primary-foreground: var(--neutral-50);
+
+  /* Utility & Secondary Roles (Subtle Neutrals to avoid flashiness) */
+  --secondary: var(--neutral-200);
+  --secondary-foreground: var(--neutral-900);
+  --muted: var(--neutral-100);
+  --muted-foreground: var(--neutral-500);
+
+  /* Accents (Neutral for system states like hover/skeleton) */
+  --accent: var(--neutral-100);
+  --accent-foreground: var(--neutral-900);
+
+  --destructive: var(--failed);
+  --destructive-foreground: var(--neutral-50);
+
+  --border: var(--neutral-200);
+  --input: var(--neutral-200);
+  --ring: var(--neutral-400); /* Subtle focus ring */
+
+  /* Sidebar Mappings */
+  --sidebar: var(--neutral-50);
+  --sidebar-foreground: var(--neutral-800);
+  --sidebar-primary: var(--primary-900);
+  --sidebar-primary-foreground: var(--neutral-50);
+  --sidebar-accent: var(--neutral-100);
+  --sidebar-accent-foreground: var(--neutral-900);
+  --sidebar-border: var(--neutral-200);
+  --sidebar-ring: var(--neutral-400);
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --background: var(--neutral-950);
+  --foreground: var(--neutral-50);
+  --card: var(--neutral-900);
+  --card-foreground: var(--neutral-50);
+  --popover: var(--neutral-900);
+  --popover-foreground: var(--neutral-50);
+
+  --primary: var(--primary-500);
+  --primary-foreground: var(--neutral-950);
+
+  --secondary: var(--neutral-800);
+  --secondary-foreground: var(--neutral-50);
+  --muted: var(--neutral-800);
+  --muted-foreground: var(--neutral-400);
+
+  --accent: var(--neutral-800);
+  --accent-foreground: var(--neutral-50);
+
+  --destructive: var(--failed);
+  --destructive-foreground: var(--neutral-50);
+
+  --border: var(--neutral-800);
+  --input: var(--neutral-800);
+  --ring: var(--neutral-600);
+
+  --sidebar: var(--neutral-950);
+  --sidebar-foreground: var(--neutral-50);
+  --sidebar-primary: var(--primary-500);
+  --sidebar-primary-foreground: var(--neutral-950);
+  --sidebar-accent: var(--neutral-800);
+  --sidebar-accent-foreground: var(--neutral-50);
+  --sidebar-border: var(--neutral-800);
+  --sidebar-ring: var(--neutral-600);
 }
 
 @layer base {

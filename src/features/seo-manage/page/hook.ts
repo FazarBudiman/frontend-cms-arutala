@@ -15,7 +15,7 @@ export function usePage(pageId: string) {
     queryFn: () => fetchPageById(pageId),
   });
 }
-export function useDeletePages() {
+export function useDeletePage() {
   const queryClient = useQueryClient();
 
   return useMutation({

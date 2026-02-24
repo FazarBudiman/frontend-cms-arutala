@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
@@ -8,9 +10,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
-import {  articleCoverInputUpdateSchema, ArticleCoverInputUpdateType, ArticleDetail } from "../type";
+import { articleCoverInputUpdateSchema, ArticleCoverInputUpdateType, ArticleDetail } from "../type";
 import { Textarea } from "@/components/ui/textarea";
-import {  useUpdateArticleCover } from "../hook";
+import { useUpdateArticleCover } from "../hook";
 
 export function ArticleCoverEditDialog({ articleDetail }: { articleDetail: ArticleDetail }) {
   const [open, setOpen] = useState(false);

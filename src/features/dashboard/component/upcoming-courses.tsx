@@ -3,6 +3,8 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatedDate } from "@/shared/utils/date";
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
+import { IconDeviceImacCode } from "@tabler/icons-react";
 
 type UpcomingCoursesProps = {
   courses: {
@@ -22,26 +24,29 @@ export function UpcomingCourses({ courses }: UpcomingCoursesProps) {
         <CardDescription>Courses starting soon</CardDescription>
       </CardHeader>
 
-      <CardContent className="space-y-4">
-        {courses.map((course) => (
-          <div key={course.course_id} className="flex items-center justify-between border-b pb-3 last:border-0">
-            <div className="flex flex-col gap-1">
-              <p className="text-sm font-medium">{course.course_title}</p>
+      <CardContent className="space-y-1">
+        {courses.length ? (
+          courses.map((course) => (
+            <div key={course.course_id} className="p-3 border rounded-md flex flex-col">
+              <div className="flex justify-between">
+                <p className="text-xs text-muted-foreground">Dimulai pada: {formatedDate(course.course_batch_start_date)}</p>
+                <Badge className="h-fit text-xs">{course.course_batch_status}</Badge>
+              </div>
+              <p className="font-medium text-sm">{course.course_title}</p>
               <p className="text-xs text-muted-foreground">{course.course_batch_name}</p>
-              <p className="text-xs text-muted-foreground">
-                Dimulai pada:{" "}
-                {/* {new Date(course.course_batch_start_date).toLocaleDateString("en-US", {
-                  month: "long",
-                  day: "numeric",
-                  year: "numeric",
-                })} */}
-                {formatedDate(course.course_batch_start_date)}
-              </p>
             </div>
-
-            <Badge variant={course.course_batch_status === "OPEN" ? "default" : "secondary"}>{course.course_batch_status}</Badge>
-          </div>
-        ))}
+          ))
+        ) : (
+          <Empty className="border border-dashed">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <IconDeviceImacCode />
+              </EmptyMedia>
+              <EmptyTitle className="text-sm">No courses</EmptyTitle>
+              <EmptyDescription className="text-xs">No courses starting soon.</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        )}
       </CardContent>
     </Card>
   );

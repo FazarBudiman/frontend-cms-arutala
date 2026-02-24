@@ -10,7 +10,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
 import { Badge } from "@/components/ui/badge";
 
-import { User } from "@/features/user/type";
+import { User } from "@/features/user";
 import { logoutAction } from "@/features/auth";
 
 export function NavUser({ user }: { user?: User }) {

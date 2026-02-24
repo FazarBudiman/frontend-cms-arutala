@@ -1,11 +1,10 @@
 "use client";
 
-import { CourseDetailCard } from "@/features/course/component/course-detail-card";
-import { useCourseDetail } from "@/features/course/hook";
+import { CourseDetailCard, useCourseDetail } from "@/features/course";
 import { useParams } from "next/navigation";
 import { SkeletonCourseDetail } from "@/components/skeleton-detail-card";
-import { CourseBatchTable } from "@/features/course-batch/component/course-batch-table";
-import { useSetBreadcrumbLabel } from "@/providers/breadcrumb-provider";
+import { CourseBatchTable } from "@/features/course-batch";
+import { useSetBreadcrumbLabel } from "@/providers";
 
 export default function CourseDetailPage() {
   const params = useParams();

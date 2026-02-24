@@ -1,4 +1,4 @@
-import { User } from "@/features/user/type";
+import { User } from "@/features/user";
 import { useQuery } from "@tanstack/react-query";
 import { fetchUserAuthenticated } from "./api";
 

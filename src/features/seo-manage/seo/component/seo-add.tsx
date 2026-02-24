@@ -12,7 +12,7 @@ import { PlusCircle } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useParams } from "next/navigation";
 
-export function SeoAddlDialog() {
+export function SeoAddDialog() {
   const [open, setOpen] = useState(false);
   const { mutateAsync, isPending } = useCreateSeo();
   const params = useParams();

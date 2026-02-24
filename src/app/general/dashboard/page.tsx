@@ -1,4 +1,4 @@
-import OverviewPage from "@/features/dashboard/component/overview";
+import { OverviewPage } from "@/features/dashboard";
 
 export default function Page() {
   return (

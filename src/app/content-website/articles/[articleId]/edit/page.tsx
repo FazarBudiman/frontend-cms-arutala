@@ -2,19 +2,14 @@
 
 import { useMemo, useState } from "react";
 import type { OutputBlockData, OutputData } from "@editorjs/editorjs";
-import ArticleEditor from "@/features/article/component/article-editor";
-import { ArticlePreview } from "@/features/article/component/article-preview/article-preview";
+import { ArticleEditor, ArticlePreview, ContentBlockType, uploadArticleImage, useArticleDetail, useUpdateArticle, ArticleChangeStatusDialog } from "@/features/article";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import {  ContentBlockType } from "@/features/article/type";
 import { AppWindowIcon, CodeIcon } from "lucide-react";
-import { uploadArticleImage } from "@/features/article/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useArticleDetail, useUpdateArticle } from "@/features/article/hook";
 import { toast } from "sonner";
 import { useParams, useRouter } from "next/navigation";
-import { ArticleChangeStatusDialog } from "@/features/article/component/article-change-status";
-import { useSetBreadcrumbLabel } from "@/providers/breadcrumb-provider";
+import { useSetBreadcrumbLabel } from "@/providers";
 
 function mapEditorBlocks(blocks: OutputBlockData[]): ContentBlockType[] {
   return blocks.map((block, index) => ({
@@ -26,15 +21,15 @@ function mapEditorBlocks(blocks: OutputBlockData[]): ContentBlockType[] {
 
 export default function EditArticlePage() {
   const router = useRouter();
-  const params = useParams()
+  const params = useParams();
 
-  const articleId = params.articleId as string
+  const articleId = params.articleId as string;
 
-    const {data: articleDetail, isPending: isLoadingDetail} = useArticleDetail(articleId)
+  const { data: articleDetail, isPending: isLoadingDetail } = useArticleDetail(articleId);
 
-    useSetBreadcrumbLabel(`/content-website/articles/${articleId}`, articleDetail?.article_title);
-    useSetBreadcrumbLabel(`/content-website/articles/${articleId}/edit`, "Edit Article");
-    const [data, setData] = useState<OutputData | undefined>();
+  useSetBreadcrumbLabel(`/content-website/articles/${articleId}`, articleDetail?.article_title);
+  useSetBreadcrumbLabel(`/content-website/articles/${articleId}/edit`, "Edit Article");
+  const [data, setData] = useState<OutputData | undefined>();
   const [mode, setMode] = useState<"edit" | "preview">("edit");
 
   const initialData = useMemo(() => {
@@ -119,13 +114,12 @@ export default function EditArticlePage() {
                 )}
               </TabsContent>
 
-          <TabsContent value="preview" className="flex flex-col w-full items-center">
-            <ArticlePreview blocks={mappedBlocks} />
-          </TabsContent>
-        </Tabs>
+              <TabsContent value="preview" className="flex flex-col w-full items-center">
+                <ArticlePreview blocks={mappedBlocks} />
+              </TabsContent>
+            </Tabs>
           </CardContent>
         </Card>
-          
       </div>
     </div>
   );

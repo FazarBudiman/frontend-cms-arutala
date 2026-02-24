@@ -2,17 +2,14 @@
 
 import { useParams } from "next/navigation";
 import { SkeletonCourseDetail } from "@/components/skeleton-detail-card";
-import { usePage } from "@/features/seo-manage/page/hook";
+import { usePage } from "@/features/seo-manage/page";
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useChangeStatusSeo, useSeos } from "@/features/seo-manage/seo/hook";
+import { useChangeStatusSeo, useSeos, SeoAddDialog, SeoEditDialog, SeoDeleteDialog } from "@/features/seo-manage/seo";
 import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle } from "@/components/ui/item";
 import { CheckCircle, XCircle } from "lucide-react";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { toast } from "sonner";
-import { SeoAddlDialog } from "@/features/seo-manage/seo/component/seo-add";
-import { SeoEditlDialog } from "@/features/seo-manage/seo/component/seo-edit";
-import { SeoDeleteDialog } from "@/features/seo-manage/seo/component/seo-delete";
 
 export default function CourseDetailPage() {
   const params = useParams();
@@ -59,7 +56,7 @@ export default function CourseDetailPage() {
                   Dibawah merupakan daftar SEO yang pernah ditambahkan pada halaman <strong>{data.page_title}</strong>
                 </CardDescription>
                 <CardAction>
-                  <SeoAddlDialog />
+                  <SeoAddDialog />
                 </CardAction>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -75,7 +72,7 @@ export default function CourseDetailPage() {
                         <Button size="sm" variant="outline" onClick={() => handleChangeStatus(data.page_id, seo.seo_id)}>
                           {seo.is_active ? "Non AKtifkan" : "Aktifkan"}
                         </Button>
-                        <SeoEditlDialog seo={{ metaTitle: seo.meta_title, metaDescription: seo.meta_description }} seoId={seo.seo_id} />
+                        <SeoEditDialog seo={{ metaTitle: seo.meta_title, metaDescription: seo.meta_description }} seoId={seo.seo_id} />
                         <SeoDeleteDialog pageId={pageId} seoId={seo.seo_id} />
                       </ButtonGroup>
                     </ItemActions>
