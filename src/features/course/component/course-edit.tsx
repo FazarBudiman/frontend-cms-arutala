@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/incompatible-library */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -6,7 +7,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CourseDetail, CourseInput, courseInputSchema } from "../type";
 import { useCourseBenefit, useCourseCategory, useCourseField, useUpdateCourse } from "../hook";
@@ -14,6 +14,7 @@ import { PlusCircle } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Textarea } from "@/components/ui/textarea";
+import { EntityDialog } from "@/components/shared/entity-dialog";
 
 type CourseEditDialogProps = {
   courseDetail: Partial<CourseDetail>;
@@ -21,7 +22,7 @@ type CourseEditDialogProps = {
 
 export function CourseEditDialog({ courseDetail }: CourseEditDialogProps) {
   const [open, setOpen] = useState(false);
-  const { mutateAsync, isPending } = useUpdateCourse();
+  const { mutateAsync: updateCourse, isPending } = useUpdateCourse();
   const { data: coursescategory } = useCourseCategory();
   const { data: coursesfield } = useCourseField();
   const { data: coursesbenefits } = useCourseBenefit();
@@ -32,7 +33,7 @@ export function CourseEditDialog({ courseDetail }: CourseEditDialogProps) {
       courseTitle: "",
       courseDescription: "",
       courseCategoryId: "",
-      courseFieldId: "fieldId",
+      courseFieldId: "",
       courseBenefits: [],
       courseMaterials: [],
     },
@@ -59,8 +60,7 @@ export function CourseEditDialog({ courseDetail }: CourseEditDialogProps) {
   const selectedBenefitIds = form.watch("courseBenefits")?.map((b) => b.courseBenefitId) ?? [];
 
   const handleUpdate = async (values: CourseInput) => {
-    // console.log(values);
-    toast.promise(mutateAsync({ courseId: courseDetail.course_id!, body: values }), {
+    toast.promise(updateCourse({ courseId: courseDetail.course_id!, body: values }), {
       loading: "Mengubah course...",
       success: () => {
         setOpen(false);
@@ -72,10 +72,9 @@ export function CourseEditDialog({ courseDetail }: CourseEditDialogProps) {
   };
 
   useEffect(() => {
-    if (!coursescategory || !coursesfield || !courseDetail) return;
+    if (!coursescategory || !coursesfield || !courseDetail || !open) return;
 
     const categoryId = coursescategory.find((cat) => cat.name === courseDetail.course_category_name)?.id;
-
     const fieldId = coursesfield.find((field) => field.field === courseDetail.course_field_name)?.id;
 
     form.reset({
@@ -83,257 +82,220 @@ export function CourseEditDialog({ courseDetail }: CourseEditDialogProps) {
       courseDescription: courseDetail.course_description ?? "",
       courseCategoryId: categoryId ?? "",
       courseFieldId: fieldId ?? "",
-
       courseMaterials:
         courseDetail.courseMaterial?.map((m, index) => ({
           title: m.title,
           description: m.description,
           orderNum: index + 1,
         })) ?? [],
-
       courseBenefits:
         courseDetail.courseBenefit?.map((b, index) => {
           const benefitId = coursesbenefits?.find((benefit) => benefit.title === b.title)?.id;
-
           return {
             courseBenefitId: benefitId ?? "",
             orderNum: index + 1,
           };
         }) ?? [],
     });
-  }, [coursescategory, coursesfield, coursesbenefits, courseDetail, form]);
+  }, [coursescategory, coursesfield, coursesbenefits, courseDetail, form, open]);
 
   return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
-      <AlertDialogTrigger asChild>
+    <EntityDialog
+      open={open}
+      onOpenChange={setOpen}
+      title="Edit Course"
+      description="Isi detail course di bawah ini"
+      isPending={isPending}
+      saveLabel="Save Changes"
+      onSubmit={form.handleSubmit(handleUpdate)}
+      className="max-w-4xl!"
+      trigger={
         <Button size="sm" variant="outline">
-          Edit Course <PlusCircle />
+          Edit Course <PlusCircle className="ml-2 h-4 w-4" />
         </Button>
-      </AlertDialogTrigger>
+      }
+    >
+      <div className="md:col-span-2">
+        <ScrollArea className="h-[50vh] pr-4 -mr-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-3">
+            <Controller
+              name="courseTitle"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field className="md:col-span-2 gap-1" data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="courseTitle">Title</FieldLabel>
+                  <Input {...field} id="courseTitle" aria-invalid={fieldState.invalid} autoComplete="off" />
+                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                </Field>
+              )}
+            />
+            <Controller
+              name="courseDescription"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field className="md:col-span-2 gap-1" data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="courseDescription">Description</FieldLabel>
+                  <Textarea {...field} id="courseDescription" aria-invalid={fieldState.invalid} autoComplete="off" className="min-h-20" />
+                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                </Field>
+              )}
+            />
 
-      <AlertDialogContent className="sm:max-w-3xl max-h-max h-fit max-w-4xl!">
-        <AlertDialogHeader>
-          <AlertDialogTitle>Edit Course</AlertDialogTitle>
-          <AlertDialogDescription>Isi detail course di bawah ini</AlertDialogDescription>
-        </AlertDialogHeader>
+            <Controller
+              name="courseCategoryId"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field className="md:col-span-1 gap-1" data-invalid={fieldState.invalid}>
+                  <FieldLabel>Category</FieldLabel>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choose Category" />
+                    </SelectTrigger>
+                    <SelectContent position="popper">
+                      {coursescategory?.map((cat) => (
+                        <SelectItem key={cat.id} value={cat.id}>
+                          {cat.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                </Field>
+              )}
+            />
 
-        {/* ================= BASIC INFO ================= */}
-        <form onSubmit={form.handleSubmit(handleUpdate)} className="space-y-4">
-          <ScrollArea className="h-96 px-3">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-3 -mx-4 max-h-max overflow-y-auto px-4">
-              <Controller
-                name="courseTitle"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field className="md:col-span-2 gap-1" data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="courseTitle">Title</FieldLabel>
-                    <Input {...field} id="courseTitle" aria-invalid={fieldState.invalid} autoComplete="off" />
-                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                  </Field>
-                )}
-              />
-              <Controller
-                name="courseDescription"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field className="md:col-span-2 gap-1" data-invalid={fieldState.invalid}>
-                    <FieldLabel htmlFor="courseDescription">Description</FieldLabel>
-                    <Textarea {...field} id="courseDescription" aria-invalid={fieldState.invalid} autoComplete="off" className="min-h-20" />
-                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                  </Field>
-                )}
-              />
+            <Controller
+              name="courseFieldId"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field className="md:col-span-1 gap-1" data-invalid={fieldState.invalid}>
+                  <FieldLabel>Field</FieldLabel>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Choose Field" />
+                    </SelectTrigger>
+                    <SelectContent position="popper">
+                      {coursesfield?.map((f) => (
+                        <SelectItem key={f.id} value={f.id}>
+                          {f.field}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                </Field>
+              )}
+            />
 
-              <Controller
-                name="courseCategoryId"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field className="md:col-span-1 gap-1" data-invalid={fieldState.invalid}>
-                    <FieldLabel>Category</FieldLabel>
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Choose Category" />
-                      </SelectTrigger>
-                      <SelectContent position="popper">
-                        {coursescategory?.map((cat) => (
-                          <SelectItem key={cat.id} value={cat.id}>
-                            {cat.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                  </Field>
-                )}
-              />
+            <div className="md:col-span-2 space-y-2 pt-2 border-t mt-2">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold">Course Benefits</h3>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() =>
+                    appendBenefit({
+                      courseBenefitId: "",
+                    })
+                  }
+                >
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Add Benefit
+                </Button>
+              </div>
 
-              <Controller
-                name="courseFieldId"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field className="md:col-span-1 gap-1" data-invalid={fieldState.invalid}>
-                    <FieldLabel>Field</FieldLabel>
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Choose Field" />
-                      </SelectTrigger>
-                      <SelectContent position="popper">
-                        {coursesfield?.map((f) => (
-                          <SelectItem key={f.id} value={f.id}>
-                            {f.field}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                  </Field>
-                )}
-              />
-
-              <div className="md:col-span-2 space-y-2">
-                <div className="flex items-center justify-between">
-                  <Field>
-                    <FieldLabel>Course Benefits</FieldLabel>
-                  </Field>
-
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    onClick={() =>
-                      appendBenefit({
-                        courseBenefitId: "",
-                      })
-                    }
-                  >
-                    <PlusCircle />
-                    Add Benefit
-                  </Button>
+              {benefitFields.map((item, index) => (
+                <div key={item.id} className="border rounded-md p-2 space-y-2 bg-muted/30">
+                  <Controller
+                    name={`courseBenefits.${index}.courseBenefitId`}
+                    control={form.control}
+                    render={({ field, fieldState }) => (
+                      <Field data-invalid={fieldState.invalid}>
+                        <FieldLabel>Benefit {index + 1}</FieldLabel>
+                        <Select value={field.value} onValueChange={field.onChange}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Choose Benefit" />
+                          </SelectTrigger>
+                          <SelectContent position="popper">
+                            {coursesbenefits
+                              ?.filter((b) => !selectedBenefitIds.includes(b.id) || b.id === field.value)
+                              .map((b) => (
+                                <SelectItem key={b.id} value={b.id}>
+                                  {b.title}
+                                </SelectItem>
+                              ))}
+                          </SelectContent>
+                        </Select>
+                        {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                      </Field>
+                    )}
+                  />
+                  <div className="flex justify-end">
+                    <Button type="button" variant="destructive" size="sm" onClick={() => removeBenefit(index)}>
+                      Remove
+                    </Button>
+                  </div>
                 </div>
+              ))}
+            </div>
 
-                {benefitFields.map((item, index) => (
-                  <div key={item.id} className="border rounded-md p-2 space-y-2 bg-muted/30">
+            <div className="md:col-span-2 space-y-2 pt-2 border-t mt-2">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold">Course Materials</h3>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() =>
+                    appendMaterial({
+                      title: "",
+                      description: "",
+                    })
+                  }
+                >
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Add Material
+                </Button>
+              </div>
+
+              {materialFields.map((item, index) => (
+                <div key={item.id} className="border rounded-md p-2 space-y-2 bg-muted/30">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <Controller
-                      name={`courseBenefits.${index}.courseBenefitId`}
+                      name={`courseMaterials.${index}.title`}
                       control={form.control}
                       render={({ field, fieldState }) => (
                         <Field data-invalid={fieldState.invalid}>
-                          <FieldLabel>Benefit {index + 1}</FieldLabel>
-
-                          <Select value={field.value} onValueChange={field.onChange}>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Choose Benefit" />
-                            </SelectTrigger>
-
-                            <SelectContent position="popper">
-                              {coursesbenefits
-                                ?.filter((b) => {
-                                  // Jangan tampilkan yang sudah dipilih,
-                                  // kecuali milik index sekarang
-                                  return !selectedBenefitIds.includes(b.id) || b.id === field.value;
-                                })
-                                .map((b) => (
-                                  <SelectItem key={b.id} value={b.id}>
-                                    {b.title}
-                                  </SelectItem>
-                                ))}
-                            </SelectContent>
-                          </Select>
-
+                          <FieldLabel>Title {index + 1}</FieldLabel>
+                          <Input {...field} placeholder="Material title" />
                           {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                         </Field>
                       )}
                     />
-
-                    <div className="flex justify-end">
-                      <Button type="button" variant="destructive" size="sm" onClick={() => removeBenefit(index)}>
-                        Remove
-                      </Button>
-                    </div>
+                    <Controller
+                      name={`courseMaterials.${index}.description`}
+                      control={form.control}
+                      render={({ field, fieldState }) => (
+                        <Field className="md:col-span-2" data-invalid={fieldState.invalid}>
+                          <FieldLabel>Description {index + 1}</FieldLabel>
+                          <Textarea {...field} placeholder="Material description" />
+                          {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+                        </Field>
+                      )}
+                    />
                   </div>
-                ))}
-              </div>
-
-              <div className="md:col-span-2 space-y-2">
-                <div className="flex items-center justify-between">
-                  <Field>
-                    <FieldLabel>Course Materials</FieldLabel>
-                  </Field>
-
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    onClick={() =>
-                      appendMaterial({
-                        title: "",
-                        description: "",
-                      })
-                    }
-                  >
-                    <PlusCircle />
-                    Add Material
-                  </Button>
+                  <div className="flex justify-end">
+                    <Button type="button" variant="destructive" size="sm" onClick={() => removeMaterial(index)}>
+                      Remove
+                    </Button>
+                  </div>
                 </div>
-
-                {materialFields.map((item, index) => (
-                  <div key={item.id} className="border rounded-md p-2 space-y-2 bg-muted/30">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {/* Title */}
-                      <Controller
-                        name={`courseMaterials.${index}.title`}
-                        control={form.control}
-                        render={({ field, fieldState }) => (
-                          <Field data-invalid={fieldState.invalid}>
-                            <FieldLabel>Title {index + 1}</FieldLabel>
-                            <Input {...field} />
-                            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                          </Field>
-                        )}
-                      />
-
-                      {/* Description */}
-                      <Controller
-                        name={`courseMaterials.${index}.description`}
-                        control={form.control}
-                        render={({ field, fieldState }) => (
-                          <Field className="md:col-span-2" data-invalid={fieldState.invalid}>
-                            <FieldLabel>Description {index + 1}</FieldLabel>
-                            <Textarea {...field} />
-                            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                          </Field>
-                        )}
-                      />
-                    </div>
-
-                    <div className="flex justify-end">
-                      <Button type="button" variant="destructive" size="sm" onClick={() => removeMaterial(index)}>
-                        Remove
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              ))}
             </div>
-          </ScrollArea>
-
-          {/* ================= FOOTER ================= */}
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              size="sm"
-              onClick={() => {
-                setOpen(false);
-                form.reset();
-              }}
-            >
-              Cancel
-            </AlertDialogCancel>
-            <Button type="submit" disabled={isPending} size="sm">
-              {isPending ? "Creating..." : "Create Course"}
-            </Button>
-          </AlertDialogFooter>
-        </form>
-      </AlertDialogContent>
-    </AlertDialog>
+          </div>
+        </ScrollArea>
+      </div>
+    </EntityDialog>
   );
 }

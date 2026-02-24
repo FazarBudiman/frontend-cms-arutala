@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SkeletonTable } from "@/components/skeleton-table";
 import { useMessages } from "../hook";
+import { formatSnakeCaseToTitle } from "@/shared/utils/string";
 
 export function MessageTable() {
   const { data: messages, isLoading } = useMessages();
@@ -54,10 +55,7 @@ export function MessageTable() {
 
     return Array.from(new Set(messages.map((m) => m.message_status))).map((status) => ({
       value: status,
-      label: status
-        .toLowerCase()
-        .replace(/_/g, " ")
-        .replace(/\b\w/g, (c) => c.toUpperCase()),
+      label: formatSnakeCaseToTitle(status),
     }));
   }, [messages]);
 

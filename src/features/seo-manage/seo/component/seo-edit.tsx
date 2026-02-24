@@ -5,12 +5,12 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useUpdateDetailSeo } from "../hook";
 import { SeoInput, seoInputSchema } from "../type";
 import { Textarea } from "@/components/ui/textarea";
 import { useParams } from "next/navigation";
 import { IconListDetails } from "@tabler/icons-react";
+import { EntityDialog } from "@/components/shared/entity-dialog";
 
 export function SeoEditDialog({ seo, seoId }: { seo: SeoInput; seoId: string }) {
   const [open, setOpen] = useState(false);
@@ -22,9 +22,7 @@ export function SeoEditDialog({ seo, seoId }: { seo: SeoInput; seoId: string }) 
     toast.promise(mutateAsync({ pageId: pageId, seoId: seoId, body: values }), {
       loading: "Mengubah SEO pada Page...",
       success: () => "Mengubah SEO berhasil",
-      error: (err) => {
-        return err.message || "Failed to update contributor";
-      },
+      error: (err) => err.message || "Failed to edit SEO",
     });
     setOpen(false);
   };
@@ -32,8 +30,8 @@ export function SeoEditDialog({ seo, seoId }: { seo: SeoInput; seoId: string }) 
   const form = useForm<SeoInput>({
     resolver: zodResolver(seoInputSchema),
     defaultValues: {
-      metaTitle: "",
-      metaDescription: "",
+      metaTitle: seo.metaTitle,
+      metaDescription: seo.metaDescription,
     },
   });
 
@@ -47,66 +45,42 @@ export function SeoEditDialog({ seo, seoId }: { seo: SeoInput; seoId: string }) 
   }, [open, seo, form]);
 
   return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
-      {/* Trigger */}
-      <AlertDialogTrigger asChild>
+    <EntityDialog
+      open={open}
+      onOpenChange={setOpen}
+      title="Edit SEO"
+      description="Make changes here. Click save when you're done"
+      isPending={isPending}
+      saveLabel="Save Changes"
+      onSubmit={form.handleSubmit(handleSubmit)}
+      trigger={
         <Button variant="outline" size="icon-sm">
           <IconListDetails />
         </Button>
-      </AlertDialogTrigger>
-
-      {/* Content */}
-      <AlertDialogContent className="sm:max-w-3xl max-h-max h-fit">
-        {/* Header */}
-        <AlertDialogHeader className="shrink-0">
-          <AlertDialogTitle>Edit SEO </AlertDialogTitle>
-          <AlertDialogDescription>Make changes here. Click save when you&apos;re done</AlertDialogDescription>
-        </AlertDialogHeader>
-
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-3">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-3 no-scrollbar -mx-4 max-h-max overflow-y-auto px-4">
-            <Controller
-              name="metaTitle"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field className="md:col-span-2 gap-1" data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="metaTitle">Meta Title</FieldLabel>
-                  <Input {...field} id="metaTitle" aria-invalid={fieldState.invalid} autoComplete="off" />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-            <Controller
-              name="metaDescription"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field className="md:col-span-2 gap-1" data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="metaDescription">Meta Description</FieldLabel>
-                  <Textarea {...field} id="metaDescription" aria-invalid={fieldState.invalid} autoComplete="off" className="min-h-20" />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-          </div>
-
-          {/* Footer */}
-          <AlertDialogFooter className="flex w-full justify-between">
-            <AlertDialogCancel asChild size="sm">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setOpen(false);
-                }}
-              >
-                Cancel
-              </Button>
-            </AlertDialogCancel>
-            <Button type="submit" size="sm" disabled={isPending}>
-              {isPending ? "Creating..." : "Create"}
-            </Button>
-          </AlertDialogFooter>
-        </form>
-      </AlertDialogContent>
-    </AlertDialog>
+      }
+    >
+      <Controller
+        name="metaTitle"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field className="md:col-span-2 gap-1" data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor="metaTitle">Meta Title</FieldLabel>
+            <Input {...field} id="metaTitle" aria-invalid={fieldState.invalid} autoComplete="off" />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
+      <Controller
+        name="metaDescription"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field className="md:col-span-2 gap-1" data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor="metaDescription">Meta Description</FieldLabel>
+            <Textarea {...field} id="metaDescription" aria-invalid={fieldState.invalid} autoComplete="off" className="min-h-20" />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
+    </EntityDialog>
   );
 }

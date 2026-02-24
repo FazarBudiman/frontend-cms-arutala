@@ -69,7 +69,7 @@ export default function CourseDetailPage() {
                     </ItemContent>
                     <ItemActions>
                       <ButtonGroup>
-                        <Button size="sm" variant="outline" onClick={() => handleChangeStatus(data.page_id, seo.seo_id)}>
+                        <Button size="sm" variant="secondary" onClick={() => handleChangeStatus(data.page_id, seo.seo_id)}>
                           {seo.is_active ? "Non AKtifkan" : "Aktifkan"}
                         </Button>
                         <SeoEditDialog seo={{ metaTitle: seo.meta_title, metaDescription: seo.meta_description }} seoId={seo.seo_id} />

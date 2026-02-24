@@ -14,8 +14,9 @@ import { generateWhatsAppMessage, generateWhatsAppNumber } from "@/shared/utils/
 import { Message, MessageStatus } from "../type";
 import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group";
 import { IconBrandWhatsappFilled } from "@tabler/icons-react";
+import { formatSnakeCaseToTitle } from "@/shared/utils/string";
 
-export const statusColor: Record<MessageStatus, string> = {
+export const statusColorMessage: Record<MessageStatus, string> = {
   NEW: "bg-status-new text-black hover:bg-status-new",
   CONTACTED: "bg-status-contacted text-white hover:bg-status-contacted",
   QUALIFIED: "bg-status-qualified text-white hover:bg-status-qualified",
@@ -99,14 +100,7 @@ export const columns: ColumnDef<Message>[] = [
     accessorKey: "message_status",
     header: "Status",
     enableColumnFilter: true,
-    cell: ({ row }) => (
-      <Badge className={cn("text-shadow-2xs", statusColor[row.original.message_status])}>
-        {row.original.message_status
-          .toLowerCase()
-          .replace(/_/g, " ")
-          .replace(/\b\w/g, (c) => c.toUpperCase())}
-      </Badge>
-    ),
+    cell: ({ row }) => <Badge className={cn("text-shadow-2xs", statusColorMessage[row.original.message_status])}>{formatSnakeCaseToTitle(row.original.message_status)}</Badge>,
   },
 
   {
@@ -117,7 +111,7 @@ export const columns: ColumnDef<Message>[] = [
       const message = generateWhatsAppMessage(row.original.sender_name);
       return (
         <ButtonGroup>
-          <Button size="icon-sm">
+          <Button size="icon-sm" variant="secondary">
             <Link href={`https://wa.me/${WaPhone}?text=${message}`} target="_blank" rel="noopener noreferrer">
               <IconBrandWhatsappFilled />
             </Link>

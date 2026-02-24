@@ -6,11 +6,18 @@ import { Page } from "../type";
 import { PageDeleteDialog } from "./page-delete";
 import { Button } from "@/components/ui/button";
 import { redirect } from "next/navigation";
+import { IconListDetails } from "@tabler/icons-react";
 
 export const columns: ColumnDef<Page>[] = [
   {
     id: "select",
-    header: ({ table }) => <Checkbox checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")} onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)} aria-label="Select all" />,
+    header: ({ table }) => (
+      <Checkbox
+        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
     cell: ({ row }) => <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />,
   },
   {
@@ -46,12 +53,12 @@ export const columns: ColumnDef<Page>[] = [
       <ButtonGroup>
         <Button
           variant="outline"
-          size="sm"
+          size="icon-sm"
           onClick={() => {
             redirect(`/general/seo-manage/${row.original.page_id}`);
           }}
         >
-          Detail SEO
+          <IconListDetails />
         </Button>
         <PageDeleteDialog pageId={row.original.page_id} />
       </ButtonGroup>

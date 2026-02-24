@@ -67,6 +67,10 @@ export const CourseBatchStatus = {
   COMPLETED: "COMPLETED",
 } as const;
 
+export const courseBatchStatusEnum = z.enum(Object.values(CourseBatchStatus) as [string, ...string[]]);
+
+export type CourseBatchStatus = z.infer<typeof courseBatchStatusEnum>;
+
 /**
  * ---------------------------
  * REGEX HELPERS

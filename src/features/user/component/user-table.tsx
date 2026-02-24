@@ -9,6 +9,7 @@ import { UserAddDialog } from "./user-add";
 import { useUsers } from "../hooks";
 import { Input } from "@/components/ui/input";
 import { DataTable } from "@/components/data-table";
+import { formatSnakeCaseToTitle } from "@/shared/utils/string";
 
 export function UserTable() {
   const { data: users, isLoading } = useUsers();
@@ -42,10 +43,7 @@ export function UserTable() {
 
     return Array.from(new Set(users.map((user) => user.role_name))).map((roleName) => ({
       value: roleName,
-      label: roleName
-        .toLowerCase()
-        .replace(/_/g, " ")
-        .replace(/\b\w/g, (c) => c.toUpperCase()),
+      label: formatSnakeCaseToTitle(roleName),
     }));
   }, [users]);
 

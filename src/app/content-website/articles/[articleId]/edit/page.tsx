@@ -2,57 +2,43 @@
 
 import { useMemo, useState } from "react";
 import type { OutputBlockData, OutputData } from "@editorjs/editorjs";
-import { ArticleEditor, ArticlePreview, ContentBlockType, uploadArticleImage, useArticleDetail, useUpdateArticle, ArticleChangeStatusDialog } from "@/features/article";
+import { ArticleEditor, ArticlePreview, useArticleDetail, useUpdateArticle, ArticleChangeStatusDialog } from "@/features/article";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { AppWindowIcon, CodeIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { useParams, useRouter } from "next/navigation";
 import { useSetBreadcrumbLabel } from "@/providers";
-
-function mapEditorBlocks(blocks: OutputBlockData[]): ContentBlockType[] {
-  return blocks.map((block, index) => ({
-    id: block.id ?? `generated-${index}`,
-    type: block.type as ContentBlockType["type"],
-    data: block.data,
-  }));
-}
+import { mapEditorBlocks, handleUploadImage } from "@/shared/utils/editor";
+import { ContentBlockType } from "@/features/article/type";
 
 export default function EditArticlePage() {
   const router = useRouter();
   const params = useParams();
-
   const articleId = params.articleId as string;
 
-  const { data: articleDetail, isPending: isLoadingDetail } = useArticleDetail(articleId);
-
-  useSetBreadcrumbLabel(`/content-website/articles/${articleId}`, articleDetail?.article_title);
-  useSetBreadcrumbLabel(`/content-website/articles/${articleId}/edit`, "Edit Article");
-  const [data, setData] = useState<OutputData | undefined>();
-  const [mode, setMode] = useState<"edit" | "preview">("edit");
-
-  const initialData = useMemo(() => {
-    if (!articleDetail?.article_content_blocks) return undefined;
-    return {
-      time: new Date().getTime(),
-      blocks: articleDetail.article_content_blocks as OutputBlockData[],
-      version: "2.30.7",
-    };
-  }, [articleDetail]);
-
-  const mappedBlocks = useMemo(() => {
-    const blocksToMap = data?.blocks ?? (articleDetail?.article_content_blocks as OutputBlockData[] | undefined);
-    if (!blocksToMap) return null;
-    return mapEditorBlocks(blocksToMap);
-  }, [data, articleDetail]);
-
+  const { data: articleDetail, isLoading } = useArticleDetail(articleId);
   const { mutateAsync: updateArticle, isPending: isUpdating } = useUpdateArticle();
 
-  const handleSave = async () => {
-    if (!mappedBlocks) return;
+  const [editorData, setEditorData] = useState<OutputData | undefined>(undefined);
 
-    toast.promise(updateArticle({ articleId, body: { contentBlocks: mappedBlocks } }), {
+  useSetBreadcrumbLabel(`/content-website/articles/${articleId}/edit`, articleDetail?.article_title ? `Edit ${articleDetail.article_title}` : undefined);
+
+  const mappedBlocks = useMemo(() => {
+    if (editorData?.blocks) {
+      return mapEditorBlocks(editorData.blocks);
+    }
+    if (articleDetail?.article_content_blocks) {
+      return mapEditorBlocks(articleDetail.article_content_blocks as OutputBlockData[]);
+    }
+    return null;
+  }, [editorData, articleDetail]);
+
+  const handleSave = async () => {
+    if (!editorData) return;
+
+    toast.promise(updateArticle({ articleId, body: { contentBlocks: editorData.blocks as ContentBlockType[] } }), {
       loading: "Updating article...",
       success: () => {
         router.push(`/content-website/articles/${articleId}`);
@@ -62,64 +48,84 @@ export default function EditArticlePage() {
     });
   };
 
-  const handleUploadImage = async (file: File) => {
-    const formData = new FormData();
-    formData.append("contentImage", file);
-
-    try {
-      const result = await uploadArticleImage(formData);
-      console.log(result);
-      return result;
-    } catch (error) {
-      console.error("Upload failed:", error);
-      throw error;
-    }
-  };
+  if (isLoading) {
+    // TODO: Implement Skeleton
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="flex flex-1 flex-col">
-      <div className="p-4 lg:px-6 border">
-        <Card>
-          <CardHeader>
-            <CardTitle>Edit Article</CardTitle>
-            <CardAction className="flex gap-2">
-              {articleDetail && <ArticleChangeStatusDialog article={articleDetail} />}
-              <Button type="submit" size="sm" onClick={handleSave} disabled={isLoadingDetail || isUpdating}>
-                {isLoadingDetail || isUpdating ? "Saving..." : "Save Changes"}
-              </Button>
-            </CardAction>
-          </CardHeader>
-          <CardContent>
-            <Tabs defaultValue="edit" className="space-y-6" value={mode} onValueChange={(v) => setMode(v as "edit" | "preview")}>
-              <TabsList>
-                <TabsTrigger value="edit">
-                  <CodeIcon /> Editor
-                </TabsTrigger>
-                <TabsTrigger value="preview">
-                  <AppWindowIcon />
-                  Preview
-                </TabsTrigger>
-              </TabsList>
+      <div className="p-4 lg:px-6 border-b bg-muted/20">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => router.push(`/content-website/articles/${articleId}`)}>
+              Cancel
+            </Button>
+            <ArticleChangeStatusDialog article={articleDetail!} />
+          </div>
+          <Button size="sm" onClick={handleSave} disabled={isUpdating}>
+            {isUpdating ? "Saving..." : "Save Changes"}
+          </Button>
+        </div>
+      </div>
 
-              <TabsContent value="edit" forceMount style={{ display: mode === "edit" ? "block" : "none" }}>
-                {initialData ? (
-                  <ArticleEditor key={articleId} defaultData={initialData} onChange={(d) => setData(d)} onUploadImage={handleUploadImage} />
-                ) : (
-                  <div className="flex h-[400px] items-center justify-center border-2 border-dashed rounded-lg">
-                    <div className="flex flex-col items-center gap-2">
-                      <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-                      <p className="text-muted-foreground font-medium">Loading content editor...</p>
-                    </div>
-                  </div>
-                )}
-              </TabsContent>
+      <div className="flex-1 overflow-hidden">
+        <Tabs defaultValue="editor" className="h-full flex flex-col">
+          <div className="px-4 border-b bg-background shrink-0">
+            <TabsList className="h-12 bg-transparent p-0 gap-6">
+              <TabsTrigger
+                value="editor"
+                className="h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2"
+              >
+                <CodeIcon className="w-4 h-4 mr-2" />
+                Editor
+              </TabsTrigger>
+              <TabsTrigger
+                value="preview"
+                className="h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2"
+              >
+                <AppWindowIcon className="w-4 h-4 mr-2" />
+                Preview
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
-              <TabsContent value="preview" className="flex flex-col w-full items-center">
-                <ArticlePreview blocks={mappedBlocks} />
-              </TabsContent>
-            </Tabs>
-          </CardContent>
-        </Card>
+          <div className="flex-1 overflow-hidden relative">
+            <TabsContent value="editor" className="h-full m-0 p-4 lg:p-6 overflow-y-auto no-scrollbar bg-muted/5">
+              <Card className="max-w-4xl mx-auto min-h-[500px]">
+                <CardHeader className="border-b bg-muted/10 py-4">
+                  <CardTitle className="text-sm font-medium">Article Content</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <ArticleEditor defaultData={articleDetail?.article_content_blocks as unknown as OutputData} onChange={setEditorData} onUploadImage={handleUploadImage} />
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="preview" className="h-full m-0 p-4 lg:p-6 overflow-y-auto no-scrollbar bg-muted/5">
+              <div className="max-w-4xl mx-auto space-y-6">
+                <Card>
+                  <CardHeader className="border-b bg-muted/10 py-4">
+                    <CardTitle className="text-sm font-medium">Header Preview</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-6">
+                    <h1 className="text-3xl font-bold mb-4">{articleDetail?.article_title}</h1>
+                    <p className="text-muted-foreground">{articleDetail?.article_cover_description}</p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="border-b bg-muted/10 py-4">
+                    <CardTitle className="text-sm font-medium">Content Preview</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-6 lg:p-8">
+                    {mappedBlocks ? <ArticlePreview blocks={mappedBlocks} /> : <div className="text-center py-10 text-muted-foreground">Start writing to see preview.</div>}
+                  </CardContent>
+                </Card>
+              </div>
+            </TabsContent>
+          </div>
+        </Tabs>
       </div>
     </div>
   );

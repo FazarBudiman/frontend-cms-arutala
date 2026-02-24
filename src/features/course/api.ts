@@ -27,7 +27,6 @@ export async function createCourse(payload: CourseInput) {
 }
 
 export async function updateCourse(courseId: string, payload: CourseInput) {
-  // const body = JSON.stringify(payload);
   return clientApi.patch(`/api/courses/${courseId}`, JSON.stringify(payload));
 }
 

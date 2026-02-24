@@ -3,7 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { IconListDetails } from "@tabler/icons-react";
-import { Article } from "../type";
+import { Article, ArticleStatusType } from "../type";
 import { ArticleDeleteDialog } from "./article-delete";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Image from "next/image";
@@ -14,24 +14,41 @@ import { redirect } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { ArticleCoverAddDialog } from "./article-cover-add";
 import { ArticleChangeStatusDialog } from "./article-change-status";
+import { cn } from "@/shared/lib/cn";
+import { formatSnakeCaseToTitle } from "@/shared/utils/string";
+
+export const statusColorArticle: Record<ArticleStatusType, string> = {
+  DRAFT: "bg-status-draft text-black hover:bg-status-draft",
+  REVIEW: "bg-status-review text-white hover:bg-status-review",
+  PUBLISHED: "bg-status-published text-white hover:bg-status-published",
+  UNPUBLISHED: "bg-status-unpublished text-white hover:bg-status-unpublished",
+};
 
 export const columns: ColumnDef<Article>[] = [
   {
     id: "select",
-    header: ({ table }) => <Checkbox checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")} onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)} aria-label="Select all" />,
+    header: ({ table }) => (
+      <Checkbox
+        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
     cell: ({ row }) => <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />,
   },
   {
     accessorKey: "article_cover_url",
     header: "Cover",
     cell: ({ row }) => {
-   
       return (
         <div className="min-w-36 items-center flex justify-center">
-          {row.original.article_cover_url === null ? <ArticleCoverAddDialog articleId={row.original.article_id} /> : <AspectRatio ratio={4 / 2} className="bg-accent rounded-lg border">
-            <Image src={row.original.article_cover_url} alt={row.original.article_id} fill className="object-contain" />
-          </AspectRatio> 
-          }
+          {row.original.article_cover_url === null ? (
+            <ArticleCoverAddDialog articleId={row.original.article_id} />
+          ) : (
+            <AspectRatio ratio={4 / 2} className="bg-accent rounded-lg border">
+              <Image src={row.original.article_cover_url} alt={row.original.article_id} fill className="object-contain" />
+            </AspectRatio>
+          )}
         </div>
       );
     },
@@ -58,7 +75,11 @@ export const columns: ColumnDef<Article>[] = [
     accessorKey: "article_status",
     header: "Status",
     enableColumnFilter: true,
-    cell: ({ row }) => <Badge>{row.original.article_status}</Badge>,
+    cell: ({ row }) => (
+      <Badge variant="destructive" className={cn("text-shadow-2xs", statusColorArticle[row.original.article_status])}>
+        {formatSnakeCaseToTitle(row.original.article_status)}
+      </Badge>
+    ),
     filterFn: "arrIncludes",
   },
   {

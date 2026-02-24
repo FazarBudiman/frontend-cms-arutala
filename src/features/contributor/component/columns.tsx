@@ -11,7 +11,13 @@ import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group"
 export const columns: ColumnDef<Contributor>[] = [
   {
     id: "select",
-    header: ({ table }) => <Checkbox checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")} onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)} aria-label="Select all" />,
+    header: ({ table }) => (
+      <Checkbox
+        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
     cell: ({ row }) => <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />,
   },
   {
@@ -59,7 +65,7 @@ export const columns: ColumnDef<Contributor>[] = [
     cell: ({ row }) => (
       <div className="flex gap-1 flex-wrap">
         {row.original.contributor_expertise.map((s) => (
-          <Badge key={s} variant="secondary">
+          <Badge key={s} variant="outline">
             {s}
           </Badge>
         ))}

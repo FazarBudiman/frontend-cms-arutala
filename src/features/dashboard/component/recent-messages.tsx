@@ -3,7 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { formatedDate } from "@/shared/utils/date";
-import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
+import { EmptyState } from "@/components/shared/empty-state";
 import { IconBrandWhatsappFilled, IconMessage2 } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { generateWhatsAppMessage, generateWhatsAppNumber } from "@/shared/utils/whatsapp";
@@ -57,15 +57,7 @@ export function RecentMessages({ messages }: RecentMessagesProps) {
             );
           })
         ) : (
-          <Empty className="border border-dashed">
-            <EmptyHeader>
-              <EmptyMedia variant="icon">
-                <IconMessage2 />
-              </EmptyMedia>
-              <EmptyTitle className="text-sm">No messages</EmptyTitle>
-              <EmptyDescription className="text-xs">No messages received yet.</EmptyDescription>
-            </EmptyHeader>
-          </Empty>
+          <EmptyState icon={<IconMessage2 />} title="No messages" description="No messages received yet." />
         )}
       </CardContent>
     </Card>

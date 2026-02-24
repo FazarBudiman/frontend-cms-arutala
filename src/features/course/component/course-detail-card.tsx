@@ -57,8 +57,8 @@ export function CourseDetailCard({ courseDetail }: CourseDetailCardProps) {
       </CardContent>
 
       <CardFooter className="flex justify-end gap-3">
-        <CourseEditDialog courseDetail={courseDetail} />
         <CourseBatchAddDialog />
+        <CourseEditDialog courseDetail={courseDetail} />
       </CardFooter>
     </Card>
   );

@@ -8,13 +8,29 @@ import { formatedDate } from "@/shared/utils/date";
 import { Button } from "@/components/ui/button";
 import { IconListDetails } from "@tabler/icons-react";
 import { redirect } from "next/navigation";
-import { CourseBatch } from "../type";
+import { CourseBatch, CourseBatchStatus } from "../type";
 import { CourseBatchDeleteDialog } from "./course-batch-delete";
+import { cn } from "@/shared/lib/cn";
+import { formatSnakeCaseToTitle } from "@/shared/utils/string";
+
+export const StatusColorCoursebatch: Record<CourseBatchStatus, string> = {
+  DRAFT: "bg-status-draft text-black hover:bg-status-draft",
+  SCHEDULED: "bg-status-scheduled text-black hover:bg-status-scheduled",
+  OPEN: "bg-status-open text-white hover:bg-status-open",
+  ON_GOING: "bg-status-on-going text-white hover:bg-status-on-going",
+  COMPLETED: "bg-status-completed text-white hover:bg-status-completed",
+};
 
 export const columns = (courseId: string): ColumnDef<CourseBatch>[] => [
   {
     id: "select",
-    header: ({ table }) => <Checkbox checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")} onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)} aria-label="Select all" />,
+    header: ({ table }) => (
+      <Checkbox
+        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
     cell: ({ row }) => <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />,
   },
   {
@@ -57,11 +73,7 @@ export const columns = (courseId: string): ColumnDef<CourseBatch>[] => [
   {
     accessorKey: "batch_status",
     header: "Status",
-    cell: ({ row }) => (
-      <div className="flex gap-1 flex-wrap">
-        <Badge>{row.original.batch_status}</Badge>
-      </div>
-    ),
+    cell: ({ row }) => <Badge className={cn("text-shadow-2xs", StatusColorCoursebatch[row.original.batch_status])}>{formatSnakeCaseToTitle(row.original.batch_status)}</Badge>,
     filterFn: "arrIncludes",
   },
   {

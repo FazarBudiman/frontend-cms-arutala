@@ -11,6 +11,7 @@ import { useArticles } from "../hook";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { redirect } from "next/navigation";
+import { formatSnakeCaseToTitle } from "@/shared/utils/string";
 
 export function ArticleTable() {
   const { data: articles, isLoading } = useArticles();
@@ -39,10 +40,7 @@ export function ArticleTable() {
 
     return Array.from(new Set(articles.map((article) => article.article_status))).map((status) => ({
       value: status,
-      label: status
-        .toLowerCase()
-        .replace(/_/g, " ")
-        .replace(/\b\w/g, (c) => c.toUpperCase()),
+      label: formatSnakeCaseToTitle(status),
     }));
   }, [articles]);
 

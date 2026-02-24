@@ -5,6 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Badge } from "@/components/ui/badge";
+import { formatSnakeCaseToTitle } from "@/shared/utils/string";
 
 export const column: ColumnDef<User>[] = [
   {
@@ -39,14 +40,7 @@ export const column: ColumnDef<User>[] = [
   {
     accessorKey: "role_name",
     header: "Role",
-    cell: ({ row }) => (
-      <Badge variant="outline">
-        {row.original.role_name
-          .toLowerCase()
-          .replace(/_/g, " ")
-          .replace(/\b\w/g, (c) => c.toUpperCase())}
-      </Badge>
-    ),
+    cell: ({ row }) => <Badge variant="secondary">{formatSnakeCaseToTitle(row.original.role_name)}</Badge>,
   },
   {
     id: "actions",

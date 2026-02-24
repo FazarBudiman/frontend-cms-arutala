@@ -1,53 +1,27 @@
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useEffect, useRef, useState } from "react";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
-import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { PlusCircle } from "lucide-react";
+"use client";
+
+import { useRef, useState, useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { PlusCircle } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { useCreateUser } from "../hooks";
 import { CreateUserInput, createUserSchema, UserRole } from "../type";
-import { Separator } from "@/components/ui/separator";
+import { EntityDialog } from "@/components/shared/entity-dialog";
+import { formatSnakeCaseToTitle } from "@/shared/utils/string";
 
 export function UserAddDialog() {
   const [open, setOpen] = useState(false);
   const [previewProfile, setPreviewProfile] = useState<string | null>(null);
-  const roleOptions = Object.values(UserRole);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const roleOptions = Object.values(UserRole);
 
-  const { mutateAsync, isPending } = useCreateUser();
-
-  const handleCreate = async (values: CreateUserInput) => {
-    const formData = new FormData();
-    formData.append("fullName", values.fullName);
-    formData.append("username", values.username);
-    formData.append("password", values.password);
-    formData.append("userRole", values.userRole);
-
-    if (values.profile) {
-      formData.append("Profile", values.profile);
-    }
-
-    toast.promise(mutateAsync(formData), {
-      loading: "Membuat user…",
-      success: () => {
-        setOpen(false);
-        form.reset();
-        return "Membuat user berhasil";
-      },
-      error: (err) => err.message || "Gagal membuat user",
-    });
-  };
-
-  useEffect(() => {
-    return () => {
-      if (previewProfile) URL.revokeObjectURL(previewProfile);
-    };
-  }, [previewProfile]);
+  const { mutateAsync: createUser, isPending } = useCreateUser();
 
   const form = useForm<CreateUserInput>({
     resolver: zodResolver(createUserSchema),
@@ -61,177 +35,160 @@ export function UserAddDialog() {
     },
   });
 
+  const handleCreate = async (values: CreateUserInput) => {
+    const formData = new FormData();
+    formData.append("fullName", values.fullName);
+    formData.append("username", values.username);
+    formData.append("password", values.password);
+    formData.append("userRole", values.userRole);
+
+    if (values.profile) {
+      formData.append("Profile", values.profile);
+    }
+
+    toast.promise(createUser(formData), {
+      loading: "Membuat user...",
+      success: () => {
+        setOpen(false);
+        form.reset();
+        setPreviewProfile(null);
+        return "User berhasil dibuat";
+      },
+      error: (err) => err.message || "Gagal membuat user",
+    });
+  };
+
+  useEffect(() => {
+    return () => {
+      if (previewProfile) URL.revokeObjectURL(previewProfile);
+    };
+  }, [previewProfile]);
+
   return (
-    <AlertDialog open={open} onOpenChange={setOpen}>
-      {/* Trigger */}
-      <AlertDialogTrigger asChild>
+    <EntityDialog
+      open={open}
+      onOpenChange={setOpen}
+      title="Tambah User"
+      description="Isi detail user di bawah ini"
+      isPending={isPending}
+      saveLabel="Create User"
+      onSubmit={form.handleSubmit(handleCreate)}
+      className="sm:max-w-3xl"
+      trigger={
         <Button size="sm">
-          Tambah User <PlusCircle />
+          Tambah User <PlusCircle className="ml-2 h-4 w-4" />
         </Button>
-      </AlertDialogTrigger>
+      }
+    >
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-4">
+        <Controller
+          name="profile"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <div className="md:col-span-2">
+              <Field data-invalid={fieldState.invalid} orientation="horizontal" className="grid grid-cols-1 md:grid-cols-[1fr,160px] gap-2 items-start">
+                <FieldLabel htmlFor="profile">Profile</FieldLabel>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg, image/png, image/webp"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    field.onChange(file);
+                    if (previewProfile) URL.revokeObjectURL(previewProfile);
+                    setPreviewProfile(URL.createObjectURL(file));
+                  }}
+                />
+                <div className="flex flex-row items-center gap-4">
+                  {previewProfile ? (
+                    <div className="relative h-24 w-24 rounded-md overflow-hidden border">
+                      <Image src={previewProfile} alt="user-profile" fill unoptimized className="object-contain" />
+                    </div>
+                  ) : null}
+                  <Button type="button" size="sm" variant="outline" onClick={() => fileInputRef.current?.click()}>
+                    {previewProfile ? "Ganti Foto" : "Upload Foto"}
+                  </Button>
+                </div>
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              </Field>
+            </div>
+          )}
+        />
 
-      {/* Content */}
-      <AlertDialogContent className="sm:max-w-3xl max-h-max h-fit">
-        {/* Header */}
-        <AlertDialogHeader>
-          <AlertDialogTitle>Tambah User</AlertDialogTitle>
-          <AlertDialogDescription>Make changes here. Click save when you&apos;re done</AlertDialogDescription>
-        </AlertDialogHeader>
-        <Separator />
+        <Controller
+          name="fullName"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field className="gap-1" data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="full-name">Full Name</FieldLabel>
+              <Input {...field} id="full-name" aria-invalid={fieldState.invalid} autoComplete="off" />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
 
-        <form onSubmit={form.handleSubmit(handleCreate)} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-4 no-scrollbar -mx-4 max-h-max overflow-y-auto px-4">
-            {/* Profile */}
-            <Controller
-              name="profile"
-              control={form.control}
-              render={({ field, fieldState }) => {
-                return (
-                  <div className="md:col-span-2 gap-1">
-                    <Field data-invalid={fieldState.invalid} orientation="horizontal" className="grid grid-cols-1 md:grid-cols-[1fr,160px] gap-2 items-start">
-                      <FieldLabel htmlFor="profile">Profile</FieldLabel>
+        <Controller
+          name="username"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field className="gap-1" data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="username">Username</FieldLabel>
+              <Input {...field} id="username" aria-invalid={fieldState.invalid} autoComplete="off" />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
 
-                      {/* Hidden File Input */}
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/jpeg, image/png, image/webp"
-                        className="hidden"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (!file) return;
+        <Controller
+          name="password"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field className="gap-1" data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="password">Password</FieldLabel>
+              <Input {...field} id="password" type="password" aria-invalid={fieldState.invalid} autoComplete="off" />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
 
-                          field.onChange(file);
-                          setPreviewProfile(URL.createObjectURL(file));
-                        }}
-                      />
+        <Controller
+          name="confirmPassword"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field className="gap-1" data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="confirm-password">Confirm Password</FieldLabel>
+              <Input {...field} id="confirm-password" type="password" aria-invalid={fieldState.invalid} autoComplete="off" />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
 
-                      {/* Preview */}
-                      {previewProfile ? (
-                        <div className="flex flex-row  items-center gap-4">
-                          <div className="relative h-36 w-36 rounded-md overflow-hidden border">
-                            <Image src={previewProfile} alt="user-profile" fill unoptimized className="object-contain" />
-                          </div>
-
-                          <Button type="button" size="sm" variant="outline" onClick={() => fileInputRef.current?.click()}>
-                            Ganti Foto
-                          </Button>
-                        </div>
-                      ) : (
-                        /* Kalau belum ada profile */
-                        <Button type="button" size="sm" variant="outline" className="w-fit" onClick={() => fileInputRef.current?.click()}>
-                          Upload Foto
-                        </Button>
-                      )}
-
-                      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                    </Field>
-                  </div>
-                );
-              }}
-            />
-
-            {/* Full Name */}
-            <Controller
-              name="fullName"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field className="gap-1" data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="full-name">Full Name</FieldLabel>
-                  <Input {...field} id="full-name" aria-invalid={fieldState.invalid} autoComplete="off" />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-
-            {/* Username */}
-            <Controller
-              name="username"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field className="gap-1" data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="username">Username</FieldLabel>
-                  <Input {...field} id="username" aria-invalid={fieldState.invalid} autoComplete="off" />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-
-            {/* Password */}
-            <Controller
-              name="password"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field className="gap-1" data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="password">Password</FieldLabel>
-                  <Input {...field} id="password" aria-invalid={fieldState.invalid} autoComplete="off" />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-
-            {/* Confirm Password */}
-            <Controller
-              name="confirmPassword"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field className="gap-1" data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="confirm-password">Confirm Password</FieldLabel>
-                  <Input {...field} id="confirm-password" aria-invalid={fieldState.invalid} autoComplete="off" />
-                  {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                </Field>
-              )}
-            />
-
-            {/* Role */}
-            <Controller
-              name="userRole"
-              control={form.control}
-              render={({ field }) => (
-                <Field className="gap-1">
-                  <FieldLabel>Role</FieldLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Role" />
-                    </SelectTrigger>
-                    <SelectContent position="popper">
-                      <SelectGroup>
-                        {roleOptions.map((role) => (
-                          <SelectItem value={role} key={role}>
-                            {role
-                              .toLowerCase()
-                              .replace(/_/g, " ")
-                              .replace(/\b\w/g, (c) => c.toUpperCase())}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </Field>
-              )}
-            />
-          </div>
-
-          {/* Footer */}
-          <AlertDialogFooter className="flex w-full justify-between">
-            <AlertDialogCancel asChild size="sm">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  form.reset();
-                  setPreviewProfile(null);
-                  setOpen(false);
-                }}
-              >
-                Cancel
-              </Button>
-            </AlertDialogCancel>
-            <Button type="submit" size="sm" disabled={isPending}>
-              {isPending ? "Creating.." : "Create User"}
-            </Button>
-          </AlertDialogFooter>
-        </form>
-      </AlertDialogContent>
-    </AlertDialog>
+        <Controller
+          name="userRole"
+          control={form.control}
+          render={({ field }) => (
+            <Field className="gap-1">
+              <FieldLabel>Role</FieldLabel>
+              <Select value={field.value} onValueChange={field.onChange}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Role" />
+                </SelectTrigger>
+                <SelectContent position="popper">
+                  <SelectGroup>
+                    {roleOptions.map((role) => (
+                      <SelectItem value={role} key={role}>
+                        {formatSnakeCaseToTitle(role)}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </Field>
+          )}
+        />
+      </div>
+    </EntityDialog>
   );
 }

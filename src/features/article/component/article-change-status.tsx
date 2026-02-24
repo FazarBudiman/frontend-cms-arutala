@@ -11,6 +11,8 @@ import { Separator } from "@/components/ui/separator";
 import { Article, articleStatusEnum, ArticleStatusType } from "../type";
 import { useUpdateArticle } from "../hook";
 import { useState } from "react";
+import { statusColorArticle } from "./columns";
+import { formatSnakeCaseToTitle } from "@/shared/utils/string";
 
 export function ArticleChangeStatusDialog({ article }: { article: Article }) {
   const [open, setOpen] = useState(false);
@@ -52,7 +54,9 @@ export function ArticleChangeStatusDialog({ article }: { article: Article }) {
     <AlertDialog open={open} onOpenChange={setOpen}>
       {/* Trigger */}
       <AlertDialogTrigger asChild>
-        <Button size="sm">Change Status</Button>
+        <Button size="sm" variant="secondary">
+          Change Status
+        </Button>
       </AlertDialogTrigger>
 
       {/* Content */}
@@ -77,7 +81,7 @@ export function ArticleChangeStatusDialog({ article }: { article: Article }) {
                 <SelectGroup>
                   {articleStatus.map((status) => (
                     <SelectItem key={status.value} value={status.value}>
-                      <Badge>{status.label}</Badge>
+                      <Badge className={statusColorArticle[status.value]}>{formatSnakeCaseToTitle(status.value)}</Badge>
                     </SelectItem>
                   ))}
                 </SelectGroup>

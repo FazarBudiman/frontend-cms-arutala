@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { statusColor } from "./columns";
+import { statusColorMessage } from "./columns";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { toast } from "sonner";
 import { formatedDate } from "@/shared/utils/date";
@@ -15,6 +15,7 @@ import { useUpdateMessageStatus } from "../hook";
 import { Message, MessageStatus, messageStatusEnum } from "../type";
 import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Separator } from "@/components/ui/separator";
+import { formatSnakeCaseToTitle } from "@/shared/utils/string";
 
 export function MessageDetailDialog({ message }: { message: Message }) {
   const [open, setOpen] = useState(false);
@@ -90,12 +91,7 @@ export function MessageDetailDialog({ message }: { message: Message }) {
                   <SelectGroup>
                     {messageStatus.map((status) => (
                       <SelectItem key={status.value} value={status.value}>
-                        <Badge className={statusColor[status.value]}>
-                          {status.label
-                            .toLowerCase()
-                            .replace(/_/g, " ")
-                            .replace(/\b\w/g, (c) => c.toUpperCase())}
-                        </Badge>
+                        <Badge className={statusColorMessage[status.value]}>{formatSnakeCaseToTitle(status.label)}</Badge>
                       </SelectItem>
                     ))}
                   </SelectGroup>
