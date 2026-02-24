@@ -126,11 +126,6 @@ export function CourseBatchDetailCard({ courseBatchDetail }: CourseDetailCardPro
           </div>
         </div>
       </CardContent>
-
-      {/* ================= FOOTER ================= */}
-      {/* <CardFooter className="flex justify-end">
-        <CourseBatchEditDialog batch={courseBatchDetail as CourseBatch} />
-      </CardFooter> */}
     </Card>
   );
 }

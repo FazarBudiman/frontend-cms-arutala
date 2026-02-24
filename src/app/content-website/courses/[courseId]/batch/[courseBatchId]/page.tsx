@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { SkeletonBatchDetail } from "@/components/skeleton-detail-card";
+import { SkeletonBatchDetail } from "@/components/shared/skeleton-detail-card";
 import { useCourseBatch, CourseBatchDetailCard } from "@/features/course-batch";
 import { useSetBreadcrumbLabel } from "@/providers";
 import { useCourseDetail } from "@/features/course";

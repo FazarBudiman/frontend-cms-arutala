@@ -3,12 +3,12 @@ import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
 import React, { useMemo } from "react";
 import { column } from "./column";
 
-import { SkeletonTable } from "@/components/skeleton-table";
+import { SkeletonTable } from "@/components/shared/skeleton-table";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { UserAddDialog } from "./user-add";
 import { useUsers } from "../hooks";
 import { Input } from "@/components/ui/input";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/shared/data-table";
 import { formatSnakeCaseToTitle } from "@/shared/utils/string";
 
 export function UserTable() {
@@ -19,24 +19,6 @@ export function UserTable() {
     pageIndex: 0,
     pageSize: 8,
   });
-
-  React.useEffect(() => {
-    setPagination((prev) => ({
-      ...prev,
-      pageIndex: 0,
-    }));
-  }, [filters, sorting]);
-
-  React.useEffect(() => {
-    const pageCount = Math.ceil((users?.length ?? 0) / pagination.pageSize);
-
-    if (pagination.pageIndex >= pageCount && pageCount > 0) {
-      setPagination((prev) => ({
-        ...prev,
-        pageIndex: pageCount - 1,
-      }));
-    }
-  }, [users, pagination.pageSize, pagination.pageIndex]);
 
   const uniqueRoles = useMemo(() => {
     if (!users) return [];

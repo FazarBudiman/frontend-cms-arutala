@@ -80,115 +80,113 @@ export function UserAddDialog() {
         </Button>
       }
     >
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-4">
-        <Controller
-          name="profile"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <div className="md:col-span-2">
-              <Field data-invalid={fieldState.invalid} orientation="horizontal" className="grid grid-cols-1 md:grid-cols-[1fr,160px] gap-2 items-start">
-                <FieldLabel htmlFor="profile">Profile</FieldLabel>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/jpeg, image/png, image/webp"
-                  className="hidden"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
-                    field.onChange(file);
-                    if (previewProfile) URL.revokeObjectURL(previewProfile);
-                    setPreviewProfile(URL.createObjectURL(file));
-                  }}
-                />
-                <div className="flex flex-row items-center gap-4">
-                  {previewProfile ? (
-                    <div className="relative h-24 w-24 rounded-md overflow-hidden border">
-                      <Image src={previewProfile} alt="user-profile" fill unoptimized className="object-contain" />
-                    </div>
-                  ) : null}
-                  <Button type="button" size="sm" variant="outline" onClick={() => fileInputRef.current?.click()}>
-                    {previewProfile ? "Ganti Foto" : "Upload Foto"}
-                  </Button>
-                </div>
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-              </Field>
-            </div>
-          )}
-        />
-
-        <Controller
-          name="fullName"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field className="gap-1" data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="full-name">Full Name</FieldLabel>
-              <Input {...field} id="full-name" aria-invalid={fieldState.invalid} autoComplete="off" />
+      <Controller
+        name="profile"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <div className="md:col-span-2">
+            <Field data-invalid={fieldState.invalid} orientation="horizontal" className="grid grid-cols-1 md:grid-cols-[1fr,160px] gap-2 items-start">
+              <FieldLabel htmlFor="profile">Profile</FieldLabel>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg, image/png, image/webp"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  field.onChange(file);
+                  if (previewProfile) URL.revokeObjectURL(previewProfile);
+                  setPreviewProfile(URL.createObjectURL(file));
+                }}
+              />
+              <div className="flex flex-row items-center gap-4">
+                {previewProfile ? (
+                  <div className="relative h-24 w-24 rounded-md overflow-hidden border">
+                    <Image src={previewProfile} alt="user-profile" fill unoptimized className="object-contain" />
+                  </div>
+                ) : null}
+                <Button type="button" size="sm" variant="outline" onClick={() => fileInputRef.current?.click()}>
+                  {previewProfile ? "Ganti Foto" : "Upload Foto"}
+                </Button>
+              </div>
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
-          )}
-        />
+          </div>
+        )}
+      />
 
-        <Controller
-          name="username"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field className="gap-1" data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="username">Username</FieldLabel>
-              <Input {...field} id="username" aria-invalid={fieldState.invalid} autoComplete="off" />
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
+      <Controller
+        name="fullName"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field className="md:col-span-1 gap-1" data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor="full-name">Full Name</FieldLabel>
+            <Input {...field} id="full-name" aria-invalid={fieldState.invalid} autoComplete="off" />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
 
-        <Controller
-          name="password"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field className="gap-1" data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="password">Password</FieldLabel>
-              <Input {...field} id="password" type="password" aria-invalid={fieldState.invalid} autoComplete="off" />
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
+      <Controller
+        name="username"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field className="md:col-span-1 gap-1" data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor="username">Username</FieldLabel>
+            <Input {...field} id="username" aria-invalid={fieldState.invalid} autoComplete="off" />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
 
-        <Controller
-          name="confirmPassword"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field className="gap-1" data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="confirm-password">Confirm Password</FieldLabel>
-              <Input {...field} id="confirm-password" type="password" aria-invalid={fieldState.invalid} autoComplete="off" />
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
+      <Controller
+        name="password"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field className="md:col-span-1 gap-1" data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor="password">Password</FieldLabel>
+            <Input {...field} id="password" type="password" aria-invalid={fieldState.invalid} autoComplete="off" />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
 
-        <Controller
-          name="userRole"
-          control={form.control}
-          render={({ field }) => (
-            <Field className="gap-1">
-              <FieldLabel>Role</FieldLabel>
-              <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Role" />
-                </SelectTrigger>
-                <SelectContent position="popper">
-                  <SelectGroup>
-                    {roleOptions.map((role) => (
-                      <SelectItem value={role} key={role}>
-                        {formatSnakeCaseToTitle(role)}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </Field>
-          )}
-        />
-      </div>
+      <Controller
+        name="confirmPassword"
+        control={form.control}
+        render={({ field, fieldState }) => (
+          <Field className="md:col-span-1 gap-1" data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor="confirm-password">Confirm Password</FieldLabel>
+            <Input {...field} id="confirm-password" type="password" aria-invalid={fieldState.invalid} autoComplete="off" />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
+      />
+
+      <Controller
+        name="userRole"
+        control={form.control}
+        render={({ field }) => (
+          <Field className="gap-1">
+            <FieldLabel>Role</FieldLabel>
+            <Select value={field.value} onValueChange={field.onChange}>
+              <SelectTrigger>
+                <SelectValue placeholder="Role" />
+              </SelectTrigger>
+              <SelectContent position="popper">
+                <SelectGroup>
+                  {roleOptions.map((role) => (
+                    <SelectItem value={role} key={role}>
+                      {formatSnakeCaseToTitle(role)}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </Field>
+        )}
+      />
     </EntityDialog>
   );
 }

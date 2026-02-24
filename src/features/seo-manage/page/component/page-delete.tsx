@@ -1,4 +1,4 @@
-import { DeleteDialog } from "@/components/dialog-delete";
+import { DeleteDialog } from "@/components/shared/dialog-delete";
 import { useDeletePage } from "../hook";
 
 export function PageDeleteDialog({ pageId }: { pageId: string }) {

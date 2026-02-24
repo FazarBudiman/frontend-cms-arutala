@@ -11,6 +11,7 @@ import { ButtonGroup } from "@/components/ui/button-group";
 import { Button } from "@/components/ui/button";
 import { useSetBreadcrumbLabel } from "@/providers";
 import { mapEditorBlocks } from "@/shared/utils/editor";
+import { SkeletonDetailCard } from "@/components/shared/skeleton-detail-card";
 
 export default function DetailArticlePage() {
   const router = useRouter();
@@ -25,12 +26,11 @@ export default function DetailArticlePage() {
   }, [data]);
 
   if (isLoading) {
-    // TODO: Implement Skeleton
-    return <div>Loading...</div>;
+    return <SkeletonDetailCard />;
   }
 
   return (
-    <div className="flex flex-1 flex-col">
+    <div className="flex flex-1 flex-col min-h-screen">
       <div className="p-4 lg:px-6 border-b bg-muted/20">
         <ButtonGroup className="justify-between w-full h-8">
           <Button variant="outline" size="sm" onClick={() => router.push("/content-website/articles")}>
@@ -45,17 +45,17 @@ export default function DetailArticlePage() {
         </ButtonGroup>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-4 lg:p-6 bg-muted/10 no-scrollbar">
-        <div className="max-w-4xl mx-auto space-y-6">
+      <div className="flex-1  p-4 lg:p-6 bg-muted/10 ">
+        <div className="max-w-full mx-auto space-y-6">
           {/* Article Header */}
-          <div className="space-y-4">
+          <div className="space-y-4 p-6">
             <div className="space-y-2">
-              <h1 className="text-3xl font-bold tracking-tight">{data?.article_title}</h1>
-              <p className="text-muted-foreground">{data?.article_cover_description}</p>
+              <h1 className="text-xl font-bold tracking-tight">{data?.article_title}</h1>
+              <p className="text-muted-foreground text-md">{data?.article_cover_description}</p>
             </div>
 
             {data?.article_cover_url && (
-              <AspectRatio ratio={16 / 9} className="overflow-hidden rounded-lg border bg-muted">
+              <AspectRatio ratio={4 / 2} className="overflow-hidden rounded-lg border bg-muted">
                 <Image src={data.article_cover_url} alt={data.article_title || "Article cover"} fill className="object-cover" />
               </AspectRatio>
             )}
@@ -64,9 +64,7 @@ export default function DetailArticlePage() {
           <Separator />
 
           {/* Article Content */}
-          <div className="bg-background rounded-lg border p-6 lg:p-8 shadow-sm">
-            {mappedBlocks ? <ArticlePreview blocks={mappedBlocks} /> : <div className="text-center py-10 text-muted-foreground">No content blocks available.</div>}
-          </div>
+          <div className="bg-background rounded-lg border p-2 lg:p-8 shadow-sm">{mappedBlocks ? <ArticlePreview blocks={mappedBlocks} /> : <div className="text-center py-10 text-muted-foreground">No content blocks available.</div>}</div>
         </div>
       </div>
     </div>

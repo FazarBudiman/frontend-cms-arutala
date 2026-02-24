@@ -22,6 +22,8 @@ type PaginationLinkProps = {
   React.ComponentProps<"a">;
 
 function PaginationLink({ className, isActive, size = "icon", ...props }: PaginationLinkProps) {
+  const isDisabled = props["aria-disabled"] === true;
+
   return (
     <a
       aria-current={isActive ? "page" : undefined}
@@ -32,8 +34,16 @@ function PaginationLink({ className, isActive, size = "icon", ...props }: Pagina
           variant: isActive ? "outline" : "ghost",
           size,
         }),
+        isDisabled && "pointer-events-none opacity-50 cursor-not-allowed",
         className,
       )}
+      onClick={(e) => {
+        if (isDisabled) {
+          e.preventDefault();
+          return;
+        }
+        props.onClick?.(e as unknown as React.MouseEvent<HTMLAnchorElement>);
+      }}
       {...props}
     />
   );

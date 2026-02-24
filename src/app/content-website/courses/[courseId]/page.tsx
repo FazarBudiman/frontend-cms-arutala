@@ -2,9 +2,11 @@
 
 import { CourseDetailCard, useCourseDetail } from "@/features/course";
 import { useParams } from "next/navigation";
-import { SkeletonCourseDetail } from "@/components/skeleton-detail-card";
 import { CourseBatchTable } from "@/features/course-batch";
 import { useSetBreadcrumbLabel } from "@/providers";
+import { SkeletonDetailCard } from "@/components/shared/skeleton-detail-card";
+import { IconDeviceImacCode } from "@tabler/icons-react";
+import { EmptyState } from "@/components/shared/empty-state";
 
 export default function CourseDetailPage() {
   const params = useParams();
@@ -15,15 +17,15 @@ export default function CourseDetailPage() {
   useSetBreadcrumbLabel(`/content-website/courses/${courseId}`, data?.course_title);
 
   if (isLoading) {
-    return <SkeletonCourseDetail />;
+    return <SkeletonDetailCard />;
   }
 
   if (isError) {
-    return <div>Error: {(error as Error).message}</div>;
+    <EmptyState title="Error" description={(error as Error).message} icon={<IconDeviceImacCode />} />;
   }
 
   if (!data) {
-    return <div>Course not found</div>;
+    return <EmptyState title="No Seo" description="No messages received yet" icon={<IconDeviceImacCode />} />;
   }
 
   return (

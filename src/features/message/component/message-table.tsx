@@ -1,64 +1,50 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/shared/data-table";
 import { columns } from "./columns";
-import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
+import { ColumnFiltersState, PaginationState, SortingState } from "@tanstack/react-table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { SkeletonTable } from "@/components/skeleton-table";
+import { SkeletonTable } from "@/components/shared/skeleton-table";
 import { useMessages } from "../hook";
 import { formatSnakeCaseToTitle } from "@/shared/utils/string";
 
 export function MessageTable() {
   const { data: messages, isLoading } = useMessages();
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [filters, setFilters] = React.useState<ColumnFiltersState>([]);
-  const [pagination, setPagination] = React.useState({
+  const [pagination, setPagination] = React.useState<PaginationState>({
     pageIndex: 0,
     pageSize: 8,
   });
 
-  React.useEffect(() => {
-    setPagination((prev) => ({
-      ...prev,
-      pageIndex: 0,
-    }));
-  }, [filters, sorting]);
-
-  React.useEffect(() => {
-    const pageCount = Math.ceil((messages?.length ?? 0) / pagination.pageSize);
-
-    if (pagination.pageIndex >= pageCount && pageCount > 0) {
-      setPagination((prev) => ({
-        ...prev,
-        pageIndex: pageCount - 1,
-      }));
-    }
-  }, [messages, pagination.pageSize, pagination.pageIndex]);
-
   /* ------------------------------------------------------------------ */
-  /* Helpers                                                             */
+  /* Derived options                                                      */
   /* ------------------------------------------------------------------ */
 
   const uniqueSubject = useMemo(() => {
     if (!messages) return [];
-    const allSubject = messages.flatMap((message) => message.subject);
-    return Array.from(new Set(allSubject)).map((subject) => ({
-      value: subject,
-      label: subject,
+    return Array.from(new Set(messages.flatMap((m) => m.subject))).map((s) => ({
+      value: s,
+      label: s,
     }));
   }, [messages]);
 
   const uniqueStatuses = useMemo(() => {
     if (!messages) return [];
-
-    return Array.from(new Set(messages.map((m) => m.message_status))).map((status) => ({
-      value: status,
-      label: formatSnakeCaseToTitle(status),
+    return Array.from(new Set(messages.map((m) => m.message_status))).map((s) => ({
+      value: s,
+      label: formatSnakeCaseToTitle(s),
     }));
   }, [messages]);
 
+  /* ------------------------------------------------------------------ */
+  /* Handlers                                                             */
+  /* ------------------------------------------------------------------ */
+
+  /** Set filter */
   const setColumnFilter = (id: string, value: string | null) => {
     setFilters((prev) => {
       const others = prev.filter((f) => f.id !== id);
@@ -68,11 +54,11 @@ export function MessageTable() {
 
   /* ------------------------------------------------------------------ */
   return (
-    <div className="space-y-4 ">
+    <div className="space-y-4">
       {/* Toolbar */}
-      <div className="flex items-center gap-4 h-9 ">
+      <div className="flex items-center gap-4 h-9">
         {/* Search by name */}
-        <Input placeholder="Search by name..." onChange={(e) => setColumnFilter("sender_name", e.target.value)} className="max-w-xs h-9 text-sm" />
+        <Input placeholder="Search by name..." onChange={(e) => setColumnFilter("sender_name", e.target.value || null)} className="max-w-xs h-9 text-sm" />
 
         {/* Filter by status */}
         <Select defaultValue="ALL" onValueChange={(v) => setColumnFilter("message_status", v !== "ALL" ? v : null)}>
@@ -82,28 +68,26 @@ export function MessageTable() {
           <SelectContent position="popper" className="text-sm">
             <SelectGroup>
               <SelectItem value="ALL">All Status</SelectItem>
-              {uniqueStatuses.map((status) => {
-                return (
-                  <SelectItem value={status.value} key={status.value}>
-                    {status.label}
-                  </SelectItem>
-                );
-              })}
+              {uniqueStatuses.map((s) => (
+                <SelectItem key={s.value} value={s.value}>
+                  {s.label}
+                </SelectItem>
+              ))}
             </SelectGroup>
           </SelectContent>
         </Select>
 
-        {/* Filter by Subejct: Mengisi filter array dengan id 'subject' */}
+        {/* Filter by Subject */}
         <Select defaultValue="ALL" onValueChange={(v) => setColumnFilter("subject", v !== "ALL" ? v : null)}>
-          <SelectTrigger className="text-sm h-90">
+          <SelectTrigger className="h-9 text-sm">
             <SelectValue placeholder="Filter Subject" />
           </SelectTrigger>
           <SelectContent position="popper">
             <SelectGroup>
               <SelectItem value="ALL">All Subject</SelectItem>
-              {uniqueSubject.map((field) => (
-                <SelectItem value={field.value} key={field.value}>
-                  {field.label}
+              {uniqueSubject.map((s) => (
+                <SelectItem key={s.value} value={s.value}>
+                  {s.label}
                 </SelectItem>
               ))}
             </SelectGroup>

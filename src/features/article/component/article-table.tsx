@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { DataTable } from "@/components/data-table";
+import { DataTable } from "@/components/shared/data-table";
 import { columns } from "./columns";
 import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { SkeletonTable } from "@/components/skeleton-table";
+import { SkeletonTable } from "@/components/shared/skeleton-table";
 import { useArticles } from "../hook";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
@@ -21,17 +21,6 @@ export function ArticleTable() {
     pageIndex: 0,
     pageSize: 8,
   });
-
-  React.useEffect(() => {
-    setPagination((prev) => ({ ...prev, pageIndex: 0 }));
-  }, [filters, sorting]);
-
-  React.useEffect(() => {
-    const pageCount = Math.ceil((articles?.length ?? 0) / pagination.pageSize);
-    if (pagination.pageIndex >= pageCount && pageCount > 0) {
-      setPagination((prev) => ({ ...prev, pageIndex: pageCount - 1 }));
-    }
-  }, [articles, pagination.pageSize, pagination.pageIndex]);
 
   const uniqueStatus = useMemo(() => {
     if (!articles) {

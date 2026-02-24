@@ -1,5 +1,5 @@
 import { useDeleteArticle } from "../hook";
-import { DeleteDialog } from "@/components/dialog-delete";
+import { DeleteDialog } from "@/components/shared/dialog-delete";
 
 export function ArticleDeleteDialog({ articleId }: { articleId: string }) {
   const { mutateAsync, isPending } = useDeleteArticle();

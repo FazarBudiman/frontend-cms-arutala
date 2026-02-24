@@ -1,4 +1,4 @@
-import { DeleteDialog } from "@/components/dialog-delete";
+import { DeleteDialog } from "@/components/shared/dialog-delete";
 import { useDeleteSeo } from "../hook";
 
 export function SeoDeleteDialog({ seoId, pageId }: { seoId: string; pageId: string }) {

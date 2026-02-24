@@ -1,7 +1,6 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { SkeletonCourseDetail } from "@/components/skeleton-detail-card";
 import { usePage } from "@/features/seo-manage/page";
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,14 +9,21 @@ import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle }
 import { CheckCircle, XCircle } from "lucide-react";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { toast } from "sonner";
+import { SkeletonDetailCard } from "@/components/shared/skeleton-detail-card";
+import { EmptyState } from "@/components/shared/empty-state";
+import { IconWorldSearch } from "@tabler/icons-react";
+import { useSetBreadcrumbLabel } from "@/providers";
+import { cn } from "@/shared/lib/cn";
 
 export default function CourseDetailPage() {
   const params = useParams();
   const pageId = params.pageId as string;
 
-  const { data, isLoading, isError, error } = usePage(pageId);
-  const { data: seos } = useSeos(pageId);
+  const { data } = usePage(pageId);
+  const { data: seos, isLoading } = useSeos(pageId);
   const { mutateAsync } = useChangeStatusSeo();
+
+  useSetBreadcrumbLabel(`/general/seo-manage/${pageId}`, data?.page_title);
 
   const handleChangeStatus = async (pageId: string, seoId: string) => {
     toast.promise(mutateAsync({ pageId, seoId }), {
@@ -28,15 +34,11 @@ export default function CourseDetailPage() {
   };
 
   if (isLoading) {
-    return <SkeletonCourseDetail />;
-  }
-
-  if (isError) {
-    return <div>Error: {(error as Error).message}</div>;
+    return <SkeletonDetailCard />;
   }
 
   if (!data) {
-    return <div>Course not found</div>;
+    return <EmptyState title="No Seo" description="No SEO added yet" icon={<IconWorldSearch />} />;
   }
 
   return (
@@ -60,24 +62,28 @@ export default function CourseDetailPage() {
                 </CardAction>
               </CardHeader>
               <CardContent className="space-y-3">
-                {seos?.map((seo, index) => (
-                  <Item key={index} className="py-2" variant="outline">
-                    <ItemMedia variant="icon">{seo.is_active ? <CheckCircle className="text-green-600" /> : <XCircle className="text-red-500" />}</ItemMedia>
-                    <ItemContent>
-                      <ItemTitle className="text-sm leading-tight">{seo.meta_title}</ItemTitle>
-                      <ItemDescription className="text-xs text-muted-foreground leading-tight">{seo.meta_description}</ItemDescription>
-                    </ItemContent>
-                    <ItemActions>
-                      <ButtonGroup>
-                        <Button size="sm" variant="secondary" onClick={() => handleChangeStatus(data.page_id, seo.seo_id)}>
-                          {seo.is_active ? "Non AKtifkan" : "Aktifkan"}
-                        </Button>
-                        <SeoEditDialog seo={{ metaTitle: seo.meta_title, metaDescription: seo.meta_description }} seoId={seo.seo_id} />
-                        <SeoDeleteDialog pageId={pageId} seoId={seo.seo_id} />
-                      </ButtonGroup>
-                    </ItemActions>
-                  </Item>
-                ))}
+                {seos?.length === 0 ? (
+                  <EmptyState title="No SEO" description="No SEO added yet" icon={<IconWorldSearch />} />
+                ) : (
+                  seos?.map((seo) => (
+                    <Item key={seo.seo_id} className={cn("py-2 transition-all hover:bg-muted/40", seo.is_active && "border-green-500 bg-green-50")} variant="outline">
+                      <ItemMedia variant="icon">{seo.is_active ? <CheckCircle className="text-green-600" /> : <XCircle className="text-red-500" />}</ItemMedia>
+                      <ItemContent>
+                        <ItemTitle className="text-sm leading-tight">{seo.meta_title}</ItemTitle>
+                        <ItemDescription className="text-xs text-muted-foreground leading-tight">{seo.meta_description}</ItemDescription>
+                      </ItemContent>
+                      <ItemActions>
+                        <ButtonGroup>
+                          <Button size="sm" variant="secondary" onClick={() => handleChangeStatus(data.page_id, seo.seo_id)}>
+                            {seo.is_active ? "Non Aktifkan" : "Aktifkan"}
+                          </Button>
+                          <SeoEditDialog seo={{ metaTitle: seo.meta_title, metaDescription: seo.meta_description }} seoId={seo.seo_id} />
+                          <SeoDeleteDialog pageId={pageId} seoId={seo.seo_id} />
+                        </ButtonGroup>
+                      </ItemActions>
+                    </Item>
+                  ))
+                )}
               </CardContent>
             </Card>
           </CardContent>

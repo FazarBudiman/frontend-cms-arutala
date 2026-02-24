@@ -1,5 +1,5 @@
 import { useDeleteContributor } from "../hook";
-import { DeleteDialog } from "@/components/dialog-delete";
+import { DeleteDialog } from "@/components/shared/dialog-delete";
 
 export function ContributorDeleteDialog({ contributorId }: { contributorId: string }) {
   const { mutateAsync, isPending } = useDeleteContributor();

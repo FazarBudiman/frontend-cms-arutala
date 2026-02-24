@@ -23,43 +23,43 @@ export function HeaderBlock({ data }: HeaderBlockProps) {
   switch (level) {
     case 1:
       return (
-        <h1 id={id} className={`text-3xl sm:text-4xl font-bold mb-6 mt-10 text-[var(--color-neutral-950)] ${baseClass}`}>
+        <h1 id={id} className={`text-xl sm:text-4xl font-bold mb-6 mt-10 text-(--color-neutral-950) ${baseClass}`}>
           {text}
         </h1>
       );
     case 2:
       return (
-        <h2 id={id} className={`text-2xl sm:text-3xl font-bold mb-5 mt-8 text-[var(--color-neutral-950)] ${baseClass}`}>
+        <h2 id={id} className={`text-lg sm:text-3xl font-bold mb-5 mt-8 text-(--color-neutral-950) ${baseClass}`}>
           {text}
         </h2>
       );
     case 3:
       return (
-        <h3 id={id} className={`text-xl sm:text-2xl font-semibold mb-4 mt-6 text-[var(--color-neutral-950)] ${baseClass}`}>
+        <h3 id={id} className={`text-md sm:text-2xl font-semibold mb-4 mt-6 text-(--color-neutral-950) ${baseClass}`}>
           {text}
         </h3>
       );
     case 4:
       return (
-        <h4 id={id} className={`text-lg sm:text-xl font-semibold mb-3 mt-5 text-[var(--color-neutral-950)] ${baseClass}`}>
+        <h4 id={id} className={`text-base sm:text-xl font-semibold mb-3 mt-5 text-(--color-neutral-950) ${baseClass}`}>
           {text}
         </h4>
       );
     case 5:
       return (
-        <h5 id={id} className={`text-base sm:text-lg font-medium mb-2 mt-4 text-[var(--color-neutral-900)] ${baseClass}`}>
+        <h5 id={id} className={`text-sm sm:text-lg font-medium mb-2 mt-4 text-(--color-neutral-900) ${baseClass}`}>
           {text}
         </h5>
       );
     case 6:
       return (
-        <h6 id={id} className={`text-sm sm:text-base font-medium mb-2 mt-3 text-[var(--color-neutral-800)] ${baseClass}`}>
+        <h6 id={id} className={`text-xs sm:text-base font-medium mb-2 mt-3 text-(--color-neutral-800) ${baseClass}`}>
           {text}
         </h6>
       );
     default:
       return (
-        <h3 id={id} className={`text-xl sm:text-2xl font-semibold mb-4 mt-6 text-[var(--color-neutral-950)] ${baseClass}`}>
+        <h3 id={id} className={`text-xl sm:text-2xl font-semibold mb-4 mt-6 text-(--color-neutral-950) ${baseClass}`}>
           {text}
         </h3>
       );

@@ -1,14 +1,14 @@
 const segmentMap: Record<string, string> = {
   "content-website": "Content Website",
-  "seo-manage": "SEO",
-  "users": "Users",
-  "dashboard": "Dashboard",
-  "articles": "Articles",
-  "courses": "Courses",
-  "mitras": "Mitras",
-  "testimonies": "Testimonies",
-  "messages": "Messages",
-  "general": "General",
+  "seo-manage": "SEO Manage",
+  users: "Users",
+  dashboard: "Dashboard",
+  articles: "Articles",
+  courses: "Courses",
+  mitras: "Mitras",
+  testimonies: "Testimonies",
+  messages: "Messages",
+  general: "General",
 };
 
 export function generateBreadcrumb(pathname: string) {
