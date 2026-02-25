@@ -76,7 +76,7 @@ export function UserAddDialog() {
       className="sm:max-w-3xl"
       trigger={
         <Button size="sm">
-          Tambah User <PlusCircle className="ml-2 h-4 w-4" />
+          Tambah User <PlusCircle />
         </Button>
       }
     >

@@ -50,22 +50,20 @@ export default function CreateArticlePage() {
       </div>
 
       <div className="flex-1 overflow-hidden">
-        <Tabs
-          value={mode}
-          onValueChange={(v) => {
-            console.log("TAB CHANGE:", v);
-            setMode(v as "edit" | "preview");
-          }}
-          className="h-full flex flex-col"
-          defaultValue="edit"
-        >
+        <Tabs value={mode} onValueChange={(v) => setMode(v as "edit" | "preview")} className="h-full flex flex-col" defaultValue="edit">
           <div className="px-4 border-b bg-background shrink-0">
             <TabsList className="h-12 bg-transparent p-0 gap-6">
-              <TabsTrigger value="edit" className="h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2">
+              <TabsTrigger
+                value="edit"
+                className="h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2"
+              >
                 <CodeIcon className="w-4 h-4 mr-2" />
                 Editor
               </TabsTrigger>
-              <TabsTrigger value="preview" className="h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2">
+              <TabsTrigger
+                value="preview"
+                className="h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2"
+              >
                 <AppWindowIcon className="w-4 h-4 mr-2" />
                 Preview
               </TabsTrigger>
@@ -90,7 +88,9 @@ export default function CreateArticlePage() {
                   <CardHeader className="border-b bg-muted/10 py-4">
                     <CardTitle className="text-sm font-medium">Content Preview</CardTitle>
                   </CardHeader>
-                  <CardContent className="p-6 lg:p-8">{mappedBlocks ? <ArticlePreview blocks={mappedBlocks} /> : <div className="text-center py-10 text-muted-foreground">Start writing to see preview.</div>}</CardContent>
+                  <CardContent className="p-6 lg:p-8">
+                    {mappedBlocks ? <ArticlePreview blocks={mappedBlocks} /> : <div className="text-center py-10 text-muted-foreground">Start writing to see preview.</div>}
+                  </CardContent>
                 </Card>
               </div>
             </TabsContent>

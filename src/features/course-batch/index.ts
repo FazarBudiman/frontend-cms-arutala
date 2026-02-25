@@ -1,7 +1,7 @@
 // components
-export { default as CourseBatchAddDialog } from "./component/course-batch-add";
 export { CourseBatchTable } from "./component/course-batch-table";
 export { CourseBatchDetailCard } from "./component/course-batch-detail-card";
+export { CourseBatchForm } from "./component/course-batch-form";
 
 // hooks
 export { useCourseBatch, useCreateCourseBatch, useUpdateCourseBatch, useDeleteCourseBatch, useUploadCourseBatch } from "./hook";

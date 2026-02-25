@@ -2,7 +2,17 @@
 
 import { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
-import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { cn } from "@/shared/lib/cn";
 
 interface EntityDialogProps {
@@ -41,7 +51,7 @@ export function EntityDialog({
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       {trigger && <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>}
-      <AlertDialogContent className={cn("sm:max-w-3xl max-h-max h-fit", className)}>
+      <AlertDialogContent className={cn("sm:max-w-5xl max-h-max h-fit", className)}>
         <AlertDialogHeader className="shrink-0">
           <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>{description}</AlertDialogDescription>
@@ -51,14 +61,16 @@ export function EntityDialog({
           <div className={cn("grid grid-cols-1 md:grid-cols-2 gap-x-2 gap-y-3 no-scrollbar -mx-4 max-h-max overflow-y-auto px-4", contentClassName)}>{children}</div>
 
           <AlertDialogFooter className="flex w-full justify-between">
-            <AlertDialogCancel asChild>
+            <AlertDialogCancel asChild size="sm">
               <Button variant="outline" size="sm" onClick={() => onOpenChange(false)}>
                 {cancelLabel}
               </Button>
             </AlertDialogCancel>
-            <Button type="submit" size="sm" disabled={isPending}>
-              {isPending ? "Saving..." : saveLabel}
-            </Button>
+            <AlertDialogAction asChild size="sm">
+              <Button type="submit" size="sm" disabled={isPending}>
+                {isPending ? "Saving..." : saveLabel}
+              </Button>
+            </AlertDialogAction>
           </AlertDialogFooter>
         </form>
       </AlertDialogContent>

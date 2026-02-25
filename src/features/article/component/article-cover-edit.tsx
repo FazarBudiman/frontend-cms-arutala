@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useRef, useState } from "react";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Edit2Icon } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";
@@ -13,6 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { articleCoverInputUpdateSchema, ArticleCoverInputUpdateType, ArticleDetail } from "../type";
 import { Textarea } from "@/components/ui/textarea";
 import { useUpdateArticleCover } from "../hook";
+import { IconPencilPin } from "@tabler/icons-react";
 
 export function ArticleCoverEditDialog({ articleDetail }: { articleDetail: ArticleDetail }) {
   const [open, setOpen] = useState(false);
@@ -71,8 +71,8 @@ export function ArticleCoverEditDialog({ articleDetail }: { articleDetail: Artic
   return (
     <AlertDialog open={open} onOpenChange={handleOpenChange}>
       <AlertDialogTrigger asChild>
-        <Button variant="outline">
-          Edit Cover Article <Edit2Icon />
+        <Button variant="secondary" size="sm">
+          Edit Cover Article <IconPencilPin />
         </Button>
       </AlertDialogTrigger>
 

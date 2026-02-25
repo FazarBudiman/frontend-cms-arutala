@@ -74,7 +74,7 @@ export function TestimoniAddDialog() {
       className="sm:max-w-3xl"
       trigger={
         <Button size="sm">
-          Tambah Testimoni <PlusCircle className="ml-2 h-4 w-4" />
+          Tambah Testimoni <PlusCircle />
         </Button>
       }
     >

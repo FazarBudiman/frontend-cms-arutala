@@ -11,7 +11,7 @@ import { IconListDetails } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
 import { Contributor, ContributorType, UpdateContributorInput, updateContributorSchema } from "../type";
 import { useUpdateContributor } from "../hook";
 import { EntityDialog } from "@/components/shared/entity-dialog";
@@ -108,7 +108,7 @@ export function ContributorDetailDialog({ contributor }: { contributor: Contribu
       className="sm:max-w-3xl"
       trigger={
         <Button variant="outline" size="icon-sm">
-          <IconListDetails className="h-4 w-4" />
+          <IconListDetails />
         </Button>
       }
     >
@@ -156,6 +156,7 @@ export function ContributorDetailDialog({ contributor }: { contributor: Contribu
         render={({ field, fieldState }) => (
           <Field className="gap-1" data-invalid={fieldState.invalid}>
             <FieldLabel htmlFor="contributorName">Name</FieldLabel>
+
             <Input {...field} id="contributorName" aria-invalid={fieldState.invalid} autoComplete="off" />
             {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
           </Field>
@@ -216,8 +217,8 @@ export function ContributorDetailDialog({ contributor }: { contributor: Contribu
         render={({ fieldState }) => (
           <Field className="md:col-span-2 gap-2" data-invalid={fieldState.invalid}>
             <FieldLabel>Expertise</FieldLabel>
+            <FieldDescription>Ketik expertise lalu tekan Enter</FieldDescription>
             <Input
-              placeholder="Ketik expertise lalu Enter"
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();

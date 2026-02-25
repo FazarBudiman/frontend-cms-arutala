@@ -71,8 +71,8 @@ const courseBenefitSchema = z.object({
  * ---------------------------
  */
 const courseMaterialSchema = z.object({
-  title: z.string().min(5, "Title is required"),
-  description: z.string().min(50, "Description is required"),
+  title: z.string().min(5, "Title minimal 5 karakter").trim(),
+  description: z.string().min(50, "Deskripsi minimal 50 karakter").trim(),
   orderNum: z.number().int().positive().optional(),
 });
 
@@ -87,11 +87,11 @@ export const courseInputSchema = z
     courseDescription: z.string().min(50, "Deskripsi minimal 50 karakter").trim(),
 
     courseCategoryId: z.string().min(1, "Category wajib dipilih").trim(),
-    courseFieldId: z.string().min(1, "Field wajib dipilig"),
+    courseFieldId: z.string().min(1, "Field wajib dipilih"),
 
     courseBenefits: z
       .array(courseBenefitSchema)
-      .min(1, "Minimal 1 Benefit")
+      .min(1, "Minimal Pilih 1 Benefit")
       .refine(
         (benefits) => {
           const ids = benefits.map((b) => b.courseBenefitId);
@@ -101,7 +101,7 @@ export const courseInputSchema = z
           message: "Duplicate benefit not allowed",
         },
       ),
-    courseMaterials: z.array(courseMaterialSchema).min(1, "Minimal 1 Materials"),
+    courseMaterials: z.array(courseMaterialSchema).min(1, "Minimal Tambah 1 Materials"),
   })
   .strict();
 

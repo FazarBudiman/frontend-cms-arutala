@@ -7,11 +7,12 @@ import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Separator } from "@/components/ui/separator";
-import { ButtonGroup } from "@/components/ui/button-group";
+import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group";
 import { Button } from "@/components/ui/button";
 import { useSetBreadcrumbLabel } from "@/providers";
 import { mapEditorBlocks } from "@/shared/utils/editor";
 import { SkeletonDetailCard } from "@/components/shared/skeleton-detail-card";
+import { IconCircleArrowLeft, IconFilePencil } from "@tabler/icons-react";
 
 export default function DetailArticlePage() {
   const router = useRouter();
@@ -32,17 +33,19 @@ export default function DetailArticlePage() {
   return (
     <div className="flex flex-1 flex-col min-h-screen">
       <div className="p-4 lg:px-6 border-b bg-muted/20">
-        <ButtonGroup className="justify-between w-full h-8">
-          <Button variant="outline" size="sm" onClick={() => router.push("/content-website/articles")}>
-            Back to List
+        <div className="flex gap-2 justify-between">
+          <Button variant="outline" size="icon-sm" onClick={() => router.push("/content-website/articles")}>
+            <IconCircleArrowLeft className="size-5" />
           </Button>
-          <div className="flex gap-2">
+          <ButtonGroup>
             <ArticleCoverEditDialog articleDetail={data!} />
+            <ButtonGroupSeparator />
             <Button size="sm" onClick={() => router.push(`/content-website/articles/${articleId}/edit`)}>
               Edit Article
+              <IconFilePencil />
             </Button>
-          </div>
-        </ButtonGroup>
+          </ButtonGroup>
+        </div>
       </div>
 
       <div className="flex-1  p-4 lg:p-6 bg-muted/10 ">
@@ -64,7 +67,9 @@ export default function DetailArticlePage() {
           <Separator />
 
           {/* Article Content */}
-          <div className="bg-background rounded-lg border p-2 lg:p-8 shadow-sm">{mappedBlocks ? <ArticlePreview blocks={mappedBlocks} /> : <div className="text-center py-10 text-muted-foreground">No content blocks available.</div>}</div>
+          <div className="bg-background rounded-lg border p-2 lg:p-8 shadow-sm">
+            {mappedBlocks ? <ArticlePreview blocks={mappedBlocks} /> : <div className="text-center py-10 text-muted-foreground">No content blocks available.</div>}
+          </div>
         </div>
       </div>
     </div>

@@ -3,10 +3,13 @@
 import React from "react";
 import { DataTable } from "@/components/shared/data-table";
 import { columns } from "./columns";
-import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
 import { Input } from "@/components/ui/input";
-import { SkeletonTable } from "@/components/shared/skeleton-table";
 import { usePages } from "../hook";
+import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
+import { SkeletonTable } from "@/components/shared/skeleton-table";
+import { Page } from "../type";
+
+const getRowId = (row: Page) => row.page_id;
 
 export function PageTable() {
   const { data: pages, isLoading } = usePages();
@@ -39,7 +42,7 @@ export function PageTable() {
       <DataTable
         data={pages ?? []}
         columns={columns}
-        getRowId={(row) => row.page_id}
+        getRowId={getRowId}
         sorting={sorting}
         columnFilters={filters}
         pagination={pagination}

@@ -16,11 +16,40 @@ import {
 } from "@tanstack/react-table";
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
-
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { SkeletonTable } from "@/components/shared/skeleton-table";
+
+/* =======================
+   Hooks
+======================= */
+
+export function useTableState(initialPageSize = 8) {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
+  const [pagination, setPagination] = React.useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: initialPageSize,
+  });
+
+  const setColumnFilter = (id: string, value: string | null) => {
+    setColumnFilters((prev) => {
+      const others = prev.filter((f) => f.id !== id);
+      return value ? [...others, { id, value }] : others;
+    });
+  };
+
+  return {
+    sorting,
+    columnFilters,
+    pagination,
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    onPaginationChange: setPagination,
+    setColumnFilter,
+  };
+}
 
 /* =======================
    Props
@@ -33,25 +62,21 @@ export interface DataTableProps<TData, TValue> {
   /** wajib agar table tidak bergantung ke field tertentu */
   getRowId: (row: TData) => string;
 
-  /** external state (optional) */
-  sorting?: SortingState;
-  columnFilters?: ColumnFiltersState;
-
-  pagination: {
-    pageIndex: number;
-    pageSize: number;
-  };
+  /** state management (can be spread from useTableState) */
+  sorting: SortingState;
+  columnFilters: ColumnFiltersState;
+  pagination: PaginationState;
+  onSortingChange: OnChangeFn<SortingState>;
+  onColumnFiltersChange: OnChangeFn<ColumnFiltersState>;
   onPaginationChange: OnChangeFn<PaginationState>;
 
-  onSortingChange?: OnChangeFn<SortingState>;
-  onColumnFiltersChange?: OnChangeFn<ColumnFiltersState>;
-
+  isLoading?: boolean;
   pageSizeOptions?: number[];
 }
 
 /* =======================
    Component
-======================= */
+ ======================= */
 
 export function DataTable<TData, TValue>({
   columns,
@@ -63,8 +88,11 @@ export function DataTable<TData, TValue>({
   onPaginationChange,
   onSortingChange,
   onColumnFiltersChange,
+  isLoading,
   pageSizeOptions = [8, 15, 30, 50],
 }: DataTableProps<TData, TValue>) {
+  "use no memo"; // eslint-disable-line
+
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
@@ -95,7 +123,7 @@ export function DataTable<TData, TValue>({
   // Reset pagination to first page when filtering or sorting changes
   React.useEffect(() => {
     table.setPageIndex(0);
-  }, [columnFilters, sorting, table]);
+  }, [columnFilters, sorting]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Ensure pageIndex is within bounds when data size changes (clamping)
   const pageSize = table.getState().pagination.pageSize;
@@ -106,7 +134,11 @@ export function DataTable<TData, TValue>({
     if (pageIndex >= pageCount && pageCount > 0) {
       table.setPageIndex(pageCount - 1);
     }
-  }, [data.length, pageSize, table]);
+  }, [data.length, pageSize]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (isLoading) {
+    return <SkeletonTable columns={columns.length} />;
+  }
 
   const pageCount = table.getPageCount();
   const currentPage = table.getState().pagination.pageIndex;

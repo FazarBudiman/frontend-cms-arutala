@@ -1,64 +1,41 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { DataTable } from "@/components/shared/data-table";
+import { DataTable, useTableState } from "@/components/shared/data-table";
 import { columns } from "./columns";
-import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { SkeletonTable } from "@/components/shared/skeleton-table";
 import { useArticles } from "../hook";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { redirect } from "next/navigation";
 import { formatSnakeCaseToTitle } from "@/shared/utils/string";
+import { getUniqueOptions } from "@/shared/utils/filter";
 
 export function ArticleTable() {
   const { data: articles, isLoading } = useArticles();
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [filters, setFilters] = React.useState<ColumnFiltersState>([]);
-  const [pagination, setPagination] = React.useState({
-    pageIndex: 0,
-    pageSize: 8,
-  });
+  const table = useTableState(8);
 
-  const uniqueStatus = useMemo(() => {
-    if (!articles) {
-      return [];
-    }
-
-    return Array.from(new Set(articles.map((article) => article.article_status))).map((status) => ({
-      value: status,
-      label: formatSnakeCaseToTitle(status),
-    }));
+  const statusOptions = useMemo(() => {
+    return getUniqueOptions(articles, "article_status", formatSnakeCaseToTitle);
   }, [articles]);
-
-  const setColumnFilter = (id: string, value: string | null) => {
-    setFilters((prev) => {
-      const others = prev.filter((f) => f.id !== id);
-      return value ? [...others, { id, value }] : others;
-    });
-  };
-
-  if (isLoading) return <SkeletonTable />;
-  console.log(articles);
 
   return (
     <div className="space-y-4">
       <div className="flex justify-between px-8">
         <div className="flex items-center gap-4">
           {/* Search by Title */}
-          <Input placeholder="Search by title..." onChange={(e) => setColumnFilter("article_title", e.target.value)} className="max-w-sm" />
+          <Input placeholder="Search by title..." onChange={(e) => table.setColumnFilter("article_title", e.target.value)} className="max-w-sm" />
 
           {/* Filter by Status */}
-          <Select defaultValue="ALL" onValueChange={(v) => setColumnFilter("article_status", v !== "ALL" ? v : null)}>
+          <Select defaultValue="ALL" onValueChange={(v) => table.setColumnFilter("article_status", v !== "ALL" ? v : null)}>
             <SelectTrigger className="w-40">
               <SelectValue placeholder="All Status" />
             </SelectTrigger>
             <SelectContent position="popper">
               <SelectGroup>
                 <SelectItem value="ALL">All Status</SelectItem>
-                {uniqueStatus.map((status) => {
+                {statusOptions.map((status) => {
                   return (
                     <SelectItem value={status.value} key={status.value}>
                       {status.label}
@@ -69,24 +46,13 @@ export function ArticleTable() {
             </SelectContent>
           </Select>
         </div>
-        {/* <ArticleAddSheet /> */}
 
         <Button size="sm" onClick={() => redirect(`/content-website/articles/create`)}>
           <PlusCircle /> Create Article
         </Button>
       </div>
 
-      <DataTable
-        data={articles ?? []}
-        columns={columns}
-        getRowId={(row) => row.article_id}
-        sorting={sorting}
-        columnFilters={filters}
-        pagination={pagination}
-        onPaginationChange={setPagination}
-        onSortingChange={setSorting}
-        onColumnFiltersChange={setFilters}
-      />
+      <DataTable data={articles ?? []} columns={columns} getRowId={(row) => row.article_id} isLoading={isLoading} {...table} />
     </div>
   );
 }

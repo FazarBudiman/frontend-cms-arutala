@@ -10,6 +10,7 @@ import { EmptyState } from "@/components/shared/empty-state";
 
 export default function CourseDetailPage() {
   const params = useParams();
+
   const courseId = params.courseId as string;
 
   const { data, isLoading, isError, error } = useCourseDetail(courseId);

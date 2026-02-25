@@ -8,7 +8,7 @@ import Image from "next/image";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
 import { Badge } from "@/components/ui/badge";
 import { useCreateMitra } from "../hook";
 import { CreateMitraInput, createMitraSchema } from "../type";
@@ -81,7 +81,7 @@ export function MitraAddDialog() {
       className="sm:max-w-3xl"
       trigger={
         <Button size="sm">
-          Tambah Mitra <PlusCircle className="ml-2 h-4 w-4" />
+          Tambah Mitra <PlusCircle />
         </Button>
       }
     >
@@ -139,8 +139,8 @@ export function MitraAddDialog() {
         render={({ fieldState }) => (
           <Field className="md:col-span-2 gap-1" data-invalid={fieldState.invalid}>
             <FieldLabel>Business Field</FieldLabel>
+            <FieldDescription>Ketik business field lalu tekan Enter</FieldDescription>
             <Input
-              placeholder="Ketik business field lalu Enter"
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();

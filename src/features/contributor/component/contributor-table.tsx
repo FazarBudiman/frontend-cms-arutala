@@ -1,26 +1,22 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { DataTable } from "@/components/shared/data-table";
+import { DataTable, useTableState } from "@/components/shared/data-table";
 import { columns } from "./columns";
-import { ColumnFiltersState, SortingState } from "@tanstack/react-table";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { SkeletonTable } from "@/components/shared/skeleton-table";
 import { ContributorAddDialog } from "./contributor-add";
 import { useContributors } from "../hook";
+import { getUniqueOptions } from "@/shared/utils/filter";
+import { Contributor } from "../type";
+
+const getRowId = (row: Contributor) => row.contributor_id;
 
 export function ContributorTable() {
   const { data: contributors, isLoading } = useContributors();
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [filters, setFilters] = React.useState<ColumnFiltersState>([]);
-  const [pagination, setPagination] = React.useState({
-    pageIndex: 0,
-    pageSize: 8,
-  });
+  const table = useTableState(8);
 
-  // Memoize opsi untuk dropdown
-  const uniqueExpertise = useMemo(() => {
+  const expertiseOptions = useMemo(() => {
     if (!contributors) return [];
     const allExpertise = contributors.flatMap((c) => c.contributor_expertise);
     return Array.from(new Set(allExpertise)).map((expert) => ({
@@ -29,42 +25,25 @@ export function ContributorTable() {
     }));
   }, [contributors]);
 
-  const uniqueType = useMemo(() => {
-    if (!contributors) {
-      return [];
-    }
-    return Array.from(new Set(contributors.map((contributor) => contributor.contributor_type))).map((type) => ({
-      value: type,
-      label: type === "INTERNAL" ? "Mentor" : "Bukan Mentor",
-    }));
+  const typeOptions = useMemo(() => {
+    return getUniqueOptions(contributors, "contributor_type", (type) => (type === "INTERNAL" ? "Mentor" : "Bukan Mentor"));
   }, [contributors]);
-
-  // Fungsi helper untuk update filter tanpa menghapus filter id lain
-  const setColumnFilter = (id: string, value: string | null) => {
-    setFilters((prev) => {
-      const others = prev.filter((f) => f.id !== id);
-      return value ? [...others, { id, value }] : others;
-    });
-  };
-
-  if (isLoading) return <SkeletonTable />;
 
   return (
     <div className="space-y-4">
       <div className=" flex justify-between  px-8">
         <div className="flex items-center gap-4">
-          {/* Search by Name: Mengisi filter array dengan id 'contributor_name' */}
-          <Input placeholder="Search by name..." onChange={(e) => setColumnFilter("contributor_name", e.target.value)} className="max-w-sm" />
+          <Input placeholder="Search by name..." onChange={(e) => table.setColumnFilter("contributor_name", e.target.value)} className="max-w-sm" />
 
           {/* Filter by Type */}
-          <Select defaultValue="ALL" onValueChange={(v) => setColumnFilter("contributor_type", v !== "ALL" ? v : null)}>
+          <Select defaultValue="ALL" onValueChange={(v) => table.setColumnFilter("contributor_type", v !== "ALL" ? v : null)}>
             <SelectTrigger className="w-50">
               <SelectValue placeholder="All Type" />
             </SelectTrigger>
             <SelectContent position="popper">
               <SelectGroup>
                 <SelectItem value="ALL">All Type</SelectItem>
-                {uniqueType.map((type) => {
+                {typeOptions.map((type) => {
                   return (
                     <SelectItem value={type.value} key={type.value}>
                       {type.label}
@@ -75,15 +54,15 @@ export function ContributorTable() {
             </SelectContent>
           </Select>
 
-          {/* Filter by Expertise: Mengisi filter array dengan id 'contributor_expertise' */}
-          <Select defaultValue="ALL" onValueChange={(v) => setColumnFilter("contributor_expertise", v !== "ALL" ? v : null)}>
+          {/* Filter by Expertise */}
+          <Select defaultValue="ALL" onValueChange={(v) => table.setColumnFilter("contributor_expertise", v !== "ALL" ? v : null)}>
             <SelectTrigger className="w-50">
               <SelectValue placeholder="All Expertise" />
             </SelectTrigger>
             <SelectContent position="popper">
               <SelectGroup>
                 <SelectItem value="ALL">All Expertise</SelectItem>
-                {uniqueExpertise.map((expert) => (
+                {expertiseOptions.map((expert) => (
                   <SelectItem value={expert.value} key={expert.value}>
                     {expert.label}
                   </SelectItem>
@@ -95,17 +74,7 @@ export function ContributorTable() {
         <ContributorAddDialog />
       </div>
 
-      <DataTable
-        data={contributors ?? []}
-        columns={columns}
-        getRowId={(row) => row.contributor_id}
-        sorting={sorting}
-        columnFilters={filters}
-        pagination={pagination}
-        onPaginationChange={setPagination}
-        onSortingChange={setSorting}
-        onColumnFiltersChange={setFilters}
-      />
+      <DataTable data={contributors ?? []} columns={columns} getRowId={getRowId} isLoading={isLoading} {...table} />
     </div>
   );
 }

@@ -10,7 +10,7 @@ import { IconListDetails } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
 import { UpdateMitraInput, Mitra, updateMitraSchema } from "../type";
 import { useUpdateMitra } from "../hook";
 import { EntityDialog } from "@/components/shared/entity-dialog";
@@ -158,8 +158,8 @@ export function MitraDetailDialog({ mitra }: { mitra: Mitra }) {
         render={({ fieldState }) => (
           <Field className="md:col-span-2 gap-1" data-invalid={fieldState.invalid}>
             <FieldLabel>Business Field</FieldLabel>
+            <FieldDescription>Ketik business field lalu tekan Enter</FieldDescription>
             <Input
-              placeholder="Ketik business field lalu Enter"
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();

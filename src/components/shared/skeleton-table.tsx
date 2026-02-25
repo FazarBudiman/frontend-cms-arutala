@@ -1,6 +1,6 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-export function SkeletonTable() {
+export function SkeletonTable({ columns = 5 }: { columns?: number }) {
   return (
     <div className="space-y-4">
       {/* Toolbar skeleton */}
@@ -17,18 +17,15 @@ export function SkeletonTable() {
       <div className="rounded-md border overflow-hidden">
         {/* Header */}
         <div className="border-b bg-muted/40 px-3 py-3 flex gap-4">
-          {Array.from({ length: 5 }).map((_, i) => (
+          {Array.from({ length: columns }).map((_, i) => (
             <Skeleton key={`h-${i}`} className="h-4 flex-1" />
           ))}
         </div>
 
         {/* Rows */}
         {Array.from({ length: 8 }).map((_, rowIdx) => (
-          <div
-            key={rowIdx}
-            className="flex gap-4 px-3 py-3 border-b last:border-0"
-          >
-            {Array.from({ length: 5 }).map((_, colIdx) => (
+          <div key={rowIdx} className="flex gap-4 px-3 py-3 border-b last:border-0">
+            {Array.from({ length: columns }).map((_, colIdx) => (
               <Skeleton key={`r-${rowIdx}-${colIdx}`} className="h-4 flex-1" />
             ))}
           </div>

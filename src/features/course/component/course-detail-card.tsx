@@ -1,9 +1,13 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { CourseDetail } from "../type";
 import { Item, ItemContent, ItemDescription, ItemTitle } from "@/components/ui/item";
-import { CourseEditDialog } from "./course-edit";
-import { CourseBatchAddDialog } from "@/features/course-batch";
+import { Button } from "@/components/ui/button";
+import { PlusCircle } from "lucide-react";
+import { IconCircleArrowLeft, IconPencil } from "@tabler/icons-react";
+import { useRouter } from "next/navigation";
 
 type CourseDetailCardProps = {
   courseDetail: Partial<CourseDetail>;
@@ -11,16 +15,25 @@ type CourseDetailCardProps = {
 
 export function CourseDetailCard({ courseDetail }: CourseDetailCardProps) {
   const { course_title, course_description, course_category_name, course_field_name, courseBenefit, courseMaterial } = courseDetail;
+  const router = useRouter();
 
   return (
     <Card>
       <CardHeader>
-        <div className=" flex gap-2 my-2">
-          <Badge>{course_category_name}</Badge>
-          <Badge variant="secondary">{course_field_name}</Badge>
+        <div className="flex flex-col items-start gap-3">
+          <Button variant="outline" size="icon-sm" onClick={() => router.push(`/content-website/courses`)}>
+            <IconCircleArrowLeft className="size-5" />
+          </Button>
+          <div className="flex flex-col items-start gap-1 mt-1">
+            <CardTitle>{course_title}</CardTitle>
+            <CardDescription>{course_description}</CardDescription>
+          </div>
+
+          <div className=" flex gap-2">
+            <Badge>{course_category_name}</Badge>
+            <Badge variant="secondary">{course_field_name}</Badge>
+          </div>
         </div>
-        <CardTitle>{course_title}</CardTitle>
-        <CardDescription>{course_description}</CardDescription>
       </CardHeader>
 
       <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
@@ -57,8 +70,12 @@ export function CourseDetailCard({ courseDetail }: CourseDetailCardProps) {
       </CardContent>
 
       <CardFooter className="flex justify-end gap-3">
-        <CourseBatchAddDialog />
-        <CourseEditDialog courseDetail={courseDetail} />
+        <Button size="sm" variant="outline" onClick={() => router.push(`/content-website/courses/${courseDetail.course_id}/edit`)}>
+          Edit Course <IconPencil />
+        </Button>
+        <Button size="sm" onClick={() => router.push(`/content-website/courses/${courseDetail.course_id}/batch/create`)}>
+          Tambah Batch <PlusCircle />
+        </Button>
       </CardFooter>
     </Card>
   );

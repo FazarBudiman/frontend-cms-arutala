@@ -13,6 +13,7 @@ import { useUpdateArticle } from "../hook";
 import { useState } from "react";
 import { statusColorArticle } from "./columns";
 import { formatSnakeCaseToTitle } from "@/shared/utils/string";
+import { IconStatusChange } from "@tabler/icons-react";
 
 export function ArticleChangeStatusDialog({ article }: { article: Article }) {
   const [open, setOpen] = useState(false);
@@ -55,7 +56,7 @@ export function ArticleChangeStatusDialog({ article }: { article: Article }) {
       {/* Trigger */}
       <AlertDialogTrigger asChild>
         <Button size="sm" variant="secondary">
-          Change Status
+          Change Status <IconStatusChange />
         </Button>
       </AlertDialogTrigger>
 

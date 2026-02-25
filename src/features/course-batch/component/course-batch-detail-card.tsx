@@ -1,16 +1,27 @@
+"use client";
+
+import { useParams, useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatedDate } from "@/shared/utils/date";
 import Image from "next/image";
 import { CourseBatch } from "../type";
 import { CourseBatchUpload } from "./course-batch-upload";
-import CourseBatchEditDialog from "./course-batch-edit";
+import { Button } from "@/components/ui/button";
+import { IconCircleArrowLeft, IconPencil } from "@tabler/icons-react";
+import { formatSnakeCaseToTitle } from "@/shared/utils/string";
+import { cn } from "@/shared/lib/cn";
+import { StatusColorCoursebatch } from "./columns";
 
 type CourseDetailCardProps = {
   courseBatchDetail: Partial<CourseBatch>;
 };
 
 export function CourseBatchDetailCard({ courseBatchDetail }: CourseDetailCardProps) {
+  const params = useParams();
+  const courseId = params.courseId as string;
+  const courseBatchId = params.courseBatchId as string;
+  const router = useRouter();
   const {
     name,
     batch_status,
@@ -43,16 +54,17 @@ export function CourseBatchDetailCard({ courseBatchDetail }: CourseDetailCardPro
     <Card className="max-w-full max-h-full">
       {/* ================= HEADER ================= */}
       <CardHeader className="space-y-1">
+        <Button variant="outline" size="icon-sm" onClick={() => router.push(`/content-website/courses/${courseId}`)}>
+          <IconCircleArrowLeft className="size-5" />
+        </Button>
         <div className="flex justify-between">
           <div className="flex flex-col gap-2">
-            {batch_status && (
-              <Badge variant="outline" className="to-blue-700">
-                {batch_status}
-              </Badge>
-            )}
             <CardTitle>{name}</CardTitle>
+            {batch_status && <Badge className={cn(StatusColorCoursebatch[batch_status])}>{formatSnakeCaseToTitle(batch_status)}</Badge>}
           </div>
-          <CourseBatchEditDialog batch={courseBatchDetail as CourseBatch} />
+          <Button variant="outline" size="sm" onClick={() => router.push(`/content-website/courses/${courseId}/batch/${courseBatchId}/edit`)}>
+            Edit Batch <IconPencil />
+          </Button>
         </div>
       </CardHeader>
 

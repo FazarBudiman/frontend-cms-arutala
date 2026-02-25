@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { useParams, useRouter } from "next/navigation";
-import { useSetBreadcrumbLabel } from "@/providers";
 import { mapEditorBlocks, handleUploadImage } from "@/shared/utils/editor";
 import { ContentBlockType } from "@/features/article/type";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
@@ -23,10 +22,7 @@ export default function EditArticlePage() {
 
   const { data: articleDetail, isLoading } = useArticleDetail(articleId);
   const { mutateAsync: updateArticle, isPending: isUpdating } = useUpdateArticle();
-
   const [editorData, setEditorData] = useState<OutputData | undefined>(undefined);
-
-  useSetBreadcrumbLabel(`/content-website/articles/${articleId}/edit`, articleDetail?.article_title ? `Edit ${articleDetail.article_title}` : undefined);
 
   const initialData = useMemo(() => {
     if (!articleDetail?.article_content_blocks) return undefined;
@@ -67,16 +63,16 @@ export default function EditArticlePage() {
   return (
     <div className="flex flex-1 flex-col">
       <div className="p-4 lg:px-6 border-b bg-muted/20">
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center justify-around">
+          <ArticleChangeStatusDialog article={articleDetail!} />
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={() => router.push(`/content-website/articles/${articleId}`)}>
               Cancel
             </Button>
-            <ArticleChangeStatusDialog article={articleDetail!} />
+            <Button size="sm" onClick={handleSave} disabled={isUpdating}>
+              {isUpdating ? "Saving..." : "Save Changes"}
+            </Button>
           </div>
-          <Button size="sm" onClick={handleSave} disabled={isUpdating}>
-            {isUpdating ? "Saving..." : "Save Changes"}
-          </Button>
         </div>
       </div>
 
@@ -84,11 +80,17 @@ export default function EditArticlePage() {
         <Tabs defaultValue="editor" className="h-full flex flex-col">
           <div className="px-4 border-b bg-background shrink-0">
             <TabsList className="h-12 bg-transparent p-0 gap-6">
-              <TabsTrigger value="editor" className="h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2">
+              <TabsTrigger
+                value="editor"
+                className="h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2"
+              >
                 <CodeIcon className="w-4 h-4 mr-2" />
                 Editor
               </TabsTrigger>
-              <TabsTrigger value="preview" className="h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2">
+              <TabsTrigger
+                value="preview"
+                className="h-full rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none px-2"
+              >
                 <AppWindowIcon className="w-4 h-4 mr-2" />
                 Preview
               </TabsTrigger>
@@ -133,7 +135,9 @@ export default function EditArticlePage() {
                   <CardHeader className="border-b bg-muted/10 py-4">
                     <CardTitle className="text-sm font-medium">Content Preview</CardTitle>
                   </CardHeader>
-                  <CardContent className="p-6 lg:p-8">{mappedBlocks ? <ArticlePreview blocks={mappedBlocks} /> : <div className="text-center py-10 text-muted-foreground">Start writing to see preview.</div>}</CardContent>
+                  <CardContent className="p-6 lg:p-8">
+                    {mappedBlocks ? <ArticlePreview blocks={mappedBlocks} /> : <div className="text-center py-10 text-muted-foreground">Start writing to see preview.</div>}
+                  </CardContent>
                 </Card>
               </div>
             </TabsContent>

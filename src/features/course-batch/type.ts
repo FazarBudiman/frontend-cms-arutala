@@ -87,11 +87,11 @@ const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
 export const courseBatchSessionInputSchema = z.object({
   topic: z.string().min(5, "Topik session minimal 5 karakter").max(255, "Topik session maksimal 255 karakter"),
 
-  sessionDate: z.string().regex(dateRegex, "Format sessionDate harus YYYY-MM-DD"),
+  sessionDate: z.string().regex(dateRegex, "Tanggal session harus diisi"),
 
-  sessionStartTime: z.string().regex(timeRegex, "Format sessionStartTime harus HH:mm (00:00 - 23:59)"),
+  sessionStartTime: z.string().regex(timeRegex, "Jam mulai session harus diisi"),
 
-  sessionEndTime: z.string().regex(timeRegex, "Format sessionEndTime harus HH:mm (00:00 - 23:59)"),
+  sessionEndTime: z.string().regex(timeRegex, "Jam selesai session harus diisi"),
 });
 
 /**
@@ -131,18 +131,18 @@ export const courseBatchInputSchema = z
   .object({
     batchName: z.string().min(5, "Nama batch minimal 5 karakter").max(255, "Nama batch maksimal 255 karakter"),
 
-    contributorId: z.string().uuid("Format contributorId harus UUID"),
+    contributorId: z.string().uuid("Contributor harus diisi"),
 
-    registrationStart: z.string().regex(dateRegex, "Format registrationStart harus YYYY-MM-DD"),
+    registrationStart: z.string().regex(dateRegex, "Tanggal mulai registrasi harus diisi"),
 
-    registrationEnd: z.string().regex(dateRegex, "Format registrationEnd harus YYYY-MM-DD"),
+    registrationEnd: z.string().regex(dateRegex, "Tanggal akhir registrasi harus diisi"),
 
-    startDate: z.string().regex(dateRegex, "Format startDate harus YYYY-MM-DD"),
+    startDate: z.string().regex(dateRegex, "Tanggal mulai batch harus diisi"),
 
-    endDate: z.string().regex(dateRegex, "Format endDate harus YYYY-MM-DD"),
+    endDate: z.string().regex(dateRegex, "Tanggal akhir batch harus diisi"),
 
     batchStatus: z.enum(Object.values(CourseBatchStatus) as [string, ...string[]], {
-      error: "Batch status tidak valid",
+      error: "Status batch harus diisi",
     }),
 
     batchSession: z.array(courseBatchSessionInputSchema).min(1, "Minimal 1 session"),

@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import { Field, FieldDescription, FieldError, FieldLabel } from "@/components/ui/field";
 import { Badge } from "@/components/ui/badge";
 import { ContributorType, CreateContributorInput, createContributorSchema } from "../type";
 import { useCreateContributor } from "../hook";
@@ -20,7 +20,6 @@ export function ContributorAddDialog() {
   const [previewProfile, setPreviewProfile] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const contributorTypeOptions = Object.values(ContributorType);
-
   const { mutateAsync: createContributor, isPending } = useCreateContributor();
 
   const form = useForm<CreateContributorInput>({
@@ -89,7 +88,7 @@ export function ContributorAddDialog() {
       className="sm:max-w-3xl"
       trigger={
         <Button size="sm">
-          Tambah Contributor <PlusCircle className="ml-2 h-4 w-4" />
+          Tambah Contributor <PlusCircle />
         </Button>
       }
     >
@@ -196,8 +195,8 @@ export function ContributorAddDialog() {
         render={({ fieldState }) => (
           <Field className="md:col-span-2 gap-1" data-invalid={fieldState.invalid}>
             <FieldLabel>Expertise</FieldLabel>
+            <FieldDescription>Ketik expertise lalu tekan Enter</FieldDescription>
             <Input
-              placeholder="Ketik expertise lalu Enter"
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();
