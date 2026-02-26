@@ -16,6 +16,7 @@ export const courseSchema = z.object({
   course_description: z.string(),
   course_category_name: z.string(),
   course_field_name: z.string(),
+  is_displayed: z.boolean(),
 });
 
 export type Course = z.infer<typeof courseSchema>;
@@ -31,6 +32,7 @@ export const courseDetailSchema = z.object({
   course_description: z.string(),
   course_category_name: z.string(),
   course_field_name: z.string(),
+  is_displayed: z.boolean(),
 
   courseBenefit: z.array(
     z.object({
@@ -88,6 +90,7 @@ export const courseInputSchema = z
 
     courseCategoryId: z.string().min(1, "Category wajib dipilih").trim(),
     courseFieldId: z.string().min(1, "Field wajib dipilih"),
+    isDisplayed: z.boolean(),
 
     courseBenefits: z
       .array(courseBenefitSchema)

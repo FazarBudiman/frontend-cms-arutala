@@ -24,12 +24,14 @@ export function CourseDetailCard({ courseDetail }: CourseDetailCardProps) {
           <Button variant="outline" size="icon-sm" onClick={() => router.push(`/content-website/courses`)}>
             <IconCircleArrowLeft className="size-5" />
           </Button>
+
           <div className="flex flex-col items-start gap-1 mt-1">
             <CardTitle>{course_title}</CardTitle>
             <CardDescription>{course_description}</CardDescription>
           </div>
 
           <div className=" flex gap-2">
+            <Badge className={courseDetail.is_displayed ? "bg-success " : "bg-destructive "}>{courseDetail.is_displayed ? "Published" : "Unpublished"}</Badge>
             <Badge>{course_category_name}</Badge>
             <Badge variant="secondary">{course_field_name}</Badge>
           </div>

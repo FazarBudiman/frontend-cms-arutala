@@ -23,7 +23,7 @@ export function useUpdateContributor() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: FormData }) => updateContributor(id, data),
+    mutationFn: ({ id, data }: { id: string; data: FormData | object }) => updateContributor(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["contributors"],

@@ -1,47 +1,44 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import Image from "next/image";
 import { IconListDetails } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 import { Testimoni, TestimoniType, UpdateTestimoniInput, updateTestimoniSchema } from "../type";
 import { useUpdateTestimoni } from "../hook";
 import { EntityDialog } from "@/components/shared/entity-dialog";
+import { Switch } from "@/components/ui/switch";
+import { formatSnakeCaseToTitle } from "@/shared/utils/string";
 
 export function TestimoniDetailDialog({ testimoni }: { testimoni: Testimoni }) {
   const [open, setOpen] = useState(false);
-  const [previewProfile, setPreviewProfile] = useState<string | null>(testimoni.author_profile_url);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const testimoniCategoryOptions = Object.values(TestimoniType);
   const { mutateAsync, isPending } = useUpdateTestimoni();
 
-  const handleUpdate = async (values: UpdateTestimoniInput) => {
-    const formData = new FormData();
-    formData.append("authorName", values.authorName);
-    formData.append("authorJobTitle", values.authorJobTitle);
-    formData.append("authorCompanyName", values.authorCompanyName);
-    formData.append("testimoniCategory", values.testimoniCategory);
-    formData.append("testimoniContent", values.testimoniContent);
-
-    if (values.authorProfile) {
-      formData.append("profile", values.authorProfile);
-    }
+  const handleUpdate = async (values: Omit<UpdateTestimoniInput, "authorProfile">) => {
+    const payload = {
+      authorName: values.authorName,
+      authorJobTitle: values.authorJobTitle,
+      authorCompanyName: values.authorCompanyName,
+      testimoniCategory: values.testimoniCategory,
+      testimoniContent: values.testimoniContent,
+      isDisplayed: values.isDisplayed,
+    };
 
     toast.promise(
       mutateAsync({
         id: testimoni.testimoni_id,
-        data: formData,
+        data: payload,
       }),
       {
-        loading: "Updating contributor...",
-        success: "Mengubah contributor berhasil",
+        loading: "Updating testimoni...",
+        success: "Mengubah testimoni berhasil",
         error: (err) => {
-          return err.message || "Failed to update contributor";
+          return err.message || "Failed to update testimoni";
         },
       },
     );
@@ -49,15 +46,15 @@ export function TestimoniDetailDialog({ testimoni }: { testimoni: Testimoni }) {
     setOpen(false);
   };
 
-  const form = useForm<UpdateTestimoniInput>({
-    resolver: zodResolver(updateTestimoniSchema),
+  const form = useForm<Omit<UpdateTestimoniInput, "authorProfile">>({
+    resolver: zodResolver(updateTestimoniSchema.omit({ authorProfile: true })),
     defaultValues: {
       authorName: "",
       authorJobTitle: "",
       authorCompanyName: "",
       testimoniContent: "",
+      isDisplayed: false,
       testimoniCategory: undefined,
-      authorProfile: undefined,
     },
   });
 
@@ -69,7 +66,7 @@ export function TestimoniDetailDialog({ testimoni }: { testimoni: Testimoni }) {
         authorCompanyName: testimoni.author_company_name,
         testimoniContent: testimoni.testimoni_content,
         testimoniCategory: testimoni.testimoni_category,
-        authorProfile: undefined,
+        isDisplayed: testimoni.is_displayed,
       });
     }
   }, [open, testimoni, form]);
@@ -90,56 +87,18 @@ export function TestimoniDetailDialog({ testimoni }: { testimoni: Testimoni }) {
         </Button>
       }
     >
+      {/* Status */}
       <Controller
-        name="authorProfile"
+        name="isDisplayed"
         control={form.control}
-        render={({ field, fieldState }) => {
-          return (
-            <div className="md:col-span-2 gap-1">
-              <Field data-invalid={fieldState.invalid} orientation="horizontal" className="grid grid-cols-1 md:grid-cols-[1fr,160px] gap-2 items-start">
-                <FieldLabel htmlFor="profile">Profile</FieldLabel>
-
-                {/* Hidden File Input */}
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/jpeg, image/png, image/webp"
-                  className="hidden"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
-
-                    field.onChange(file);
-                    setPreviewProfile(URL.createObjectURL(file));
-                  }}
-                />
-
-                {/* Preview */}
-                {previewProfile ? (
-                  <div className="flex flex-row  items-center gap-4">
-                    <div className="relative h-36 w-36 rounded-md overflow-hidden border">
-                      <Image src={previewProfile} alt="user-profile" fill unoptimized className="object-contain" />
-                    </div>
-
-                    {/* <Button type="button" size="sm" variant="outline" onClick={() => fileInputRef.current?.click()}>
-                            Ganti Foto
-                          </Button> */}
-                  </div>
-                ) : (
-                  <span></span>
-                  /* Kalau belum ada profile */
-                  // <Button type="button" size="sm" variant="outline" className="w-fit" onClick={() => fileInputRef.current?.click()}>
-                  //   Upload Foto
-                  // </Button>
-                )}
-
-                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-              </Field>
-            </div>
-          );
-        }}
+        render={({ field, fieldState }) => (
+          <Field className="md:col-span-2 gap-1" data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor="isDisplayed">Status</FieldLabel>
+            <Switch className="mt-2" id="isDisplayed" checked={field.value} onCheckedChange={field.onChange} />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
+        )}
       />
-
       <Controller
         name="authorName"
         control={form.control}
@@ -157,16 +116,16 @@ export function TestimoniDetailDialog({ testimoni }: { testimoni: Testimoni }) {
         control={form.control}
         render={({ field }) => (
           <Field className="gap-1">
-            <FieldLabel>Type</FieldLabel>
+            <FieldLabel>Category</FieldLabel>
             <Select value={field.value} onValueChange={field.onChange}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Pilih kategori testimoni..." />
               </SelectTrigger>
               <SelectContent position="popper">
                 <SelectGroup>
-                  {testimoniCategoryOptions.map((type) => (
-                    <SelectItem value={type} key={type}>
-                      {type}
+                  {testimoniCategoryOptions.map((category) => (
+                    <SelectItem value={category} key={category}>
+                      {formatSnakeCaseToTitle(category)}
                     </SelectItem>
                   ))}
                 </SelectGroup>

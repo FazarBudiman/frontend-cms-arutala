@@ -12,8 +12,10 @@ export async function createMitra(formData: FormData) {
 }
 
 /* ---------- UPDATE ---------- */
-export async function updateMitra(mitraId: string, formData: FormData) {
-  return await clientApi.patch(`/api/mitras/${mitraId}`, formData);
+export async function updateMitra(mitraId: string, data: FormData | object) {
+  const body = data instanceof FormData ? data : JSON.stringify(data);
+  console.log(body);
+  return await clientApi.patch(`/api/mitras/${mitraId}`, body as BodyInit);
 }
 
 /* ---------- DELETE ---------- */

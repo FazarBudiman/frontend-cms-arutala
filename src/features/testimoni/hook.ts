@@ -23,7 +23,7 @@ export function useUpdateTestimoni() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: FormData }) => updateTestimoni(id, data),
+    mutationFn: ({ id, data }: { id: string; data: FormData | object }) => updateTestimoni(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["testimonies"],

@@ -13,6 +13,7 @@ export const contributorSchema = z.object({
   contributor_expertise: z.array(z.string()),
   contributor_profile_url: z.string(),
   contributor_type: z.enum(Object.values(ContributorType) as [string, ...string[]]),
+  is_displayed: z.boolean(),
 });
 
 export type Contributor = z.infer<typeof contributorSchema>;
@@ -60,5 +61,6 @@ export const updateContributorSchema = z.object({
     .refine((file) => ["image/jpeg", "image/png", "image/webp"].includes(file.type), "File harus berupa JPG, PNG, atau WEBP")
     .refine((file) => file.size <= 5 * 1024 * 1024, "Ukuran file maksimal 5MB")
     .optional(),
+  isDisplayed: z.boolean(),
 });
 export type UpdateContributorInput = z.infer<typeof updateContributorSchema>;

@@ -19,10 +19,18 @@ export async function GET(req: NextRequest, context: { params: Promise<{ article
 export async function PATCH(req: NextRequest, context: { params: Promise<{ articleId: string }> }) {
   try {
     const { articleId } = await context.params;
-    const body = await req.json();
+    const contentType = req.headers.get("content-type") || "";
+    let requestBody;
+
+    if (contentType.includes("multipart/form-data")) {
+      requestBody = await req.formData();
+    } else {
+      requestBody = JSON.stringify(await req.json());
+    }
+
     await serverFetch(`/article/${articleId}`, {
       method: "PATCH",
-      body: JSON.stringify(body),
+      body: requestBody,
     });
     return NextResponse.json({ success: true, data: null });
   } catch (error) {

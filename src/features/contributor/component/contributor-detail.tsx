@@ -1,11 +1,10 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import Image from "next/image";
 import { IconListDetails } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -16,23 +15,22 @@ import { useUpdateContributor } from "../hook";
 import { EntityDialog } from "@/components/shared/entity-dialog";
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group";
 import { IconPlus, IconX } from "@tabler/icons-react";
+import { Switch } from "@/components/ui/switch";
 
 export function ContributorDetailDialog({ contributor }: { contributor: Contributor }) {
   const [open, setOpen] = useState(false);
-  const [previewProfile, setPreviewProfile] = useState<string | null>(contributor.contributor_profile_url);
   const contributorTypeOptions = Object.values(ContributorType);
   const { mutateAsync: updateContributor, isPending } = useUpdateContributor();
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const form = useForm<UpdateContributorInput>({
-    resolver: zodResolver(updateContributorSchema),
+  const form = useForm<Omit<UpdateContributorInput, "profile">>({
+    resolver: zodResolver(updateContributorSchema.omit({ profile: true })),
     defaultValues: {
       contributorName: "",
       jobTitle: "",
       companyName: "",
       expertise: [],
-      profile: undefined,
       contributorType: undefined,
+      isDisplayed: false,
     },
   });
 
@@ -53,30 +51,24 @@ export function ContributorDetailDialog({ contributor }: { contributor: Contribu
         companyName: contributor.contributor_company_name,
         contributorType: contributor.contributor_type,
         expertise: contributor.contributor_expertise.map((e) => ({ value: e })),
-        profile: undefined,
+        isDisplayed: contributor.is_displayed,
       });
     }
   }, [open, contributor, form]);
-
-  const handleUpdate = async (values: UpdateContributorInput) => {
-    const formData = new FormData();
-    formData.append("contributorName", values.contributorName);
-    formData.append("jobTitle", values.jobTitle);
-    formData.append("companyName", values.companyName);
-    formData.append("contributorType", values.contributorType);
-
-    values.expertise.forEach((item) => {
-      formData.append("expertise", item.value);
-    });
-
-    if (values.profile) {
-      formData.append("profile", values.profile);
-    }
+  const handleUpdate = async (values: Omit<UpdateContributorInput, "profile">) => {
+    const payload = {
+      contributorName: values.contributorName,
+      jobTitle: values.jobTitle,
+      companyName: values.companyName,
+      contributorType: values.contributorType,
+      expertise: values.expertise.map((item) => item.value),
+      isDisplayed: values.isDisplayed,
+    };
 
     toast.promise(
       updateContributor({
         id: contributor.contributor_id,
-        data: formData,
+        data: payload,
       }),
       {
         loading: "Updating contributor...",
@@ -88,14 +80,6 @@ export function ContributorDetailDialog({ contributor }: { contributor: Contribu
       },
     );
   };
-
-  useEffect(() => {
-    return () => {
-      if (previewProfile && previewProfile !== contributor.contributor_profile_url) {
-        URL.revokeObjectURL(previewProfile);
-      }
-    };
-  }, [previewProfile, contributor.contributor_profile_url]);
 
   return (
     <EntityDialog
@@ -114,40 +98,14 @@ export function ContributorDetailDialog({ contributor }: { contributor: Contribu
       }
     >
       <Controller
-        name="profile"
+        name="isDisplayed"
         control={form.control}
         render={({ field, fieldState }) => (
-          <div className="md:col-span-2">
-            <Field data-invalid={fieldState.invalid} orientation="horizontal" className="grid grid-cols-1 md:grid-cols-[1fr,160px] gap-2 items-start">
-              <FieldLabel htmlFor="profile">Profile</FieldLabel>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/jpeg, image/png, image/webp"
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-                  field.onChange(file);
-                  if (previewProfile && previewProfile !== contributor.contributor_profile_url) {
-                    URL.revokeObjectURL(previewProfile);
-                  }
-                  setPreviewProfile(URL.createObjectURL(file));
-                }}
-              />
-              <div className="flex flex-row items-center gap-4">
-                {previewProfile ? (
-                  <div className="relative h-24 w-24 rounded-md overflow-hidden border">
-                    <Image src={previewProfile} alt="contributor-profile" fill unoptimized className="object-contain" />
-                  </div>
-                ) : null}
-                <Button type="button" size="sm" variant="outline" onClick={() => fileInputRef.current?.click()}>
-                  {previewProfile ? "Ganti Foto" : "Upload Foto"}
-                </Button>
-              </div>
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          </div>
+          <Field className="md:col-span-2 gap-1" data-invalid={fieldState.invalid}>
+            <FieldLabel htmlFor="isDisplayed">Status</FieldLabel>
+            <Switch className="mt-2" id="isDisplayed" checked={field.value} onCheckedChange={field.onChange} />
+            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+          </Field>
         )}
       />
 

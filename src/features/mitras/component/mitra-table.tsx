@@ -20,6 +20,12 @@ export function MitraTable() {
     return getUniqueOptions(mitras, "business_field");
   }, [mitras]);
 
+  const statusOptions = useMemo(() => {
+    return getUniqueOptions(mitras, "is_displayed", (val) => (val ? "Published" : "Unpublished"));
+  }, [mitras]);
+
+  console.log(mitras);
+
   return (
     <div className="space-y-4">
       <div className=" flex justify-between  px-8">
@@ -37,6 +43,23 @@ export function MitraTable() {
                 {businessFieldOptions.map((field) => (
                   <SelectItem value={field.value} key={field.value}>
                     {field.label}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+
+          {/* Filter by Status */}
+          <Select defaultValue="ALL" onValueChange={(v) => table.setColumnFilter("is_displayed", v !== "ALL" ? v : null)}>
+            <SelectTrigger className="w-50">
+              <SelectValue placeholder="All Status" />
+            </SelectTrigger>
+            <SelectContent position="popper">
+              <SelectGroup>
+                <SelectItem value="ALL">All Status</SelectItem>
+                {statusOptions.map((status) => (
+                  <SelectItem value={status.value} key={status.value}>
+                    {status.label}
                   </SelectItem>
                 ))}
               </SelectGroup>

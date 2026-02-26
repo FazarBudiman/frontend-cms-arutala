@@ -2,9 +2,9 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ContributorDeleteDialog } from "./contributor-delete";
 import { ContributorDetailDialog } from "./contributor-detail";
+import { ContributorProfileDialog } from "./contributor-profile-dialog";
 import { Contributor } from "../type";
 import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group";
 
@@ -23,12 +23,7 @@ export const columns: ColumnDef<Contributor>[] = [
   {
     accessorKey: "contributor_profile_url",
     header: "Profile",
-    cell: ({ row }) => (
-      <Avatar>
-        <AvatarImage src={row.original.contributor_profile_url} alt="user-profile" />
-        <AvatarFallback>{row.original.contributor_name.charAt(0)}</AvatarFallback>
-      </Avatar>
-    ),
+    cell: ({ row }) => <ContributorProfileDialog contributor={row.original} />,
   },
   {
     id: "contributor_name",
@@ -45,10 +40,10 @@ export const columns: ColumnDef<Contributor>[] = [
     accessorKey: "contributor_job_title",
     header: "Job Title",
   },
-  {
-    accessorKey: "contributor_company_name",
-    header: "Company Name",
-  },
+  // {
+  //   accessorKey: "contributor_company_name",
+  //   header: "Company Name",
+  // },
   {
     accessorKey: "contributor_type",
     header: "Type",
@@ -72,6 +67,16 @@ export const columns: ColumnDef<Contributor>[] = [
       </div>
     ),
     filterFn: "arrIncludes",
+  },
+  {
+    accessorKey: "is_displayed",
+    header: "Status",
+    enableColumnFilter: true,
+    cell: ({ row }) => <Badge className={row.original.is_displayed ? "bg-success" : "bg-destructive"}>{row.original.is_displayed ? "Published" : "Unpublished"}</Badge>,
+    filterFn: (row, columnId, value) => {
+      if (value === null || value === undefined) return true;
+      return String(row.getValue(columnId)) === String(value);
+    },
   },
   {
     id: "actions",

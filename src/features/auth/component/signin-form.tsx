@@ -13,6 +13,7 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginAction } from "../api";
 import { SignInInput, signInSchema } from "../schema";
+import { IconLogin } from "@tabler/icons-react";
 
 export function SignInForm() {
   const router = useRouter();
@@ -56,7 +57,7 @@ export function SignInForm() {
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="username">Username</FieldLabel>
-                  <Input {...field} id="username" autoComplete="off" aria-invalid={fieldState.invalid} disabled={isSubmitting} />
+                  <Input {...field} id="username" autoComplete="off" aria-invalid={fieldState.invalid} disabled={isSubmitting} placeholder="Masukan username" />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
               )}
@@ -70,7 +71,7 @@ export function SignInForm() {
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="password">Password</FieldLabel>
                   <InputGroup>
-                    <InputGroupInput {...field} id="password" aria-invalid={fieldState.invalid} type={passwordCheck ? "text" : "password"} disabled={isSubmitting} />
+                    <InputGroupInput {...field} id="password" aria-invalid={fieldState.invalid} type={passwordCheck ? "text" : "password"} disabled={isSubmitting} placeholder="Masukan password" />
                     <InputGroupAddon className=" cursor-pointer" align="inline-end" onClick={() => setPasswordCheck(!passwordCheck)}>
                       {passwordCheck ? <EyeIcon size={16} /> : <EyeOffIcon size={16} />}
                     </InputGroupAddon>
@@ -80,7 +81,10 @@ export function SignInForm() {
               )}
             />
 
-            <Button type="submit">{isSubmitting ? "Loading..." : "Sign In"}</Button>
+            <Button type="submit" size="sm">
+              {isSubmitting ? "Loading..." : "Sign In"}
+              <IconLogin />
+            </Button>
           </FieldGroup>
         </form>
       </CardContent>

@@ -1,17 +1,17 @@
 "use client";
 
 import { IconLogout } from "@tabler/icons-react";
-import { ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { SidebarMenu, SidebarMenuItem } from "@/components/ui/sidebar";
 import { Badge } from "@/components/ui/badge";
-
 import { User } from "@/features/user";
 import { logoutAction } from "@/features/auth";
+import { Button } from "../ui/button";
+import { Item, ItemContent, ItemDescription, ItemHeader, ItemMedia, ItemTitle } from "../ui/item";
+import { formatSnakeCaseToTitle } from "@/shared/utils/string";
 
 export function NavUser({ user }: { user?: User }) {
   const router = useRouter();
@@ -28,50 +28,50 @@ export function NavUser({ user }: { user?: User }) {
     });
   };
 
-  const roleBadgeClass = user.role_name === "SUPER_ADMIN" ? "bg-black text-white" : "bg-muted text-muted-foreground";
-
   return (
     <SidebarMenu>
       <SidebarMenuItem>
         <DropdownMenu>
           {/* ===== Trigger ===== */}
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton size="lg" className="flex items-center gap-2 data-[state=open]:bg-sidebar-accent">
-              <Avatar className="h-8 w-8 rounded-lg">
+            <Button variant="ghost" size="icon-sm" className="rounded-full">
+              <Avatar>
                 <AvatarImage src={user.user_profile_url || undefined} alt={user.username} />
-                <AvatarFallback>{user.full_name?.charAt(0)}</AvatarFallback>
+                <AvatarFallback className="bg-primary-900 text-white">{user.full_name?.charAt(0)}</AvatarFallback>
               </Avatar>
-
-              <ChevronDown className="h-4 w-4 opacity-50" />
-            </SidebarMenuButton>
+            </Button>
           </DropdownMenuTrigger>
 
           {/* ===== Content ===== */}
-          <DropdownMenuContent align="end" sideOffset={6} className="min-w-64 rounded-xl p-2">
+          <DropdownMenuContent align="end" sideOffset={6} className="rounded-md">
             {/* ===== Profile Header ===== */}
-            <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-3 rounded-lg bg-muted/40 px-3 py-3">
-                <Avatar className="h-10 w-10 rounded-lg">
-                  <AvatarImage src={user.user_profile_url || undefined} alt={user.username} />
-                  <AvatarFallback>{user.full_name?.charAt(0)}</AvatarFallback>
-                </Avatar>
-
-                <div className="flex-1 space-y-0.5">
-                  <p className="truncate text-sm font-semibold">{user.full_name}</p>
-                  <p className="truncate text-xs text-muted-foreground">@{user.username}</p>
-
-                  <Badge className={`mt-1 w-fit px-2 py-0.5 text-[10px] ${roleBadgeClass}`}>{user.role_name}</Badge>
-                </div>
-              </div>
+            <DropdownMenuLabel>
+              <Item>
+                <ItemHeader>
+                  <Badge variant="outline">{formatSnakeCaseToTitle(user.role_name)}</Badge>
+                </ItemHeader>
+                <ItemMedia>
+                  <Avatar size="lg">
+                    <AvatarImage src={user.user_profile_url || undefined} alt={user.username} />
+                    <AvatarFallback className="bg-primary-900 text-white">{user.full_name?.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                </ItemMedia>
+                <ItemContent className="gap-0">
+                  <ItemTitle>{user.full_name}</ItemTitle>
+                  <ItemDescription>{user.username}</ItemDescription>
+                </ItemContent>
+              </Item>
             </DropdownMenuLabel>
 
-            <DropdownMenuSeparator className="my-2" />
+            <DropdownMenuSeparator />
 
             {/* ===== Logout ===== */}
-            <DropdownMenuItem onClick={handleLogout} className="text-red-600 focus:text-red-600">
-              <IconLogout className="mr-2 h-4 w-4" />
-              Log out
-            </DropdownMenuItem>
+            <DropdownMenuLabel className="flex justify-end">
+              <Button variant="destructive" size="sm" onClick={handleLogout} className="w-full">
+                Log Out
+                <IconLogout />
+              </Button>
+            </DropdownMenuLabel>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

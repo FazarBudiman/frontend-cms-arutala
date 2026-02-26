@@ -1,10 +1,9 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Badge } from "@/components/ui/badge";
-import Image from "next/image";
 import { IconListDetails } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -15,20 +14,19 @@ import { useUpdateMitra } from "../hook";
 import { EntityDialog } from "@/components/shared/entity-dialog";
 import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group";
 import { IconPlus, IconX } from "@tabler/icons-react";
+import { Switch } from "@/components/ui/switch";
 
 export function MitraDetailDialog({ mitra }: { mitra: Mitra }) {
   const [open, setOpen] = useState(false);
-  const [previewLogo, setPreviewLogo] = useState<string | null>(mitra.mitra_logo_url);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const { mutateAsync: updateMitra, isPending } = useUpdateMitra();
 
-  const form = useForm<UpdateMitraInput>({
-    resolver: zodResolver(updateMitraSchema),
+  const form = useForm<Omit<UpdateMitraInput, "mitraLogo">>({
+    resolver: zodResolver(updateMitraSchema.omit({ mitraLogo: true })),
     defaultValues: {
       mitraName: "",
       businessField: [],
-      mitraLogo: undefined,
+      isDisplayed: false,
     },
   });
 
@@ -46,27 +44,24 @@ export function MitraDetailDialog({ mitra }: { mitra: Mitra }) {
       form.reset({
         mitraName: mitra.mitra_name,
         businessField: mitra.business_field.map((e) => ({ value: e })),
-        mitraLogo: undefined,
+
+        isDisplayed: mitra.is_displayed,
       });
     }
   }, [open, mitra, form]);
 
   const handleUpdate = async (values: UpdateMitraInput) => {
-    const formData = new FormData();
-    formData.append("mitraName", values.mitraName);
-
-    values.businessField.forEach((item) => {
-      formData.append("businessField", item.value);
-    });
-
-    if (values.mitraLogo) {
-      formData.append("mitraLogo", values.mitraLogo);
-    }
+    // Only send metadata as JSON
+    const payload = {
+      mitraName: values.mitraName,
+      businessField: values.businessField.map((f) => f.value),
+      isDisplayed: values.isDisplayed,
+    };
 
     toast.promise(
       updateMitra({
         id: mitra.mitra_id,
-        data: formData,
+        data: payload,
       }),
       {
         loading: "Updating mitra...",
@@ -78,14 +73,6 @@ export function MitraDetailDialog({ mitra }: { mitra: Mitra }) {
       },
     );
   };
-
-  useEffect(() => {
-    return () => {
-      if (previewLogo && previewLogo !== mitra.mitra_logo_url) {
-        URL.revokeObjectURL(previewLogo);
-      }
-    };
-  }, [previewLogo, mitra.mitra_logo_url]);
 
   return (
     <EntityDialog
@@ -103,56 +90,34 @@ export function MitraDetailDialog({ mitra }: { mitra: Mitra }) {
         </Button>
       }
     >
-      <Controller
-        name="mitraLogo"
-        control={form.control}
-        render={({ field, fieldState }) => (
-          <div className="md:col-span-2">
-            <Field data-invalid={fieldState.invalid} orientation="horizontal" className="grid grid-cols-1 md:grid-cols-[1fr,160px] gap-2 items-start">
-              <FieldLabel htmlFor="mitraLogo">Logo Mitra</FieldLabel>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/jpeg, image/png, image/webp"
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (!file) return;
-                  field.onChange(file);
-                  if (previewLogo && previewLogo !== mitra.mitra_logo_url) {
-                    URL.revokeObjectURL(previewLogo);
-                  }
-                  setPreviewLogo(URL.createObjectURL(file));
-                }}
-              />
-              <div className="flex flex-row items-center gap-4">
-                {previewLogo ? (
-                  <div className="relative h-24 w-24 rounded-md overflow-hidden border">
-                    <Image src={previewLogo} alt="mitra-logo" fill unoptimized className="object-contain" />
-                  </div>
-                ) : null}
-                <Button type="button" size="sm" variant="outline" onClick={() => fileInputRef.current?.click()}>
-                  {previewLogo ? "Ganti Logo" : "Upload Logo"}
-                </Button>
-              </div>
+      <div className="md:col-span-2 flex">
+        {/* Status */}
+        <Controller
+          name="isDisplayed"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field className="md:col-span-2 gap-1" data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="isDisplayed">Status</FieldLabel>
+              <Switch className="mt-2" id="isDisplayed" checked={field.value} onCheckedChange={field.onChange} />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
-          </div>
-        )}
-      />
+          )}
+        />
+        {/* Name */}
+        <Controller
+          name="mitraName"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid} className="gap-1">
+              <FieldLabel htmlFor="mitraName">Name</FieldLabel>
+              <Input {...field} id="mitraName" placeholder="Masukan nama mitra..." aria-invalid={fieldState.invalid} autoComplete="off" />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+      </div>
 
-      <Controller
-        name="mitraName"
-        control={form.control}
-        render={({ field, fieldState }) => (
-          <Field className="md:col-span-2 gap-1" data-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor="mitraName">Name</FieldLabel>
-            <Input {...field} id="mitraName" placeholder="Masukan nama mitra..." aria-invalid={fieldState.invalid} autoComplete="off" />
-            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-          </Field>
-        )}
-      />
-
+      {/* Business Field */}
       <Controller
         name="businessField"
         control={form.control}

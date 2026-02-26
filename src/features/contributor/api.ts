@@ -12,8 +12,9 @@ export async function createContributor(formData: FormData) {
 }
 
 /* ---------- UPDATE ---------- */
-export async function updateContributor(contributorId: string, formData: FormData) {
-  return await clientApi.patch(`/api/contributors/${contributorId}`, formData);
+export async function updateContributor(contributorId: string, data: FormData | object) {
+  const body = data instanceof FormData ? data : JSON.stringify(data);
+  return await clientApi.patch(`/api/contributors/${contributorId}`, body as BodyInit);
 }
 
 /* ---------- DELETE ---------- */

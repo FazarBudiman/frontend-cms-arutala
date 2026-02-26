@@ -23,7 +23,7 @@ export function useUpdateMitra() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: FormData }) => updateMitra(id, data),
+    mutationFn: ({ id, data }: { id: string; data: FormData | object }) => updateMitra(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["Mitras"],

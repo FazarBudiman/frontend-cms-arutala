@@ -29,6 +29,10 @@ export function ContributorTable() {
     return getUniqueOptions(contributors, "contributor_type", (type) => (type === "INTERNAL" ? "Mentor" : "Bukan Mentor"));
   }, [contributors]);
 
+  const statusOptions = useMemo(() => {
+    return getUniqueOptions(contributors, "is_displayed", (status) => (status ? "Published" : "Unpublished"));
+  }, [contributors]);
+
   return (
     <div className="space-y-4">
       <div className=" flex justify-between  px-8">
@@ -65,6 +69,23 @@ export function ContributorTable() {
                 {expertiseOptions.map((expert) => (
                   <SelectItem value={expert.value} key={expert.value}>
                     {expert.label}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+
+          {/* Filter by Status */}
+          <Select defaultValue="ALL" onValueChange={(v) => table.setColumnFilter("is_displayed", v !== "ALL" ? v : null)}>
+            <SelectTrigger className="w-50">
+              <SelectValue placeholder="All Status" />
+            </SelectTrigger>
+            <SelectContent position="popper">
+              <SelectGroup>
+                <SelectItem value="ALL">All Status</SelectItem>
+                {statusOptions.map((status) => (
+                  <SelectItem value={status.value} key={status.value}>
+                    {status.label}
                   </SelectItem>
                 ))}
               </SelectGroup>

@@ -26,6 +26,10 @@ export function CourseTable() {
     return getUniqueOptions(courses, "course_field_name");
   }, [courses]);
 
+  const statusOptions = useMemo(() => {
+    return getUniqueOptions(courses, "is_displayed", (status) => (status ? "Published" : "Unpublished"));
+  }, [courses]);
+
   return (
     <div className="space-y-4">
       <div className=" flex justify-between  px-8">
@@ -66,6 +70,23 @@ export function CourseTable() {
                     </SelectItem>
                   );
                 })}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+
+          {/* Filter by Status */}
+          <Select defaultValue="ALL" onValueChange={(v) => table.setColumnFilter("is_displayed", v !== "ALL" ? v : null)}>
+            <SelectTrigger className="w-50">
+              <SelectValue placeholder="All Status" />
+            </SelectTrigger>
+            <SelectContent position="popper">
+              <SelectGroup>
+                <SelectItem value="ALL">All Status</SelectItem>
+                {statusOptions.map((status) => (
+                  <SelectItem value={status.value} key={status.value}>
+                    {status.label}
+                  </SelectItem>
+                ))}
               </SelectGroup>
             </SelectContent>
           </Select>

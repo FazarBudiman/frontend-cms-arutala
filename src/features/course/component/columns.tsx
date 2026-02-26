@@ -13,7 +13,13 @@ import { redirect } from "next/navigation";
 export const columns: ColumnDef<Course>[] = [
   {
     id: "select",
-    header: ({ table }) => <Checkbox checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")} onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)} aria-label="Select all" />,
+    header: ({ table }) => (
+      <Checkbox
+        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
     cell: ({ row }) => <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />,
   },
   {
@@ -40,6 +46,16 @@ export const columns: ColumnDef<Course>[] = [
   {
     accessorKey: "course_field_name",
     header: "Field",
+  },
+  {
+    accessorKey: "is_displayed",
+    header: "Status",
+    enableColumnFilter: true,
+    cell: ({ row }) => <Badge className={row.original.is_displayed ? "bg-success" : "bg-destructive"}>{row.original.is_displayed ? "Published" : "Unpublished"}</Badge>,
+    filterFn: (row, columnId, value) => {
+      if (value === null || value === undefined) return true;
+      return String(row.getValue(columnId)) === String(value);
+    },
   },
   {
     id: "actions",

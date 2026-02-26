@@ -5,10 +5,18 @@ import { NextRequest, NextResponse } from "next/server";
 export async function PATCH(req: NextRequest, context: { params: Promise<{ testimoniId: string }> }) {
   try {
     const { testimoniId } = await context.params;
-    const formData = await req.formData();
+    const contentType = req.headers.get("content-type") || "";
+    let body;
+
+    if (contentType.includes("multipart/form-data")) {
+      body = await req.formData();
+    } else {
+      body = JSON.stringify(await req.json());
+    }
+
     await serverFetch(`/testimonies/${testimoniId}`, {
       method: "PATCH",
-      body: formData,
+      body: body,
     });
     return NextResponse.json({
       success: true,

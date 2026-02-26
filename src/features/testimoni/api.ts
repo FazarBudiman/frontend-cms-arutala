@@ -12,8 +12,9 @@ export async function createTestimoni(formData: FormData) {
 }
 
 /* ---------- UPDATE ---------- */
-export async function updateTestimoni(testimoniId: string, data: FormData) {
-  return await clientApi.patch(`/api/testimonies/${testimoniId}`, data);
+export async function updateTestimoni(testimoniId: string, data: FormData | object) {
+  const body = data instanceof FormData ? data : JSON.stringify(data);
+  return await clientApi.patch(`/api/testimonies/${testimoniId}`, body as BodyInit);
 }
 
 /* ---------- DELETE ---------- */

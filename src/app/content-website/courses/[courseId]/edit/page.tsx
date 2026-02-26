@@ -34,6 +34,7 @@ export default function EditCoursePage({ params }: { params: Promise<{ courseId:
       courseDescription: course.course_description,
       courseCategoryId: categoryId ?? "",
       courseFieldId: fieldId ?? "",
+      isDisplayed: course.is_displayed,
       courseBenefits:
         course.courseBenefit?.map((b) => {
           const benefitId = benefitsMaster.find((bm) => bm.title === b.title)?.id;
@@ -54,7 +55,7 @@ export default function EditCoursePage({ params }: { params: Promise<{ courseId:
       loading: "Mengubah course...",
       success: () => {
         setTimeout(() => {
-          router.push("/content-website/courses");
+          router.push(`/content-website/courses/${courseId}`);
         }, 1000);
         return "Course berhasil diubah";
       },

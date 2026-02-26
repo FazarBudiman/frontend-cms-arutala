@@ -10,6 +10,7 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { useCourseCategory, useCourseField, useCourseBenefit } from "@/features/course/hook";
 import { PlusCircle } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -35,6 +36,7 @@ export function CourseForm({ initialData, onSubmit, isPending, submitLabel = "Sa
       courseDescription: "",
       courseCategoryId: "",
       courseFieldId: "",
+      isDisplayed: true,
       courseBenefits: [],
       courseMaterials: [],
     },
@@ -132,6 +134,21 @@ export function CourseForm({ initialData, onSubmit, isPending, submitLabel = "Sa
                   ))}
                 </SelectContent>
               </Select>
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        {/* Status */}
+        <Controller
+          name="isDisplayed"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field className="md:col-span-4 gap-1 flex-row items-center justify-between rounded-lg border p-3" data-invalid={fieldState.invalid}>
+              <div className="space-y-0.5">
+                <FieldLabel>Status Kursus</FieldLabel>
+                <div className="text-[0.8rem] text-muted-foreground">Tentukan apakah kursus ini akan ditampilkan atau disembunyikan.</div>
+              </div>
+              <Switch checked={field.value} onCheckedChange={field.onChange} />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}

@@ -13,6 +13,7 @@ export const testimoniSchema = z.object({
   testimoni_content: z.string(),
   author_profile_url: z.string(),
   testimoni_category: z.enum(Object.values(TestimoniType) as [string, ...string[]]),
+  is_displayed: z.boolean(),
 });
 
 export type Testimoni = z.infer<typeof testimoniSchema>;
@@ -47,6 +48,7 @@ export const updateTestimoniSchema = z.object({
     .refine((file) => ["image/jpeg", "image/png", "image/webp"].includes(file.type), "File harus berupa JPG, PNG, atau WEBP")
     .refine((file) => file.size <= 5 * 1024 * 1024, "Ukuran file maksimal 5MB")
     .optional(),
+  isDisplayed: z.boolean(),
 });
 
 export type UpdateTestimoniInput = z.infer<typeof updateTestimoniSchema>;
