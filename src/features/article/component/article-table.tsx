@@ -20,8 +20,6 @@ export function ArticleTable() {
     return getUniqueOptions(articles, "article_status", formatSnakeCaseToTitle);
   }, [articles]);
 
-  console.log("articles", articles);
-
   return (
     <div className="space-y-4">
       <div className="flex justify-between px-8">

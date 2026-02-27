@@ -17,6 +17,7 @@ export const articleSchema = z.object({
   article_status: articleStatusEnum,
   created_date: z.string(),
   full_name: z.string(),
+  article_page_id: z.string().nullable(),
 });
 
 export type Article = z.infer<typeof articleSchema>;

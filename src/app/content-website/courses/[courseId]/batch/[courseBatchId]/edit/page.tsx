@@ -109,7 +109,7 @@ export default function CourseBatchEditPage() {
         </div>
         <Separator />
 
-        <CourseBatchForm initialData={initialData} onSubmit={handleSubmit} isPending={isUpdatePending} submitLabel="Save Changes" />
+        <CourseBatchForm initialData={initialData} onSubmit={handleSubmit} isPending={isUpdatePending} submitLabel="UPDATE" />
       </div>
     </div>
   );

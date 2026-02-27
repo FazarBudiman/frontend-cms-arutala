@@ -52,7 +52,7 @@ export default function CourseBatchCreatePage() {
         <Separator />
 
         {/* Form */}
-        <CourseBatchForm onSubmit={handleSubmit} isPending={isPending} submitLabel="Create Batch" />
+        <CourseBatchForm onSubmit={handleSubmit} isPending={isPending} submitLabel="CREATE" />
       </div>
     </div>
   );

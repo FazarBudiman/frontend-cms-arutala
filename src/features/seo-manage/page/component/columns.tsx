@@ -7,6 +7,8 @@ import { PageDeleteDialog } from "./page-delete";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { IconListDetails } from "@tabler/icons-react";
+import { Badge } from "@/components/ui/badge";
+import { formatSnakeCaseToTitle } from "@/shared/utils/string";
 
 export const columns: ColumnDef<Page>[] = [
   {
@@ -47,6 +49,12 @@ export const columns: ColumnDef<Page>[] = [
     header: "Page Slug",
   },
   {
+    id: "seo_status",
+    accessorKey: "seo_status",
+    header: "SEO Status",
+    cell: ({ row }) => <Badge>{formatSnakeCaseToTitle(row.original.seo_status)}</Badge>,
+  },
+  {
     id: "actions",
     header: "Action",
     cell: ({ row }) => (
@@ -56,7 +64,7 @@ export const columns: ColumnDef<Page>[] = [
             <IconListDetails />
           </Link>
         </Button>
-        <PageDeleteDialog pageId={row.original.page_id} />
+        {row.original.parent_page_title !== null && <PageDeleteDialog pageId={row.original.page_id} />}
       </ButtonGroup>
     ),
   },
