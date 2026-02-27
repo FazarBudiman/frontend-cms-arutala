@@ -104,16 +104,9 @@ export function TableOfContents({ blocks }: TableOfContentsProps) {
                                     `}
                 >
                   {/* Segitiga indikator untuk item aktif h2 - di kiri teks */}
-                  {isActive && !isSubItem && <Image src="/src/article/segitiga-indikator.svg" width={20} height={20} alt="indicators" className="absolute left-0 top-1/2 -translate-y-1/2 w-3 h-auto" />}
-
-                  {/* Segitiga indikator untuk item aktif h3 - di border gray
-                                    {isActive && isSubItem && (
-                                        <img
-                                            src="/src/article/segitiga-indikator.svg"
-                                            alt=""
-                                            className="absolute left-0 top-1/2 -translate-y-1/2 w-2.5 h-auto"
-                                        />
-                                    )} */}
+                  {isActive && !isSubItem && (
+                    <Image src="/src/article/segitiga-indikator.svg" width={20} height={20} alt="indicators" className="absolute left-0 top-1/2 -translate-y-1/2 w-3 h-auto" />
+                  )}
 
                   {/* Penomoran untuk sub-items */}
                   {isSubItem && <span className="mr-1 text-gray-600">{subItemCounter}.</span>}

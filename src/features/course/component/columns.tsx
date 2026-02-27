@@ -8,7 +8,12 @@ import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group"
 import { CourseDeleteDialog } from "./course-delete";
 import { IconListDetails } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
-import { redirect } from "next/navigation";
+import { PlusCircle, Calendar } from "lucide-react";
+import { formatedDate } from "@/shared/utils/date";
+import { cn } from "@/shared/lib/cn";
+import { StatusColorCoursebatch } from "@/features/course-batch/component/columns";
+import { formatSnakeCaseToTitle } from "@/shared/utils/string";
+import Link from "next/link";
 
 export const columns: ColumnDef<Course>[] = [
   {
@@ -48,6 +53,46 @@ export const columns: ColumnDef<Course>[] = [
     header: "Field",
   },
   {
+    id: "next_batch",
+    header: "Next Batch",
+    cell: ({ row }) => {
+      const batch = row.original.course_batch;
+      const hasBatch = batch && Object.keys(batch).length > 0;
+
+      if (!hasBatch) {
+        return (
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground italic">No Batch</span>
+            <Button variant="ghost" size="icon-sm" className="h-7 w-7" asChild>
+              <Link href={`/content-website/courses/${row.original.course_id}/batch/create`}>
+                <PlusCircle className="size-4 text-primary" />
+              </Link>
+            </Button>
+          </div>
+        );
+      }
+
+      return (
+        <div className="flex flex-col gap-2 items-start max-w-[200px]">
+          <Link href={`/content-website/courses/${row.original.course_id}/batch/${batch.course_batch_id}`} className="text-sm font-semibold leading-tight hover:underline text-left">
+            {batch.name}
+          </Link>
+          <div className="flex items-center gap-2 flex-wrap">
+            <Badge variant="outline" className={cn("text-shadow-2xs", StatusColorCoursebatch[batch.status])}>
+              {formatSnakeCaseToTitle(batch.status)}
+            </Badge>
+            {batch.registration_start && (
+              <span className="text-[10px] text-muted-foreground flex items-center gap-0.5 whitespace-nowrap" suppressHydrationWarning>
+                <Calendar className="size-3" />
+                {formatedDate(batch.registration_start)}
+              </span>
+            )}
+          </div>
+        </div>
+      );
+    },
+  },
+  {
     accessorKey: "is_displayed",
     header: "Status",
     enableColumnFilter: true,
@@ -62,8 +107,10 @@ export const columns: ColumnDef<Course>[] = [
     header: "Action",
     cell: ({ row }) => (
       <ButtonGroup>
-        <Button variant="outline" size="icon-sm" onClick={() => redirect(`/content-website/courses/${row.original.course_id}`)}>
-          <IconListDetails />
+        <Button variant="outline" size="icon-sm" asChild>
+          <Link href={`/content-website/courses/${row.original.course_id}`}>
+            <IconListDetails />
+          </Link>
         </Button>
         <ButtonGroupSeparator />
         <CourseDeleteDialog courseId={row.original.course_id} />

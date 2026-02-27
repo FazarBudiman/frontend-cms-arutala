@@ -9,7 +9,7 @@ import { IconCircleArrowLeft } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
-export default function CreateCoursePage() {
+export default function CourseCreatePage() {
   const router = useRouter();
   const { mutateAsync: createCourse, isPending } = useCreateCourse();
 
@@ -29,12 +29,16 @@ export default function CreateCoursePage() {
   return (
     <div className="flex flex-1 flex-col">
       <div className="p-4 lg:px-6 space-y-4">
-        <div className=" flex items-center gap-3">
-          <Button variant="outline" size="icon-sm" onClick={() => router.push("/content-website/courses")}>
-            <IconCircleArrowLeft className="size-5" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Button variant="outline" size="icon-sm" onClick={() => router.push("/content-website/courses")}>
+              <IconCircleArrowLeft className="size-5" />
+            </Button>
+            <h6 className="text-lg font-medium">Create Course</h6>
+          </div>
+          <Button size="sm" type="submit" form="course-form" disabled={isPending}>
+            {isPending ? "Creating..." : "Create Course"}
           </Button>
-
-          <h6 className="text-lg font-medium">Create Course</h6>
         </div>
         <Separator />
         <CourseForm onSubmit={handleCreate} isPending={isPending} submitLabel="Create Course" />

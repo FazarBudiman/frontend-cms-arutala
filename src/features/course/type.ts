@@ -17,6 +17,7 @@ export const courseSchema = z.object({
   course_category_name: z.string(),
   course_field_name: z.string(),
   is_displayed: z.boolean(),
+  course_batch: z.record(z.string(), z.any()).optional(),
 });
 
 export type Course = z.infer<typeof courseSchema>;
@@ -168,7 +169,8 @@ export const mapCourseBatchInputToPayload = (data: CourseBatchInput) => ({
     end_time: s.sessionEndTime,
   })),
 
-  base_price: data.batchPrice.basePrice,
+  base_price: data.batchPrice.basePrice ?? 0,
   discount_type: data.batchPrice.discountType ?? null,
   discount_value: data.batchPrice.discountValue ?? null,
+  final_price: data.batchPrice.finalPrice ?? data.batchPrice.basePrice ?? 0,
 });

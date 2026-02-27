@@ -11,7 +11,7 @@ export const contributorSchema = z.object({
   contributor_job_title: z.string(),
   contributor_company_name: z.string(),
   contributor_expertise: z.array(z.string()),
-  contributor_profile_url: z.string(),
+  contributor_profile_url: z.string().nullable(),
   contributor_type: z.enum(Object.values(ContributorType) as [string, ...string[]]),
   is_displayed: z.boolean(),
 });

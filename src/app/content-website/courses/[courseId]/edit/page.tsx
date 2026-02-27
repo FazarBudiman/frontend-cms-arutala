@@ -11,7 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { IconCircleArrowLeft } from "@tabler/icons-react";
 
-export default function EditCoursePage({ params }: { params: Promise<{ courseId: string }> }) {
+export default function CourseEditPage({ params }: { params: Promise<{ courseId: string }> }) {
   const { courseId } = use(params);
   const router = useRouter();
 
@@ -83,12 +83,16 @@ export default function EditCoursePage({ params }: { params: Promise<{ courseId:
   return (
     <div className="flex flex-1 flex-col">
       <div className="p-4 lg:px-6 space-y-4">
-        <div className=" flex items-center gap-3">
-          <Button variant="outline" size="icon-sm" onClick={() => router.back()}>
-            <IconCircleArrowLeft className="size-5" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Button variant="outline" size="icon-sm" onClick={() => router.back()}>
+              <IconCircleArrowLeft className="size-5" />
+            </Button>
+            <h6 className="text-lg font-medium">Edit Course</h6>
+          </div>
+          <Button size="sm" type="submit" form="course-form" disabled={isUpdatePending}>
+            {isUpdatePending ? "Saving..." : "Save Changes"}
           </Button>
-
-          <h6 className="text-lg font-medium">Edit Course</h6>
         </div>
         <Separator />
         {initialData && <CourseForm onSubmit={handleUpdate} initialData={initialData} isPending={isUpdatePending} submitLabel="Update Course" />}

@@ -4,7 +4,7 @@ export const mitraSchema = z.object({
   mitra_id: z.string(),
   mitra_name: z.string(),
   business_field: z.array(z.string()),
-  mitra_logo_url: z.string(),
+  mitra_logo_url: z.string().nullable(),
   is_displayed: z.boolean(),
 });
 

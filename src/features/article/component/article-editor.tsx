@@ -21,7 +21,6 @@ const ArticleEditor = forwardRef<ArticleEditorHandle, ArticleEditorProps>(functi
   const editorRef = useRef<EditorJS | null>(null);
   const holderRef = useRef<HTMLDivElement | null>(null);
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
-  const isInitializing = useRef(false);
 
   // Store props in refs to avoid useEffect dependency issues while preventing re-init
   const propsRef = useRef({ onUploadImage, onChange, defaultData });

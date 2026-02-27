@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { useArticles } from "../hook";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
-import { redirect } from "next/navigation";
+import Link from "next/link";
 import { formatSnakeCaseToTitle } from "@/shared/utils/string";
 import { getUniqueOptions } from "@/shared/utils/filter";
 
@@ -19,6 +19,8 @@ export function ArticleTable() {
   const statusOptions = useMemo(() => {
     return getUniqueOptions(articles, "article_status", formatSnakeCaseToTitle);
   }, [articles]);
+
+  console.log("articles", articles);
 
   return (
     <div className="space-y-4">
@@ -47,8 +49,10 @@ export function ArticleTable() {
           </Select>
         </div>
 
-        <Button size="sm" onClick={() => redirect(`/content-website/articles/create`)}>
-          <PlusCircle /> Create Article
+        <Button size="sm" asChild>
+          <Link href="/content-website/articles/create">
+            <PlusCircle /> Create Article
+          </Link>
         </Button>
       </div>
 

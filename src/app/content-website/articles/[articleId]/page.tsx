@@ -11,10 +11,10 @@ import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group"
 import { Button } from "@/components/ui/button";
 import { useSetBreadcrumbLabel } from "@/providers";
 import { mapEditorBlocks } from "@/shared/utils/editor";
-import { SkeletonDetailCard } from "@/components/shared/skeleton-detail-card";
+import { SkeletonDetailCard } from "@/components/shared/skeleton-card-detail";
 import { IconCircleArrowLeft, IconFilePencil } from "@tabler/icons-react";
 
-export default function DetailArticlePage() {
+export default function ArticleDetailPage() {
   const router = useRouter();
   const { articleId } = useParams();
   const { data, isLoading } = useArticleDetail(articleId as string);

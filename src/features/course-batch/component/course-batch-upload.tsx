@@ -5,21 +5,18 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { useParams } from "next/navigation";
 import { useUploadCourseBatch } from "../hook";
 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
-export function CourseBatchUpload({ posterUrl }: { posterUrl: string | undefined }) {
+export function CourseBatchUpload({ posterUrl, courseId, batchId }: { posterUrl: string | null | undefined; courseId: string; batchId: string }) {
   const [previewProfile, setPreviewProfile] = useState<string | null>(posterUrl ?? null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [openConfirm, setOpenConfirm] = useState(false);
 
   const { mutateAsync } = useUploadCourseBatch();
-  const params = useParams();
-  const courseId = params.courseId as string;
-  const courseBatchId = params.courseBatchId as string;
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const courseBatchId = batchId;
 
   const handleUpload = async () => {
     if (!selectedFile) return;

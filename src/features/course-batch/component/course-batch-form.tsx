@@ -26,13 +26,13 @@ function formatRupiah(value: number | undefined | null): string {
   return new Intl.NumberFormat("id-ID").format(value);
 }
 
-function parseRupiahInput(raw: string): number | undefined {
+function parseRupiahInput(raw: string): number {
   const cleaned = raw.replace(/\D/g, "");
   const parsed = parseInt(cleaned, 10);
-  return isNaN(parsed) ? undefined : parsed;
+  return isNaN(parsed) ? 0 : parsed;
 }
 
-function calculateFinalPrice(basePrice: number, discountType?: "PERCENT" | "FIXED", discountValue?: number): number {
+function calculateFinalPrice(basePrice: number | undefined, discountType?: "PERCENT" | "FIXED", discountValue?: number): number {
   const safeBasePrice = basePrice || 0;
   const safeDiscountValue = discountValue || 0;
 
@@ -54,9 +54,10 @@ interface CourseBatchFormProps {
   onSubmit: (values: CourseBatchInput) => Promise<void> | void;
   isPending?: boolean;
   submitLabel?: string;
+  formId?: string;
 }
 
-export function CourseBatchForm({ initialData, onSubmit, isPending, submitLabel = "Save Batch" }: CourseBatchFormProps) {
+export function CourseBatchForm({ initialData, onSubmit, formId = "course-batch-form" }: CourseBatchFormProps) {
   const { data: contributors } = useContributors();
 
   const form = useForm<CourseBatchInput>({
@@ -79,6 +80,7 @@ export function CourseBatchForm({ initialData, onSubmit, isPending, submitLabel 
       ],
       batchPrice: {
         basePrice: 0,
+        discountValue: 0,
       },
     },
   });
@@ -100,12 +102,22 @@ export function CourseBatchForm({ initialData, onSubmit, isPending, submitLabel 
     return calculateFinalPrice(basePrice, discountType, discountValue);
   }, [basePrice, discountType, discountValue]);
 
-  React.useEffect(() => {
-    form.setValue("batchPrice.finalPrice", finalPrice);
-  }, [finalPrice, form]);
-
   return (
-    <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
+    <form
+      className="space-y-4"
+      id={formId}
+      onSubmit={form.handleSubmit((values) => {
+        // Calculate final price before submit
+        const submissionData = {
+          ...values,
+          batchPrice: {
+            ...values.batchPrice,
+            finalPrice: calculateFinalPrice(values.batchPrice.basePrice, values.batchPrice.discountType, values.batchPrice.discountValue),
+          },
+        };
+        onSubmit(submissionData);
+      })}
+    >
       <div className="grid grid-cols-1 md:grid-cols-4 gap-x-4 gap-y-3">
         {/* Batch Name */}
         <Controller
@@ -172,8 +184,8 @@ export function CourseBatchForm({ initialData, onSubmit, isPending, submitLabel 
         <Controller
           name="registrationStart"
           control={form.control}
-          render={({ fieldState }) => (
-            <Field className="md:col-span-2 gap-1" data-invalid={fieldState.invalid}>
+          render={({}) => (
+            <Field className="md:col-span-2 gap-1">
               <FieldLabel>Periode Pendaftaran</FieldLabel>
               <RangeDatePicker
                 value={{
@@ -194,8 +206,8 @@ export function CourseBatchForm({ initialData, onSubmit, isPending, submitLabel 
         <Controller
           name="startDate"
           control={form.control}
-          render={({ fieldState }) => (
-            <Field className="md:col-span-2 gap-1" data-invalid={fieldState.invalid}>
+          render={({}) => (
+            <Field className="md:col-span-2 gap-1">
               <FieldLabel>Periode Pelaksanaan</FieldLabel>
               <RangeDatePicker
                 value={{
@@ -328,8 +340,11 @@ export function CourseBatchForm({ initialData, onSubmit, isPending, submitLabel 
                         <Input
                           inputMode="numeric"
                           placeholder="0"
-                          value={field.value === undefined || field.value === null ? "" : field.value === 0 ? "0" : formatRupiah(field.value)}
-                          onChange={(e) => field.onChange(parseRupiahInput(e.target.value))}
+                          value={field.value === undefined || field.value === null ? "" : formatRupiah(field.value)}
+                          onChange={(e) => {
+                            const raw = e.target.value;
+                            field.onChange(parseRupiahInput(raw));
+                          }}
                         />
                         {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                       </Field>
@@ -378,21 +393,13 @@ export function CourseBatchForm({ initialData, onSubmit, isPending, submitLabel 
                             <Input
                               inputMode="numeric"
                               placeholder="0"
-                              value={
-                                discountType === "PERCENT"
-                                  ? field.value?.toString() || ""
-                                  : field.value === undefined || field.value === null
-                                    ? ""
-                                    : field.value === 0
-                                      ? "0"
-                                      : formatRupiah(field.value)
-                              }
+                              value={discountType === "PERCENT" ? field.value?.toString() || "" : field.value === undefined || field.value === null ? "" : formatRupiah(field.value)}
                               onChange={(e) => {
                                 const raw = e.target.value;
                                 if (discountType === "PERCENT") {
                                   const cleaned = raw.replace(/\D/g, "");
                                   const val = cleaned === "" ? 0 : parseInt(cleaned, 10);
-                                  field.onChange(Math.min(isNaN(val) ? 0 : val, 100));
+                                  field.onChange(isNaN(val) ? 0 : Math.min(val, 100));
                                 } else {
                                   field.onChange(parseRupiahInput(raw));
                                 }
@@ -415,12 +422,6 @@ export function CourseBatchForm({ initialData, onSubmit, isPending, submitLabel 
             </Field>
           )}
         />
-      </div>
-
-      <div className="flex justify-end ">
-        <Button type="submit" disabled={isPending} size="sm">
-          {isPending ? `${submitLabel}...` : submitLabel}
-        </Button>
       </div>
     </form>
   );

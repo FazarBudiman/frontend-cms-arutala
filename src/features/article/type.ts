@@ -8,12 +8,12 @@ export const ArticleStatus = {
 } as const;
 
 export const articleStatusEnum = z.enum(["DRAFT", "PUBLISHED", "UNPUBLISHED", "REVIEW"]);
-export type ArticleStatusType = z.infer<typeof articleStatusEnum>
+export type ArticleStatusType = z.infer<typeof articleStatusEnum>;
 
 export const articleSchema = z.object({
   article_id: z.string(),
   article_title: z.string(),
-  article_cover_url: z.string(),
+  article_cover_url: z.string().nullable(),
   article_status: articleStatusEnum,
   created_date: z.string(),
   full_name: z.string(),
@@ -76,7 +76,13 @@ export const ContentBlock = z.union([
   z.object({
     id: z.string().optional(),
     type: z.literal("image"),
-    data: z.object({ file: z.object({ url: z.string() }), caption: z.string().optional(), stretched: z.boolean().optional(), withBorder: z.boolean().optional(), withBackground: z.boolean().optional() }),
+    data: z.object({
+      file: z.object({ url: z.string() }),
+      caption: z.string().optional(),
+      stretched: z.boolean().optional(),
+      withBorder: z.boolean().optional(),
+      withBackground: z.boolean().optional(),
+    }),
   }),
   z.object({
     id: z.string().optional(),
@@ -103,7 +109,7 @@ export type ContentBlockType = z.infer<typeof ContentBlock>;
 export const articleDetailSchema = z.object({
   article_id: z.string(),
   article_title: z.string(),
-  article_cover_url: z.string(),
+  article_cover_url: z.string().nullable(),
   article_content_blocks: z.array(ContentBlock),
   article_cover_description: z.string(),
   article_content_text: z.string(),
@@ -123,7 +129,6 @@ export const articleCoverInputSchema = z.object({
 });
 
 export type ArticleCoverInputType = z.infer<typeof articleCoverInputSchema>;
-
 
 export const articleCoverInputUpdateSchema = z.object({
   cover_description: z.string().min(20, "Cover description must be at least 20 characters").optional(),

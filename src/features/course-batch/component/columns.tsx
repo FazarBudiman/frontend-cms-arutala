@@ -7,11 +7,14 @@ import { ButtonGroup, ButtonGroupSeparator } from "@/components/ui/button-group"
 import { formatedDate } from "@/shared/utils/date";
 import { Button } from "@/components/ui/button";
 import { IconListDetails } from "@tabler/icons-react";
-import { redirect } from "next/navigation";
+import Link from "next/link";
 import { CourseBatch, CourseBatchStatus } from "../type";
 import { CourseBatchDeleteDialog } from "./course-batch-delete";
 import { cn } from "@/shared/lib/cn";
 import { formatSnakeCaseToTitle } from "@/shared/utils/string";
+import { CourseBatchUpload } from "./course-batch-upload";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import Image from "next/image";
 
 export const StatusColorCoursebatch: Record<CourseBatchStatus, string> = {
   DRAFT: "bg-status-draft text-black hover:bg-status-draft",
@@ -34,6 +37,23 @@ export const columns = (courseId: string): ColumnDef<CourseBatch>[] => [
     cell: ({ row }) => <Checkbox checked={row.getIsSelected()} onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" />,
   },
   {
+    accessorKey: "poster_url",
+    header: "Cover",
+    cell: ({ row }) => {
+      return (
+        <div className="min-w-36 items-center flex justify-center">
+          {row.original.poster_url === null ? (
+            <CourseBatchUpload courseId={courseId} batchId={row.original.course_batch_id} posterUrl={row.original.poster_url} />
+          ) : (
+            <AspectRatio ratio={4 / 2} className="bg-accent rounded-lg border">
+              <Image src={row.original.poster_url} alt={row.original.name} fill className="object-contain" />
+            </AspectRatio>
+          )}
+        </div>
+      );
+    },
+  },
+  {
     id: "name",
     accessorKey: "name",
     header: "Title",
@@ -51,7 +71,7 @@ export const columns = (courseId: string): ColumnDef<CourseBatch>[] => [
       const registStart = formatedDate(row.original.registration_start);
       const registEnd = formatedDate(row.original.registration_end);
       return (
-        <div>
+        <div suppressHydrationWarning>
           {registStart} - {registEnd}
         </div>
       );
@@ -64,7 +84,7 @@ export const columns = (courseId: string): ColumnDef<CourseBatch>[] => [
       const start = formatedDate(row.original.start_date);
       const end = formatedDate(row.original.end_date);
       return (
-        <div>
+        <div suppressHydrationWarning>
           {start} - {end}
         </div>
       );
@@ -76,47 +96,49 @@ export const columns = (courseId: string): ColumnDef<CourseBatch>[] => [
     cell: ({ row }) => <Badge className={cn("text-shadow-2xs", StatusColorCoursebatch[row.original.batch_status])}>{formatSnakeCaseToTitle(row.original.batch_status)}</Badge>,
     filterFn: "arrIncludes",
   },
-  {
-    accessorKey: "instructor_name",
-    header: "Instruktur",
-  },
-  {
-    accessorKey: "base_price",
-    header: "Harga",
-    cell: ({ row }) => {
-      const { base_price, discount_type, discount_value, final_price } = row.original;
+  // {
+  //   accessorKey: "instructor_name",
+  //   header: "Instruktur",
+  // },
+  // {
+  //   accessorKey: "base_price",
+  //   header: "Harga",
+  //   cell: ({ row }) => {
+  //     const { base_price, discount_type, discount_value, final_price } = row.original;
 
-      const hasDiscount = discount_value !== null && final_price !== null;
+  //     const hasDiscount = discount_value !== null && final_price !== null;
 
-      const formatCurrency = (value: number) =>
-        new Intl.NumberFormat("id-ID", {
-          style: "currency",
-          currency: "IDR",
-          maximumFractionDigits: 0,
-        }).format(value);
+  //     const formatCurrency = (value: number) =>
+  //       new Intl.NumberFormat("id-ID", {
+  //         style: "currency",
+  //         currency: "IDR",
+  //         maximumFractionDigits: 0,
+  //       }).format(value);
 
-      return (
-        <div className="flex flex-col">
-          {/* Final Price */}
-          <span className="font-semibold">{formatCurrency(hasDiscount ? final_price : base_price)}</span>
+  //     return (
+  //       <div className="flex flex-col">
+  //         {/* Final Price */}
+  //         <span className="font-semibold">{formatCurrency(hasDiscount ? final_price : base_price)}</span>
 
-          {/* Original Price (if discounted) */}
-          {hasDiscount && <span className="text-xs line-through text-muted-foreground">{formatCurrency(base_price)}</span>}
+  //         {/* Original Price (if discounted) */}
+  //         {hasDiscount && <span className="text-xs line-through text-muted-foreground">{formatCurrency(base_price)}</span>}
 
-          {/* Discount Label */}
-          {hasDiscount && <span className="text-xs text-red-500 font-medium">{discount_type === "PERCENT" ? `${discount_value}% OFF` : `-${formatCurrency(discount_value)}`}</span>}
-        </div>
-      );
-    },
-  },
+  //         {/* Discount Label */}
+  //         {hasDiscount && <span className="text-xs text-red-500 font-medium">{discount_type === "PERCENT" ? `${discount_value}% OFF` : `-${formatCurrency(discount_value)}`}</span>}
+  //       </div>
+  //     );
+  //   },
+  // },
   {
     id: "actions",
     header: "Action",
     cell: ({ row }) => {
       return (
         <ButtonGroup>
-          <Button variant="outline" size="icon-sm" onClick={() => redirect(`/content-website/courses/${courseId}/batch/${row.original.course_batch_id}`)}>
-            <IconListDetails />
+          <Button variant="outline" size="icon-sm" asChild>
+            <Link href={`/content-website/courses/${courseId}/batch/${row.original.course_batch_id}`}>
+              <IconListDetails />
+            </Link>
           </Button>
           <ButtonGroupSeparator />
           <CourseBatchDeleteDialog courseId={courseId} batchId={row.original.course_batch_id} />

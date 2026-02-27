@@ -2,7 +2,6 @@ import z from "zod";
 
 export const UserRole = {
   ADMIN: "ADMIN",
-  // SUPER_ADMIN: 'SUPER_ADMIN',
 } as const;
 
 // Schema
@@ -10,7 +9,7 @@ export const userSchema = z.object({
   user_id: z.string(),
   full_name: z.string(),
   username: z.string(),
-  user_profile_url: z.string(),
+  user_profile_url: z.string().nullable(),
   role_name: z.string(),
 });
 
@@ -39,3 +38,24 @@ export const createUserSchema = z
 export type User = z.infer<typeof userSchema>;
 
 export type CreateUserInput = z.infer<typeof createUserSchema>;
+
+// Update Schema (password is optional when editing)
+export const updateUserSchema = z
+  .object({
+    fullName: z.string().min(3, "Nama minimal 3 karakter"),
+    username: z.string().min(8, "Username minimal 8 karakter").regex(usernameRegex, "Username tidak boleh mengandung spasi"),
+    password: z.string().min(8, "Password minimal 8 karakter").regex(passwordRegex, "Password harus mengandung huruf besar, huruf kecil, angka, dan simbol").optional(),
+    confirmPassword: z.string().optional(),
+    userRole: z.enum(Object.values(UserRole) as [string, ...string[]]),
+    profile: z
+      .instanceof(File)
+      .refine((file) => ["image/jpeg", "image/png", "image/webp"].includes(file.type), "File harus berupa JPG, PNG, atau WEBP")
+      .refine((file) => file.size <= 5 * 1024 * 1024, "Ukuran file maksimal 5MB")
+      .optional(),
+  })
+  .refine((data) => !data.password || data.password === data.confirmPassword, {
+    message: "Password tidak sama",
+    path: ["confirmPassword"],
+  });
+
+export type UpdateUserInput = z.infer<typeof updateUserSchema>;

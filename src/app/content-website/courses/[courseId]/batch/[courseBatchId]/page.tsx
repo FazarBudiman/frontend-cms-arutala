@@ -1,12 +1,12 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { SkeletonBatchDetail } from "@/components/shared/skeleton-detail-card";
+import { SkeletonBatchDetail } from "@/components/shared/skeleton-card-detail";
 import { useCourseBatch, CourseBatchDetailCard } from "@/features/course-batch";
 import { useSetBreadcrumbLabel } from "@/providers";
 import { useCourseDetail } from "@/features/course";
 
-export default function CourseDetailPage() {
+export default function CourseBatchDetailPage() {
   const params = useParams();
   const courseId = params.courseId as string;
   const courseBatchId = params.courseBatchId as string;

@@ -13,9 +13,9 @@ import { mapEditorBlocks, handleUploadImage } from "@/shared/utils/editor";
 import { ContentBlockType } from "@/features/article/type";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Image from "next/image";
-import { SkeletonDetailCard } from "@/components/shared/skeleton-detail-card";
+import { SkeletonDetailCard } from "@/components/shared/skeleton-card-detail";
 
-export default function EditArticlePage() {
+export default function ArticleEditPage() {
   const router = useRouter();
   const params = useParams();
   const articleId = params.articleId as string;

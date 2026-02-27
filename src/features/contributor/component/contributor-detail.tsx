@@ -160,7 +160,7 @@ export function ContributorDetailDialog({ contributor }: { contributor: Contribu
                 <SelectGroup>
                   {contributorTypeOptions.map((type) => (
                     <SelectItem value={type} key={type}>
-                      {type === "INTERNAL" ? "Mentor" : "Bukan Mentor"}
+                      {type === "INTERNAL" ? "Mentor" : "Eksternal"}
                     </SelectItem>
                   ))}
                 </SelectGroup>

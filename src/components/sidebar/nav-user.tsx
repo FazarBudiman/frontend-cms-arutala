@@ -37,7 +37,7 @@ export function NavUser({ user }: { user?: User }) {
             <Button variant="ghost" size="icon-sm" className="rounded-full">
               <Avatar>
                 <AvatarImage src={user.user_profile_url || undefined} alt={user.username} />
-                <AvatarFallback className="bg-primary-900 text-white">{user.full_name?.charAt(0)}</AvatarFallback>
+                <AvatarFallback className="bg-primary-900 text-white">{user.full_name?.charAt(0).toUpperCase()}</AvatarFallback>
               </Avatar>
             </Button>
           </DropdownMenuTrigger>

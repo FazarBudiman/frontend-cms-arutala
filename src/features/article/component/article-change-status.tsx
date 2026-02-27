@@ -32,6 +32,11 @@ export function ArticleChangeStatusDialog({ article }: { article: Article }) {
       return;
     }
 
+    if (statusArticle === "PUBLISHED" && !article.article_cover_url) {
+      toast.error("Artikel tidak bisa dipublikasikan sebelum cover diupload.");
+      return;
+    }
+
     toast.promise(
       mutateAsync({
         articleId: article.article_id,
@@ -41,11 +46,11 @@ export function ArticleChangeStatusDialog({ article }: { article: Article }) {
         loading: "Menyimpan perubahan…",
         success: () => {
           setOpen(false);
-          return "Memperbarui pesan berhasil";
+          return "Memperbarui status article berhasil";
         },
         error: (err) => {
           setStatusArticle(article.article_status);
-          return err.message || "Gagal memperbarui status";
+          return err.message || "Gagal memperbarui status article";
         },
       },
     );
@@ -80,11 +85,13 @@ export function ArticleChangeStatusDialog({ article }: { article: Article }) {
               </SelectTrigger>
               <SelectContent position="popper">
                 <SelectGroup>
-                  {articleStatus.map((status) => (
-                    <SelectItem key={status.value} value={status.value}>
-                      <Badge className={statusColorArticle[status.value]}>{formatSnakeCaseToTitle(status.value)}</Badge>
-                    </SelectItem>
-                  ))}
+                  {articleStatus
+                    // .filter((s) => !(s.value === "PUBLISHED" && !article.article_cover_url))
+                    .map((status) => (
+                      <SelectItem key={status.value} value={status.value}>
+                        <Badge className={statusColorArticle[status.value]}>{formatSnakeCaseToTitle(status.value)}</Badge>
+                      </SelectItem>
+                    ))}
                 </SelectGroup>
               </SelectContent>
             </Select>

@@ -11,7 +11,7 @@ export function usePages() {
 
 export function usePage(pageId: string) {
   return useQuery<Page>({
-    queryKey: ["pagedetail"],
+    queryKey: ["pagedetail", pageId],
     queryFn: () => fetchPageById(pageId),
   });
 }

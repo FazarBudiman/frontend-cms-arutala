@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 import { mapEditorBlocks, handleUploadImage } from "@/shared/utils/editor";
 import { ContentBlockType } from "@/features/article/type";
 
-export default function CreateArticlePage() {
+export default function ArticleCreatePage() {
   const router = useRouter();
   const [data, setData] = useState<OutputData | undefined>();
   const [mode, setMode] = useState<"edit" | "preview">("edit");

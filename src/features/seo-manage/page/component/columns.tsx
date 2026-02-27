@@ -5,7 +5,7 @@ import { ButtonGroup } from "@/components/ui/button-group";
 import { Page } from "../type";
 import { PageDeleteDialog } from "./page-delete";
 import { Button } from "@/components/ui/button";
-import { redirect } from "next/navigation";
+import Link from "next/link";
 import { IconListDetails } from "@tabler/icons-react";
 
 export const columns: ColumnDef<Page>[] = [
@@ -51,14 +51,10 @@ export const columns: ColumnDef<Page>[] = [
     header: "Action",
     cell: ({ row }) => (
       <ButtonGroup>
-        <Button
-          variant="outline"
-          size="icon-sm"
-          onClick={() => {
-            redirect(`/general/seo-manage/${row.original.page_id}`);
-          }}
-        >
-          <IconListDetails />
+        <Button variant="outline" size="icon-sm" asChild>
+          <Link href={`/general/seo-manage/${row.original.page_id}`}>
+            <IconListDetails />
+          </Link>
         </Button>
         <PageDeleteDialog pageId={row.original.page_id} />
       </ButtonGroup>

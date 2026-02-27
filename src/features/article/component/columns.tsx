@@ -10,7 +10,7 @@ import Image from "next/image";
 import { formatedDate } from "@/shared/utils/date";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { Button } from "@/components/ui/button";
-import { redirect } from "next/navigation";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { ArticleCoverAddDialog } from "./article-cover-add";
 import { ArticleChangeStatusDialog } from "./article-change-status";
@@ -68,7 +68,7 @@ export const columns: ColumnDef<Article>[] = [
   {
     accessorKey: "created_date",
     header: "Date",
-    cell: ({ row }) => formatedDate(row.original.created_date),
+    cell: ({ row }) => <span suppressHydrationWarning>{formatedDate(row.original.created_date)}</span>,
   },
   {
     id: "article_status",
@@ -88,8 +88,10 @@ export const columns: ColumnDef<Article>[] = [
     cell: ({ row }) => (
       <ButtonGroup>
         <ArticleChangeStatusDialog article={row.original} />
-        <Button size="icon-sm" variant="outline" onClick={() => redirect(`/content-website/articles/${row.original.article_id}`)}>
-          <IconListDetails />
+        <Button size="icon-sm" variant="outline" asChild>
+          <Link href={`/content-website/articles/${row.original.article_id}`}>
+            <IconListDetails />
+          </Link>
         </Button>
         <ArticleDeleteDialog articleId={row.original.article_id} />
       </ButtonGroup>
