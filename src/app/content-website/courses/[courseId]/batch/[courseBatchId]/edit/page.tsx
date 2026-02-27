@@ -17,7 +17,7 @@ function toDateOnly(isoString: string): string {
   return isoString.split("T")[0];
 }
 
-export default function EditCourseBatchPage() {
+export default function CourseBatchEditPage() {
   const router = useRouter();
   const params = useParams();
   const courseId = params.courseId as string;
@@ -46,7 +46,7 @@ export default function EditCourseBatchPage() {
           sessionEndTime: s.end_time.slice(0, 5),
         })) ?? [],
       batchPrice: {
-        basePrice: batch.base_price,
+        basePrice: batch.base_price ?? 0,
         discountType: (batch.discount_type === "PERCENT" || batch.discount_type === "FIXED" ? batch.discount_type : undefined) as "PERCENT" | "FIXED" | undefined,
         discountValue: batch.discount_value ?? 0,
         finalPrice: batch.final_price ?? batch.base_price,
@@ -91,16 +91,21 @@ export default function EditCourseBatchPage() {
       <div className="p-4 lg:px-6 space-y-4">
         {/* Title Page */}
 
-        <div className="flex items-start gap-3">
-          <Button variant="ghost" size="icon-sm" onClick={() => router.back()}>
-            <IconCircleArrowLeft className="size-5" />
-          </Button>
-          <div className="flex flex-col items-start gap-1">
-            <h2 className="text-lg font-medium">Edit Batch</h2>
-            <p className="text-xs text-muted-foreground">
-              Updating <span className="font-semibold text-foreground">{batch?.name}</span> for <span className="font-semibold text-foreground">{courseDetail?.course_title || "..."}</span>
-            </p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-start gap-3">
+            <Button variant="outline" size="icon-sm" onClick={() => router.back()}>
+              <IconCircleArrowLeft className="size-5" />
+            </Button>
+            <div className="flex flex-col items-start gap-1">
+              <h2 className="text-lg font-medium">Edit Batch</h2>
+              <p className="text-xs text-muted-foreground">
+                Updating <span className="font-semibold text-foreground">{batch?.name}</span> for <span className="font-semibold text-foreground">{courseDetail?.course_title || "..."}</span>
+              </p>
+            </div>
           </div>
+          <Button size="sm" type="submit" form="course-batch-form" disabled={isUpdatePending}>
+            {isUpdatePending ? "Saving..." : "Save Changes"}
+          </Button>
         </div>
         <Separator />
 

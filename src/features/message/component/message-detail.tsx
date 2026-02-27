@@ -126,7 +126,7 @@ export function MessageDetailDialog({ message }: { message: Message }) {
             <InputGroup>
               <InputGroupInput value={message.sender_phone} disabled />
               <InputGroupButton variant="ghost" size="icon-sm">
-                <a href={`https://wa.me/${generateWhatsAppNumber(message.sender_phone)}?text=${generateWhatsAppMessage(message.sender_phone)}`} target="_blank" rel="noopener noreferrer">
+                <a href={`https://wa.me/${generateWhatsAppNumber(message.sender_phone)}?text=${generateWhatsAppMessage(message.sender_name)}`} target="_blank" rel="noopener noreferrer">
                   <IconBrandWhatsappFilled />
                 </a>
               </InputGroupButton>

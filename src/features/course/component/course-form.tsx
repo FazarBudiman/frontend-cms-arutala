@@ -21,9 +21,10 @@ interface CourseFormProps {
   onSubmit: (values: CourseInput) => Promise<void> | void;
   isPending?: boolean;
   submitLabel?: string;
+  formId?: string;
 }
 
-export function CourseForm({ initialData, onSubmit, isPending, submitLabel = "Save Course" }: CourseFormProps) {
+export function CourseForm({ initialData, onSubmit, formId = "course-form" }: CourseFormProps) {
   const { data: coursescategory } = useCourseCategory();
   const { data: coursesfield } = useCourseField();
   const { data: coursesbenefits } = useCourseBenefit();
@@ -78,7 +79,7 @@ export function CourseForm({ initialData, onSubmit, isPending, submitLabel = "Sa
     await onSubmit(formatted);
   };
   return (
-    <form className="space-y-3" onSubmit={form.handleSubmit(handleFormSubmit)}>
+    <form id={formId} className="space-y-3" onSubmit={form.handleSubmit(handleFormSubmit)}>
       <div className="grid grid-cols-1 md:grid-cols-4 gap-x-4 gap-y-3">
         {/* Title */}
         <Controller
@@ -145,8 +146,8 @@ export function CourseForm({ initialData, onSubmit, isPending, submitLabel = "Sa
           render={({ field, fieldState }) => (
             <Field className="md:col-span-4 gap-1 flex-row items-center justify-between rounded-lg border p-3" data-invalid={fieldState.invalid}>
               <div className="space-y-0.5">
-                <FieldLabel>Status Kursus</FieldLabel>
-                <div className="text-[0.8rem] text-muted-foreground">Tentukan apakah kursus ini akan ditampilkan atau disembunyikan.</div>
+                <FieldLabel>Status</FieldLabel>
+                <div className="text-[0.8rem] text-muted-foreground">Tentukan apakah Course ini akan ditampilkan atau disembunyikan pada Landing Page.</div>
               </div>
               <Switch checked={field.value} onCheckedChange={field.onChange} />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -299,12 +300,6 @@ export function CourseForm({ initialData, onSubmit, isPending, submitLabel = "Sa
             </Field>
           )}
         />
-      </div>
-
-      <div className="flex justify-end">
-        <Button type="submit" disabled={isPending}>
-          {isPending ? `${submitLabel}...` : submitLabel}
-        </Button>
       </div>
     </form>
   );

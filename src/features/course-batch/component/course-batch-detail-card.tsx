@@ -73,7 +73,7 @@ export function CourseBatchDetailCard({ courseBatchDetail }: CourseDetailCardPro
         {/* ================= LEFT ================= */}
         <div className="space-y-2">
           {/* Poster (Tidak Dominan) */}
-          <CourseBatchUpload posterUrl={poster_url} />
+          <CourseBatchUpload posterUrl={poster_url || undefined} courseId={courseId} batchId={courseBatchId} />
 
           <div className="space-y-3 text-sm">
             <div>

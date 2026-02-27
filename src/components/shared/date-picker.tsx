@@ -1,3 +1,4 @@
+"use client";
 import { CalendarIcon, ChevronDownIcon } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { DateRange } from "react-day-picker";

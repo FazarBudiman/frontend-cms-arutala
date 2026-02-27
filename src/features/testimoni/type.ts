@@ -11,7 +11,7 @@ export const testimoniSchema = z.object({
   author_job_title: z.string(),
   author_company_name: z.string(),
   testimoni_content: z.string(),
-  author_profile_url: z.string(),
+  author_profile_url: z.string().nullable(),
   testimoni_category: z.enum(Object.values(TestimoniType) as [string, ...string[]]),
   is_displayed: z.boolean(),
 });

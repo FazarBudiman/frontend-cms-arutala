@@ -73,7 +73,7 @@ export function MitraLogoDialog({ mitra }: { mitra: Mitra }) {
       trigger={
         <div className="w-full max-w-sm cursor-pointer hover:opacity-80 transition-opacity">
           <AspectRatio ratio={4 / 2} className="bg-accent rounded-lg border overflow-hidden">
-            <Image src={mitra.mitra_logo_url} alt={mitra.mitra_name} fill className="object-contain p-2" />
+            <Image src={mitra.mitra_logo_url!} alt={mitra.mitra_name} fill className="object-contain p-2" />
           </AspectRatio>
         </div>
       }

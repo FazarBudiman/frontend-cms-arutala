@@ -1,9 +1,10 @@
 "use client";
-import { SkeletonCard } from "@/components/shared/skeleton-dashboard";
+import { SkeletonCard } from "@/components/shared/skeleton-card";
 import { useOverview } from "../hook";
 import { ChartArea } from "./chart-area";
 import { RecentMessages } from "./recent-messages";
 import { UpcomingCourses } from "./upcoming-courses";
+import { EmptyState } from "@/components/shared/empty-state";
 
 export default function OverviewPage() {
   const { data, isPending } = useOverview();
@@ -13,7 +14,7 @@ export default function OverviewPage() {
   }
 
   if (!data) {
-    return <div>No data available</div>;
+    return <EmptyState title="No data available" description="No data available" />;
   }
 
   return (

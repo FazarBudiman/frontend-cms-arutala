@@ -24,8 +24,8 @@ export const column: ColumnDef<User>[] = [
     header: "Profile",
     cell: ({ row }) => (
       <Avatar>
-        <AvatarImage src={row.original.user_profile_url} alt="user-profile" />
-        <AvatarFallback>{row.original.username.charAt(0).toUpperCase()}</AvatarFallback>
+        <AvatarImage src={row.original.user_profile_url || undefined} alt="user-profile" />
+        <AvatarFallback className="bg-primary-900 text-white"> {row.original.username.charAt(0).toUpperCase()}</AvatarFallback>
       </Avatar>
     ),
   },

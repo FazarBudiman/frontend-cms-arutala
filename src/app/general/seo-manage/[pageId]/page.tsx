@@ -9,7 +9,7 @@ import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemTitle }
 import { CheckCircle, XCircle } from "lucide-react";
 import { ButtonGroup } from "@/components/ui/button-group";
 import { toast } from "sonner";
-import { SkeletonDetailCard } from "@/components/shared/skeleton-detail-card";
+import { SkeletonDetailCard } from "@/components/shared/skeleton-card-detail";
 import { EmptyState } from "@/components/shared/empty-state";
 import { IconCircleArrowLeft, IconWorldSearch } from "@tabler/icons-react";
 import { useSetBreadcrumbLabel } from "@/providers";
@@ -47,7 +47,7 @@ export default function SeoManageDetailPage() {
     <div className="flex flex-1 flex-col">
       <div className="p-4 lg:px-6 flex flex-col gap-4">
         <div className=" flex items-start gap-3">
-          <Button variant="outline" size="icon-sm" onClick={() => router.back()}>
+          <Button variant="outline" size="icon-sm" onClick={() => router.push(`/general/seo-manage`)}>
             <IconCircleArrowLeft className="size-5" />
           </Button>
           <div className="flex flex-col items-start gap-1">

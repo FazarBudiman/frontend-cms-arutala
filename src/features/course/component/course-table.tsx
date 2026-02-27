@@ -9,7 +9,7 @@ import { useCourses } from "../hook";
 import { getUniqueOptions } from "@/shared/utils/filter";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
-import { redirect } from "next/navigation";
+import Link from "next/link";
 import { Course } from "../type";
 
 const getRowId = (row: Course) => row.course_id;
@@ -29,6 +29,7 @@ export function CourseTable() {
   const statusOptions = useMemo(() => {
     return getUniqueOptions(courses, "is_displayed", (status) => (status ? "Published" : "Unpublished"));
   }, [courses]);
+  console.log(courses);
 
   return (
     <div className="space-y-4">
@@ -93,8 +94,10 @@ export function CourseTable() {
         </div>
 
         {/* <CourseAddDialog /> */}
-        <Button size="sm" onClick={() => redirect(`/content-website/courses/create`)}>
-          Tambah Course <PlusCircle />
+        <Button size="sm" asChild>
+          <Link href="/content-website/courses/create">
+            <PlusCircle /> Create Course
+          </Link>
         </Button>
       </div>
 

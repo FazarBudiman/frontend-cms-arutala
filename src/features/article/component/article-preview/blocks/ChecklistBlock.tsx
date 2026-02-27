@@ -21,7 +21,10 @@ export function ChecklistBlock({ data }: ChecklistBlockProps) {
           <div className={`mt-1 flex-shrink-0 w-5 h-5 rounded border flex items-center justify-center ${item.checked ? "bg-primary border-primary" : "border-gray-300"}`}>
             {item.checked && <CheckIcon className="w-3.5 h-3.5 text-white" />}
           </div>
-          <span className={`text-base sm:text-lg leading-relaxed ${item.checked ? "text-gray-500 line-through" : "text-[var(--color-neutral-700)]"}`} dangerouslySetInnerHTML={{ __html: item.text || (item as any).content || "" }} />
+          <span
+            className={`text-base sm:text-lg leading-relaxed ${item.checked ? "text-gray-500 line-through" : "text-[var(--color-neutral-700)]"}`}
+            dangerouslySetInnerHTML={{ __html: item.text || (item as any).content || "" }}
+          />
         </div>
       ))}
     </div>

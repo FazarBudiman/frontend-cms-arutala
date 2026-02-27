@@ -57,7 +57,8 @@ export function ArticleCoverAddDialog({ articleId }: { articleId: string }) {
       {/* Trigger */}
       <AlertDialogTrigger asChild>
         <Button size="sm">
-          Add Cover Article <PlusCircle />
+          Add Cover
+          <PlusCircle />
         </Button>
       </AlertDialogTrigger>
 

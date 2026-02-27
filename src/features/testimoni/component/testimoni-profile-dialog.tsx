@@ -73,8 +73,8 @@ export function TestimoniProfileDialog({ testimoni }: { testimoni: Testimoni }) 
       trigger={
         <div className="cursor-pointer hover:opacity-80 transition-opacity">
           <Avatar>
-            <AvatarImage src={testimoni.author_profile_url} alt="user-profile" />
-            <AvatarFallback>{testimoni.author_name.charAt(0)}</AvatarFallback>
+            <AvatarImage src={testimoni.author_profile_url || undefined} alt="user-profile" />
+            <AvatarFallback className="bg-primary-900 text-white">{testimoni.author_name.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
         </div>
       }

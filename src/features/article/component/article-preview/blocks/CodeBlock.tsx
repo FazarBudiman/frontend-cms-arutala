@@ -1,6 +1,6 @@
 "use client";
 
-import { CodeBlockData, ContentBlockType } from "@/features/article/type";
+import { CodeBlockData } from "@/features/article/type";
 
 interface CodeBlockProps {
   data: CodeBlockData;

@@ -4,7 +4,7 @@ import { CourseDetailCard, useCourseDetail } from "@/features/course";
 import { useParams } from "next/navigation";
 import { CourseBatchTable } from "@/features/course-batch";
 import { useSetBreadcrumbLabel } from "@/providers";
-import { SkeletonDetailCard } from "@/components/shared/skeleton-detail-card";
+import { SkeletonDetailCard } from "@/components/shared/skeleton-card-detail";
 import { IconDeviceImacCode } from "@tabler/icons-react";
 import { EmptyState } from "@/components/shared/empty-state";
 

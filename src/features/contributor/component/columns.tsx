@@ -49,7 +49,7 @@ export const columns: ColumnDef<Contributor>[] = [
     header: "Type",
     cell: ({ row }) => (
       <div className="flex gap-1 flex-wrap">
-        <Badge>{row.original.contributor_type === "INTERNAL" ? "Mentor" : "Bukan Mentor"}</Badge>
+        <Badge>{row.original.contributor_type === "INTERNAL" ? "Mentor" : "Eksternal"}</Badge>
       </div>
     ),
     filterFn: "arrIncludes",

@@ -105,7 +105,7 @@ export const courseBatchPriceInputSchema = z.object({
     .number({
       error: "Base price harus berupa angka",
     })
-    .min(1, "Harga dasar harus lebih dari 0"),
+    .min(0, "Harga dasar minimal 0"),
 
   discountType: z.enum(["PERCENT", "FIXED"]).optional(),
 
@@ -113,8 +113,7 @@ export const courseBatchPriceInputSchema = z.object({
     .number({
       error: "Discount value harus berupa angka",
     })
-    .min(1, "Harga dasar harus lebih dari 0")
-    .optional(),
+    .min(0, "Discount value minimal 0"),
   finalPrice: z
     .number({
       error: "Final price harus berupa angka",

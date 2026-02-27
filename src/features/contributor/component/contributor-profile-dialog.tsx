@@ -74,8 +74,8 @@ export function ContributorProfileDialog({ contributor }: { contributor: Contrib
       trigger={
         <div className="cursor-pointer hover:opacity-80 transition-opacity">
           <Avatar>
-            <AvatarImage src={contributor.contributor_profile_url} alt="user-profile" />
-            <AvatarFallback>{contributor.contributor_name.charAt(0)}</AvatarFallback>
+            <AvatarImage src={contributor.contributor_profile_url || undefined} alt="user-profile" />
+            <AvatarFallback className="bg-primary-900 text-white">{contributor.contributor_name.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
         </div>
       }

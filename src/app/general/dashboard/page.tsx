@@ -1,6 +1,6 @@
 import { OverviewPage } from "@/features/dashboard";
 
-export default function Page() {
+export default function DashboardPage() {
   return (
     <div className="flex flex-1 flex-col">
       <div className="flex flex-1 flex-col gap-2">

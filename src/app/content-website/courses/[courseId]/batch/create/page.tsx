@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { IconCircleArrowLeft } from "@tabler/icons-react";
 
-export default function CreateCourseBatchPage() {
+export default function CourseBatchCreatePage() {
   const router = useRouter();
   const params = useParams();
   const courseId = params.courseId as string;
@@ -33,16 +33,21 @@ export default function CreateCourseBatchPage() {
     <div className="flex flex-1 flex-col">
       <div className="p-4 lg:px-6 space-y-4">
         {/* Title Page */}
-        <div className=" flex items-start gap-2">
-          <Button variant="ghost" size="icon-sm" onClick={() => router.back()}>
-            <IconCircleArrowLeft className="size-5" />
-          </Button>
-          <div className="flex flex-col items-start gap-1">
-            <h6 className="text-lg font-medium">Create Batch</h6>
-            <p className="text-xs text-muted-foreground">
-              Adding new batch for <span className="font-semibold text-foreground">{courseDetail?.course_title || "..."}</span>
-            </p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-start gap-2">
+            <Button variant="outline" size="icon-sm" onClick={() => router.back()}>
+              <IconCircleArrowLeft className="size-5" />
+            </Button>
+            <div className="flex flex-col items-start gap-1">
+              <h6 className="text-lg font-medium">Create Batch</h6>
+              <p className="text-xs text-muted-foreground">
+                Adding new batch for <span className="font-semibold text-foreground">{courseDetail?.course_title || "..."}</span>
+              </p>
+            </div>
           </div>
+          <Button size="sm" type="submit" form="course-batch-form" disabled={isPending}>
+            {isPending ? "Creating..." : "Create Batch"}
+          </Button>
         </div>
         <Separator />
 
