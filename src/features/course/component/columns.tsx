@@ -74,7 +74,7 @@ export const columns: ColumnDef<Course>[] = [
 
       return (
         <div className="flex flex-col gap-2 items-start max-w-[200px]">
-          <Link href={`/content-website/courses/${row.original.course_id}/batch/${batch.course_batch_id}`} className="text-sm font-semibold leading-tight hover:underline text-left">
+          <Link href={`/content-website/courses/${row.original.course_id}/batch/${batch.id}`} className="text-sm font-semibold leading-tight hover:underline text-left">
             {batch.name}
           </Link>
           <div className="flex items-center gap-2 flex-wrap">

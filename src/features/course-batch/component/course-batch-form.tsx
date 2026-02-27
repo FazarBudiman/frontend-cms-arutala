@@ -53,11 +53,11 @@ interface CourseBatchFormProps {
   initialData?: CourseBatchInput;
   onSubmit: (values: CourseBatchInput) => Promise<void> | void;
   isPending?: boolean;
-  submitLabel?: string;
+  submitLabel?: "CREATE" | "UPDATE";
   formId?: string;
 }
 
-export function CourseBatchForm({ initialData, onSubmit, formId = "course-batch-form" }: CourseBatchFormProps) {
+export function CourseBatchForm({ initialData, onSubmit, formId = "course-batch-form", submitLabel = "CREATE" }: CourseBatchFormProps) {
   const { data: contributors } = useContributors();
 
   const form = useForm<CourseBatchInput>({
@@ -157,28 +157,30 @@ export function CourseBatchForm({ initialData, onSubmit, formId = "course-batch-
         />
 
         {/* Status */}
-        <Controller
-          name="batchStatus"
-          control={form.control}
-          render={({ field, fieldState }) => (
-            <Field className="md:col-span-1 gap-1" data-invalid={fieldState.invalid}>
-              <FieldLabel>Status</FieldLabel>
-              <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger className={fieldState.invalid ? "border-destructive" : ""}>
-                  <SelectValue placeholder="Pilih status batch..." />
-                </SelectTrigger>
-                <SelectContent position="popper">
-                  {Object.values(CourseBatchStatus).map((status) => (
-                    <SelectItem key={status} value={status}>
-                      <Badge className={StatusColorCoursebatch[status]}>{formatSnakeCaseToTitle(status)}</Badge>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-            </Field>
-          )}
-        />
+        {submitLabel === "UPDATE" && (
+          <Controller
+            name="batchStatus"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field className="md:col-span-1 gap-1" data-invalid={fieldState.invalid}>
+                <FieldLabel>Status</FieldLabel>
+                <Select value={field.value} onValueChange={field.onChange}>
+                  <SelectTrigger className={fieldState.invalid ? "border-destructive" : ""}>
+                    <SelectValue placeholder="Pilih status batch..." />
+                  </SelectTrigger>
+                  <SelectContent position="popper">
+                    {Object.values(CourseBatchStatus).map((status) => (
+                      <SelectItem key={status} value={status}>
+                        <Badge className={StatusColorCoursebatch[status]}>{formatSnakeCaseToTitle(status)}</Badge>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              </Field>
+            )}
+          />
+        )}
 
         {/* Registration Period */}
         <Controller

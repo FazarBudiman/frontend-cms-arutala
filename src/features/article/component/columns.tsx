@@ -83,6 +83,16 @@ export const columns: ColumnDef<Article>[] = [
     filterFn: "arrIncludes",
   },
   {
+    id: "seo_manage",
+    accessorKey: "article_page_id",
+    header: "SEO Detail",
+    cell: ({ row }) => (
+      <Button size="sm" variant="link" asChild>
+        <Link href={`/general/seo-manage/${row.original.article_page_id}`}>Manage SEO</Link>
+      </Button>
+    ),
+  },
+  {
     id: "actions",
     header: "Action",
     cell: ({ row }) => (
